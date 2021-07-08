@@ -44,6 +44,7 @@ func Run() error {
 
 	parser := parsley.New(config.Prefix)
 	parser.RegisterHandler(Bot)
+	RegisterCommands(parser)
 
 	if err = Bot.Open(); err != nil {
 		return fmt.Errorf("error opening Discord connection: %w", err)
