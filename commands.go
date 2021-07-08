@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"regexp"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/nint8835/parsley"
 	"github.com/nint8835/scribe/database"
+	"gorm.io/gorm/clause"
 )
 
 var MentionListRegexp = regexp.MustCompile(`<@!?(\d{17,})>`)
@@ -77,6 +79,50 @@ func AddQuoteCommand(message *discordgo.MessageCreate, args AddArgs) {
 	})
 }
 
+type GetArgs struct {
+	ID uint `description:"ID of the quote to display."`
+}
+
+func GetQuoteCommand(message *discordgo.MessageCreate, args GetArgs) {
+	var quote database.Quote
+
+	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
+	if result.Error != nil {
+		Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error))
+	}
+
+	embed, err := MakeQuoteEmbed(&quote, message.GuildID)
+	if err != nil {
+		Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting quote.\n```\n%s\n```", err))
+	}
+
+	Bot.ChannelMessageSendEmbed(message.ChannelID, embed)
+}
+
+func RandomQuoteCommand(message *discordgo.MessageCreate, args struct{}) {
+	var quote database.Quote
+	var quoteCount int64
+
+	result := database.Instance.Model(&database.Quote{}).Count(&quoteCount)
+	if result.Error != nil {
+		Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting random quote number.\n```\n%s\n```", result.Error))
+	}
+
+	result = database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, rand.Intn(int(quoteCount+1)))
+	if result.Error != nil {
+		Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error))
+	}
+
+	embed, err := MakeQuoteEmbed(&quote, message.GuildID)
+	if err != nil {
+		Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting quote.\n```\n%s\n```", err))
+	}
+
+	Bot.ChannelMessageSendEmbed(message.ChannelID, embed)
+}
+
 func RegisterCommands(parser *parsley.Parser) {
 	parser.NewCommand("add", "Add a new quote.", AddQuoteCommand)
+	parser.NewCommand("get", "Display an individual quote by ID.", GetQuoteCommand)
+	parser.NewCommand("random", "Get a random quote.", RandomQuoteCommand)
 }
