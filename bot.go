@@ -50,11 +50,11 @@ func Run() error {
 		return fmt.Errorf("error opening Discord connection: %w", err)
 	}
 
-	fmt.Printf("Scribe is now running. Press Ctrl-C to exit.")
+	fmt.Println("Scribe is now running. Press Ctrl-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
-	fmt.Printf("Quitting Scribe")
+	fmt.Println("Quitting Scribe")
 
 	if err = Bot.Close(); err != nil {
 		return fmt.Errorf("error closing Discord connection: %w", err)

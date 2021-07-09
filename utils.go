@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/nint8835/scribe/database"
@@ -70,5 +71,6 @@ func MakeQuoteEmbed(quote *database.Quote, guildID string) (*discordgo.MessageEm
 		Description: quote.Text,
 		Color:       (80 << 16) + (40 << 8) + (200),
 		Fields:      fields,
+		Timestamp:   quote.Meta.CreatedAt.Format(time.RFC3339),
 	}, nil
 }

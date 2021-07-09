@@ -121,8 +121,61 @@ func RandomQuoteCommand(message *discordgo.MessageCreate, args struct{}) {
 	Bot.ChannelMessageSendEmbed(message.ChannelID, embed)
 }
 
+type ListArgs struct {
+	Authors string `description:"Author(s) to display, as a list of Discord mentions, or all for all quotes."`
+	Page    uint   `default:"1" description:"Page of quotes to display."`
+}
+
+func ListQuotesCommand(message *discordgo.MessageCreate, args ListArgs) {
+	var quotes []database.Quote
+
+	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
+
+	if args.Authors != "all" {
+		authors := []string{}
+		authorMatches := MentionListRegexp.FindAllStringSubmatch(args.Authors, -1)
+
+		for _, match := range authorMatches {
+			authors = append(authors, match[1])
+		}
+
+		query = query.
+			Joins("INNER JOIN quote_authors ON quote_authors.quote_id = quotes.id", authorMatches).
+			Where(map[string]interface{}{"quote_authors.author_id": authors})
+	}
+
+	result := query.Limit(5).Offset(int(5 * (args.Page - 1))).Find(&quotes)
+	if result.Error != nil {
+		Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error))
+	}
+
+	embed := discordgo.MessageEmbed{
+		Title:  "Quotes",
+		Color:  (40 << 16) + (120 << 8) + (120),
+		Fields: []*discordgo.MessageEmbedField{},
+	}
+
+	for _, quote := range quotes {
+		authors, _, err := GenerateAuthorString(quote.Authors, message.GuildID)
+		if err != nil {
+			Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting quote authors.\n```\n%s\n```", result.Error))
+		}
+		quoteBody := fmt.Sprintf("%s\n\n_<t:%d>_", quote.Text, quote.Meta.CreatedAt.UTC().Unix())
+		if quote.Source != nil {
+			quoteBody += fmt.Sprintf(" - [Source](%s)", *quote.Source)
+		}
+		embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+			Name:  fmt.Sprintf("%d - %s", quote.Meta.ID, authors),
+			Value: quoteBody,
+		})
+	}
+
+	Bot.ChannelMessageSendEmbed(message.ChannelID, &embed)
+}
+
 func RegisterCommands(parser *parsley.Parser) {
 	parser.NewCommand("add", "Add a new quote.", AddQuoteCommand)
 	parser.NewCommand("get", "Display an individual quote by ID.", GetQuoteCommand)
 	parser.NewCommand("random", "Get a random quote.", RandomQuoteCommand)
+	parser.NewCommand("list", "List quotes.", ListQuotesCommand)
 }
