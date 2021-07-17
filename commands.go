@@ -122,7 +122,7 @@ func RandomQuoteCommand(message *discordgo.MessageCreate, args struct{}) {
 }
 
 type ListArgs struct {
-	Authors string `description:"Author(s) to display, as a list of Discord mentions, or all for all quotes."`
+	Authors string `default:"all" description:"Author(s) to display, as a list of Discord mentions, or all for all quotes."`
 	Page    uint   `default:"1" description:"Page of quotes to display."`
 }
 
