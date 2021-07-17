@@ -19,3 +19,6 @@ quotes.sqlite
 
 # Environment variables / credentials
 .env
+
+# Binary, built with `go build`
+scribe
