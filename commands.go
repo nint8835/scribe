@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"regexp"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/nint8835/parsley"
@@ -122,7 +123,7 @@ func RandomQuoteCommand(message *discordgo.MessageCreate, args struct{}) {
 }
 
 type ListArgs struct {
-	Authors string `description:"Author(s) to display, as a list of Discord mentions, or all for all quotes."`
+	Authors string `default:"all" description:"Author(s) to display, as a list of Discord mentions, or all for all quotes."`
 	Page    uint   `default:"1" description:"Page of quotes to display."`
 }
 
@@ -170,7 +171,23 @@ func ListQuotesCommand(message *discordgo.MessageCreate, args ListArgs) {
 		})
 	}
 
-	Bot.ChannelMessageSendEmbed(message.ChannelID, &embed)
+	embed_message, err := Bot.ChannelMessageSendEmbed(message.ChannelID, &embed)
+
+	if err != nil {
+		Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error sending embed.\n```\n%s\n```", err))
+	}
+
+	time.AfterFunc(100*time.Millisecond, func() {
+		Bot.MessageReactionAdd(message.ChannelID, embed_message.ID, ReactLeftArrow)
+	})
+
+	time.AfterFunc(200*time.Millisecond, func() {
+		Bot.MessageReactionAdd(message.ChannelID, embed_message.ID, ReactRightArrow)
+	})
+
+	time.AfterFunc(300*time.Millisecond, func() {
+		Bot.MessageReactionAdd(message.ChannelID, embed_message.ID, ReactClear)
+	})
 }
 
 func RegisterCommands(parser *parsley.Parser) {

@@ -13,6 +13,10 @@ import (
 	"github.com/nint8835/scribe/database"
 )
 
+const ReactLeftArrow = "⬅️"
+const ReactRightArrow = "➡️"
+const ReactClear = "❌"
+
 type Config struct {
 	DBPath string `default:"quotes.sqlite" split_words:"true"`
 	Token  string
@@ -40,11 +44,13 @@ func Run() error {
 	if err != nil {
 		return fmt.Errorf("error creating Discord session: %w", err)
 	}
-	Bot.Identify.Intents = discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages
+	Bot.Identify.Intents = discordgo.IntentsGuildMessages | discordgo.IntentsGuildMessageReactions | discordgo.IntentsDirectMessages | discordgo.IntentsDirectMessageReactions
 
 	parser := parsley.New(config.Prefix)
 	parser.RegisterHandler(Bot)
 	RegisterCommands(parser)
+
+	Bot.AddHandler(messageReactionAdd)
 
 	if err = Bot.Open(); err != nil {
 		return fmt.Errorf("error opening Discord connection: %w", err)
@@ -61,6 +67,17 @@ func Run() error {
 	}
 
 	return nil
+}
+
+func messageReactionAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
+	switch m.Emoji.Name {
+	case ReactLeftArrow:
+		// TODO
+	case ReactRightArrow:
+		// TODO
+	case ReactClear:
+		// TODO
+	}
 }
 
 func main() {
