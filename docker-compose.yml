@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  scribe:
+    image: ghcr.io/nint8835/scribe
+    restart: always
+    environment:
+      - SCRIBE_DB_PATH=/scribe/quotes.sqlite
+    env_file:
+      - .env
+    volumes:
+      - ./data:/scribe

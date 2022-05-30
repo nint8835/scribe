@@ -19,3 +19,5 @@ quotes.sqlite
 
 # Environment variables / credentials
 .env
+
+data/
