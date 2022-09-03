@@ -21,3 +21,4 @@ quotes.sqlite
 .env
 
 data/
+.idea/
