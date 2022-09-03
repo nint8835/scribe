@@ -10,13 +10,15 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/nint8835/parsley"
+
 	"github.com/nint8835/scribe/database"
 )
 
 type Config struct {
-	DBPath string `default:"quotes.sqlite" split_words:"true"`
-	Token  string
-	Prefix string `default:"q!"`
+	DBPath  string `default:"quotes.sqlite" split_words:"true"`
+	Token   string
+	Prefix  string `default:"q!"`
+	OwnerId string `default:"106162668032802816" split_words:"true"`
 }
 
 var config Config
@@ -40,7 +42,7 @@ func Run() error {
 	if err != nil {
 		return fmt.Errorf("error creating Discord session: %w", err)
 	}
-	Bot.Identify.Intents = discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages
+	Bot.Identify.Intents = discordgo.IntentsAllWithoutPrivileged | discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages
 
 	parser := parsley.New(config.Prefix)
 	parser.RegisterHandler(Bot)

@@ -7,8 +7,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/nint8835/parsley"
-	"github.com/nint8835/scribe/database"
 	"gorm.io/gorm/clause"
+
+	"github.com/nint8835/scribe/database"
 )
 
 var MentionListRegexp = regexp.MustCompile(`<@!?(\d{17,})>`)
@@ -173,9 +174,40 @@ func ListQuotesCommand(message *discordgo.MessageCreate, args ListArgs) {
 	Bot.ChannelMessageSendEmbed(message.ChannelID, &embed)
 }
 
+type RemoveArgs struct {
+	ID uint `description:"ID of the quote to remove."`
+}
+
+func RemoveQuoteCommand(message *discordgo.MessageCreate, args RemoveArgs) {
+	if message.Author.ID != config.OwnerId {
+		Bot.ChannelMessageSendReply(message.ChannelID, "You do not have access to that command.", message.Reference())
+		return
+	}
+
+	var quote database.Quote
+	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
+	if result.Error != nil {
+		Bot.ChannelMessageSendReply(message.ChannelID, fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error), message.Reference())
+		return
+	}
+
+	result = database.Instance.Delete(&quote)
+	if result.Error != nil {
+		Bot.ChannelMessageSendReply(message.ChannelID, fmt.Sprintf("Error deleting quote.\n```\n%s\n```", result.Error), message.Reference())
+	}
+
+	embed := discordgo.MessageEmbed{
+		Title:       "Quote deleted!",
+		Description: fmt.Sprintf("Quote %d has been deleted succesfully.", args.ID),
+		Color:       (240 << 16) + (85 << 8) + (125),
+	}
+	Bot.ChannelMessageSendEmbedReply(message.ChannelID, &embed, message.Reference())
+}
+
 func RegisterCommands(parser *parsley.Parser) {
 	parser.NewCommand("add", "Add a new quote.", AddQuoteCommand)
 	parser.NewCommand("get", "Display an individual quote by ID.", GetQuoteCommand)
 	parser.NewCommand("random", "Get a random quote.", RandomQuoteCommand)
 	parser.NewCommand("list", "List quotes.", ListQuotesCommand)
+	parser.NewCommand("remove", "Remove a quote.", RemoveQuoteCommand)
 }
