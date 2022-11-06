@@ -101,18 +101,14 @@ func GetQuoteCommand(message *discordgo.MessageCreate, args GetArgs) {
 }
 
 func RandomQuoteCommand(message *discordgo.MessageCreate, args struct{}) {
-	var quote database.Quote
-	var quoteCount int64
+	var quotes []database.Quote
 
-	result := database.Instance.Model(&database.Quote{}).Count(&quoteCount)
+	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).Find(&quotes)
 	if result.Error != nil {
-		Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting random quote number.\n```\n%s\n```", result.Error))
+		Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error))
 	}
 
-	result = database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, rand.Intn(int(quoteCount+1)))
-	if result.Error != nil {
-		Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error))
-	}
+	quote := quotes[rand.Intn(len(quotes))]
 
 	embed, err := MakeQuoteEmbed(&quote, message.GuildID)
 	if err != nil {
