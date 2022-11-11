@@ -200,10 +200,44 @@ func RemoveQuoteCommand(message *discordgo.MessageCreate, args RemoveArgs) {
 	Bot.ChannelMessageSendEmbedReply(message.ChannelID, &embed, message.Reference())
 }
 
+type EditArgs struct {
+	ID   uint   `description:"ID of the quote to edit."`
+	Text string `description:"New text for the quote."`
+}
+
+func EditQuoteCommand(message *discordgo.MessageCreate, args EditArgs) {
+	if message.Author.ID != config.OwnerId {
+		Bot.ChannelMessageSendReply(message.ChannelID, "You do not have access to that command.", message.Reference())
+		return
+	}
+
+	var quote database.Quote
+	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
+	if result.Error != nil {
+		Bot.ChannelMessageSendReply(message.ChannelID, fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error), message.Reference())
+		return
+	}
+
+	quote.Text = args.Text
+
+	result = database.Instance.Save(&quote)
+	if result.Error != nil {
+		Bot.ChannelMessageSendReply(message.ChannelID, fmt.Sprintf("Error editing quote.\n```\n%s\n```", result.Error), message.Reference())
+		return
+	}
+
+	Bot.ChannelMessageSendEmbed(message.ChannelID, &discordgo.MessageEmbed{
+		Title:       "Quote edited!",
+		Color:       (45 << 16) + (200 << 8) + (95),
+		Description: "The quote has been edited successfully.",
+	})
+}
+
 func RegisterCommands(parser *parsley.Parser) {
 	parser.NewCommand("add", "Add a new quote.", AddQuoteCommand)
 	parser.NewCommand("get", "Display an individual quote by ID.", GetQuoteCommand)
 	parser.NewCommand("random", "Get a random quote.", RandomQuoteCommand)
 	parser.NewCommand("list", "List quotes.", ListQuotesCommand)
 	parser.NewCommand("remove", "Remove a quote.", RemoveQuoteCommand)
+	parser.NewCommand("edit", "Edit a quote.", EditQuoteCommand)
 }
