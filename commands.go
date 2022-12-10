@@ -157,7 +157,13 @@ func ListQuotesCommand(message *discordgo.MessageCreate, args ListArgs) {
 		if err != nil {
 			Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting quote authors.\n```\n%s\n```", result.Error))
 		}
-		quoteBody := fmt.Sprintf("%s\n\n_<t:%d>_", quote.Text, quote.Meta.CreatedAt.UTC().Unix())
+
+		quoteText := quote.Text
+		if len(quoteText) >= 900 {
+			quoteText = quoteText[:900] + "..."
+		}
+
+		quoteBody := fmt.Sprintf("%s\n\n_<t:%d>_", quoteText, quote.Meta.CreatedAt.UTC().Unix())
 		if quote.Source != nil {
 			quoteBody += fmt.Sprintf(" - [Source](%s)", *quote.Source)
 		}
