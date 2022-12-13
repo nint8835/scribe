@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"regexp"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/nint8835/parsley"
@@ -144,6 +145,7 @@ func ListQuotesCommand(message *discordgo.MessageCreate, args ListArgs) {
 	result := query.Limit(5).Offset(int(5 * (args.Page - 1))).Find(&quotes)
 	if result.Error != nil {
 		Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error))
+		return
 	}
 
 	embed := discordgo.MessageEmbed{
@@ -196,6 +198,7 @@ func RemoveQuoteCommand(message *discordgo.MessageCreate, args RemoveArgs) {
 	result = database.Instance.Delete(&quote)
 	if result.Error != nil {
 		Bot.ChannelMessageSendReply(message.ChannelID, fmt.Sprintf("Error deleting quote.\n```\n%s\n```", result.Error), message.Reference())
+		return
 	}
 
 	embed := discordgo.MessageEmbed{
@@ -239,6 +242,69 @@ func EditQuoteCommand(message *discordgo.MessageCreate, args EditArgs) {
 	})
 }
 
+type SearchArgs struct {
+	Query string `description:"Keyword / phrase to search for in quotes. If it contains a percent, it will be used as an argument to LIKE directly."`
+	Page  uint   `default:"1" description:"Page of results to display."`
+}
+
+func SearchQuotesCommand(message *discordgo.MessageCreate, args SearchArgs) {
+	if result := database.Instance.Exec("PRAGMA case_sensitive_like = OFF", nil); result.Error != nil {
+		Bot.ChannelMessageSendReply(message.ChannelID, fmt.Sprintf("Error enabling case-insensitive like.\n```\n%s\n```", result.Error), message.Reference())
+		return
+	}
+
+	var quotes []database.Quote
+
+	query := database.Instance.Model(&database.Quote{}).
+		Preload(clause.Associations)
+
+	if strings.Contains(args.Query, "%") {
+		query = query.Where("text LIKE ?", args.Query)
+	} else {
+		query = query.Where("text LIKE ?", "% "+args.Query+" %").
+			Or("text LIKE ?", "% "+args.Query).
+			Or("text LIKE ?", args.Query+" %")
+	}
+
+	result := query.
+		Limit(5).
+		Offset(int(5 * (args.Page - 1))).
+		Find(&quotes)
+	if result.Error != nil {
+		Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error))
+		return
+	}
+
+	embed := discordgo.MessageEmbed{
+		Title:  "Quotes",
+		Color:  (40 << 16) + (120 << 8) + (120),
+		Fields: []*discordgo.MessageEmbedField{},
+	}
+
+	for _, quote := range quotes {
+		authors, _, err := GenerateAuthorString(quote.Authors, message.GuildID)
+		if err != nil {
+			Bot.ChannelMessageSend(message.ChannelID, fmt.Sprintf("Error getting quote authors.\n```\n%s\n```", result.Error))
+		}
+
+		quoteText := quote.Text
+		if len(quoteText) >= 900 {
+			quoteText = quoteText[:900] + "..."
+		}
+
+		quoteBody := fmt.Sprintf("%s\n\n_<t:%d>_", quoteText, quote.Meta.CreatedAt.UTC().Unix())
+		if quote.Source != nil {
+			quoteBody += fmt.Sprintf(" - [Source](%s)", *quote.Source)
+		}
+		embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+			Name:  fmt.Sprintf("%d - %s", quote.Meta.ID, authors),
+			Value: quoteBody,
+		})
+	}
+
+	Bot.ChannelMessageSendEmbed(message.ChannelID, &embed)
+}
+
 func RegisterCommands(parser *parsley.Parser) {
 	parser.NewCommand("add", "Add a new quote.", AddQuoteCommand)
 	parser.NewCommand("get", "Display an individual quote by ID.", GetQuoteCommand)
@@ -246,4 +312,5 @@ func RegisterCommands(parser *parsley.Parser) {
 	parser.NewCommand("list", "List quotes.", ListQuotesCommand)
 	parser.NewCommand("remove", "Remove a quote.", RemoveQuoteCommand)
 	parser.NewCommand("edit", "Edit a quote.", EditQuoteCommand)
+	parser.NewCommand("search", "Search for quotes.", SearchQuotesCommand)
 }
