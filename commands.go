@@ -16,66 +16,16 @@ import (
 var MentionListRegexp = regexp.MustCompile(`<@!?(\d{17,})>`)
 
 type AddArgs struct {
-	Text    string `description:"Text for the quote to add. Can be multi-line, by wrapping in quotes."`
-	Authors string `description:"Author(s) of the quote, as a list of Discord mentions."`
-	Source  string `default:"" description:"Link to a source for the quote, if available (such as a Discord message, screenshot, etc.)"`
+	Text   string         `description:"Text for the quote to add. To insert a new line, insert \\n."`
+	Author discordgo.User `description:"Author of the quote."`
+	Source *string        `description:"Link to a source for the quote, if available (such as a Discord message, screenshot, etc.)"`
 }
 
-func AddQuoteCommand(session *discordgo.Session, interaction *discordgo.InteractionCreate, args AddArgs) {
-	addedAuthors := map[string]bool{}
-	authors := []*database.Author{}
-	authorMatches := MentionListRegexp.FindAllStringSubmatch(args.Authors, -1)
-
-	for _, match := range authorMatches {
-		if _, found := addedAuthors[match[1]]; found {
-			continue
-		}
-		_, err := Bot.User(match[1])
-		if err != nil {
-			Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Embeds: []*discordgo.MessageEmbed{
-						{
-							Title:       "Error adding quote",
-							Color:       (200 << 16) + (45 << 8) + (95),
-							Description: "One or more of the provided authors is invalid.",
-						},
-					},
-				},
-			})
-			return
-		}
-		authors = append(authors, &database.Author{ID: match[1]})
-		addedAuthors[match[1]] = true
-	}
-
-	if len(authors) == 0 {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Embeds: []*discordgo.MessageEmbed{
-					{
-						Title:       "Error adding quote",
-						Color:       (200 << 16) + (45 << 8) + (95),
-						Description: "One or more quote authors must be provided.",
-					},
-				},
-			},
-		})
-		return
-	}
-
-	var source *string = nil
-
-	if args.Source != "" {
-		source = &args.Source
-	}
-
+func AddQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args AddArgs) {
 	quote := database.Quote{
-		Text:    args.Text,
-		Authors: authors,
-		Source:  source,
+		Text:    strings.Replace(args.Text, "\\n", "\n", -1),
+		Authors: []*database.Author{{ID: args.Author.ID}},
+		Source:  args.Source,
 	}
 
 	result := database.Instance.Create(&quote)
