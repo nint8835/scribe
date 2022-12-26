@@ -66,7 +66,7 @@ type GetArgs struct {
 	ID int `description:"ID of the quote to display."`
 }
 
-func GetQuoteCommand(session *discordgo.Session, interaction *discordgo.InteractionCreate, args GetArgs) {
+func GetQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args GetArgs) {
 	var quote database.Quote
 
 	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
@@ -99,7 +99,7 @@ func GetQuoteCommand(session *discordgo.Session, interaction *discordgo.Interact
 	})
 }
 
-func RandomQuoteCommand(session *discordgo.Session, interaction *discordgo.InteractionCreate, args struct{}) {
+func RandomQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
 	var quotes []database.Quote
 
 	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).Find(&quotes)
@@ -135,29 +135,22 @@ func RandomQuoteCommand(session *discordgo.Session, interaction *discordgo.Inter
 }
 
 type ListArgs struct {
-	Authors string `description:"Author(s) to display, as a list of Discord mentions, or all for all quotes."`
-	Page    int    `default:"1" description:"Page of quotes to display."`
+	Author *discordgo.User `description:"Author to display quotes for. Omit to display quotes from all users."`
+	Page   int             `default:"1" description:"Page of quotes to display."`
 }
 
-func ListQuotesCommand(session *discordgo.Session, interaction *discordgo.InteractionCreate, args ListArgs) {
+func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args ListArgs) {
 	var quotes []database.Quote
 
 	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
 
-	if args.Authors != "all" {
-		authors := []string{}
-		authorMatches := MentionListRegexp.FindAllStringSubmatch(args.Authors, -1)
-
-		for _, match := range authorMatches {
-			authors = append(authors, match[1])
-		}
-
+	if args.Author != nil {
 		query = query.
-			Joins("INNER JOIN quote_authors ON quote_authors.quote_id = quotes.id", authorMatches).
-			Where(map[string]interface{}{"quote_authors.author_id": authors})
+			Joins("INNER JOIN quote_authors ON quote_authors.quote_id = quotes.id").
+			Where(map[string]interface{}{"quote_authors.author_id": args.Author.ID})
 	}
 
-	result := query.Limit(5).Offset(int(5 * (args.Page - 1))).Find(&quotes)
+	result := query.Limit(5).Offset(5 * (args.Page - 1)).Find(&quotes)
 	if result.Error != nil {
 		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -207,7 +200,7 @@ type RemoveArgs struct {
 	ID int `description:"ID of the quote to remove."`
 }
 
-func RemoveQuoteCommand(session *discordgo.Session, interaction *discordgo.InteractionCreate, args RemoveArgs) {
+func RemoveQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args RemoveArgs) {
 	if interaction.Member.User.ID != config.OwnerId {
 		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -259,7 +252,7 @@ type EditArgs struct {
 	Text string `description:"New text for the quote."`
 }
 
-func EditQuoteCommand(session *discordgo.Session, interaction *discordgo.InteractionCreate, args EditArgs) {
+func EditQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args EditArgs) {
 	if interaction.Member.User.ID != config.OwnerId {
 		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -314,7 +307,7 @@ type SearchArgs struct {
 	Page  int    `default:"1" description:"Page of results to display."`
 }
 
-func SearchQuotesCommand(session *discordgo.Session, interaction *discordgo.InteractionCreate, args SearchArgs) {
+func SearchQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args SearchArgs) {
 	if result := database.Instance.Exec("PRAGMA case_sensitive_like = OFF", nil); result.Error != nil {
 		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
