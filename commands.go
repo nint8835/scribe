@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 	"regexp"
 	"strings"
@@ -33,10 +32,17 @@ func AddQuoteCommand(session *discordgo.Session, interaction *discordgo.Interact
 		}
 		_, err := Bot.User(match[1])
 		if err != nil {
-			Bot.ChannelMessageSendEmbed(interaction.ChannelID, &discordgo.MessageEmbed{
-				Title:       "Error adding quote",
-				Color:       (200 << 16) + (45 << 8) + (95),
-				Description: "One or more of the provided authors is invalid.",
+			Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Embeds: []*discordgo.MessageEmbed{
+						{
+							Title:       "Error adding quote",
+							Color:       (200 << 16) + (45 << 8) + (95),
+							Description: "One or more of the provided authors is invalid.",
+						},
+					},
+				},
 			})
 			return
 		}
@@ -45,10 +51,17 @@ func AddQuoteCommand(session *discordgo.Session, interaction *discordgo.Interact
 	}
 
 	if len(authors) == 0 {
-		Bot.ChannelMessageSendEmbed(interaction.ChannelID, &discordgo.MessageEmbed{
-			Title:       "Error adding quote",
-			Color:       (200 << 16) + (45 << 8) + (95),
-			Description: "One or more quote authors must be provided.",
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Embeds: []*discordgo.MessageEmbed{
+					{
+						Title:       "Error adding quote",
+						Color:       (200 << 16) + (45 << 8) + (95),
+						Description: "One or more quote authors must be provided.",
+					},
+				},
+			},
 		})
 		return
 	}
@@ -67,18 +80,35 @@ func AddQuoteCommand(session *discordgo.Session, interaction *discordgo.Interact
 
 	result := database.Instance.Create(&quote)
 	if result.Error != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error),
+			},
+		})
 	}
 
 	result = database.Instance.Save(&quote)
 	if result.Error != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error),
+			},
+		})
 	}
 
-	Bot.ChannelMessageSendEmbed(interaction.ChannelID, &discordgo.MessageEmbed{
-		Title:       "Quote added!",
-		Color:       (45 << 16) + (200 << 8) + (95),
-		Description: fmt.Sprintf("Your quote was added. It has been assigned ID %d.", quote.Meta.ID),
+	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:       "Quote added!",
+					Color:       (45 << 16) + (200 << 8) + (95),
+					Description: fmt.Sprintf("Your quote was added. It has been assigned ID %d.", quote.Meta.ID),
+				},
+			},
+		},
 	})
 }
 
@@ -91,15 +121,32 @@ func GetQuoteCommand(session *discordgo.Session, interaction *discordgo.Interact
 
 	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
 	if result.Error != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error),
+			},
+		})
+		return
 	}
 
 	embed, err := MakeQuoteEmbed(&quote, interaction.GuildID)
 	if err != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote.\n```\n%s\n```", err))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error getting quote.\n```\n%s\n```", err),
+			},
+		})
+		return
 	}
 
-	Bot.ChannelMessageSendEmbed(interaction.ChannelID, embed)
+	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{embed},
+		},
+	})
 }
 
 func RandomQuoteCommand(session *discordgo.Session, interaction *discordgo.InteractionCreate, args struct{}) {
@@ -107,17 +154,34 @@ func RandomQuoteCommand(session *discordgo.Session, interaction *discordgo.Inter
 
 	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).Find(&quotes)
 	if result.Error != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error),
+			},
+		})
+		return
 	}
 
 	quote := quotes[rand.Intn(len(quotes))]
 
 	embed, err := MakeQuoteEmbed(&quote, interaction.GuildID)
 	if err != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote.\n```\n%s\n```", err))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error getting quote.\n```\n%s\n```", err),
+			},
+		})
+		return
 	}
 
-	Bot.ChannelMessageSendEmbed(interaction.ChannelID, embed)
+	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{embed},
+		},
+	})
 }
 
 type ListArgs struct {
@@ -145,7 +209,12 @@ func ListQuotesCommand(session *discordgo.Session, interaction *discordgo.Intera
 
 	result := query.Limit(5).Offset(int(5 * (args.Page - 1))).Find(&quotes)
 	if result.Error != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error),
+			},
+		})
 		return
 	}
 
@@ -176,7 +245,12 @@ func ListQuotesCommand(session *discordgo.Session, interaction *discordgo.Intera
 		})
 	}
 
-	Bot.ChannelMessageSendEmbed(interaction.ChannelID, &embed)
+	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{&embed},
+		},
+	})
 }
 
 type RemoveArgs struct {
@@ -185,20 +259,35 @@ type RemoveArgs struct {
 
 func RemoveQuoteCommand(session *discordgo.Session, interaction *discordgo.InteractionCreate, args RemoveArgs) {
 	if interaction.Member.User.ID != config.OwnerId {
-		Bot.ChannelMessageSend(interaction.ChannelID, "You do not have access to that command.")
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "You do not have access to that command.",
+			},
+		})
 		return
 	}
 
 	var quote database.Quote
 	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
 	if result.Error != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error),
+			},
+		})
 		return
 	}
 
 	result = database.Instance.Delete(&quote)
 	if result.Error != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error deleting quote.\n```\n%s\n```", result.Error))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error deleting quote.\n```\n%s\n```", result.Error),
+			},
+		})
 		return
 	}
 
@@ -207,7 +296,12 @@ func RemoveQuoteCommand(session *discordgo.Session, interaction *discordgo.Inter
 		Description: fmt.Sprintf("Quote %d has been deleted succesfully.", args.ID),
 		Color:       (240 << 16) + (85 << 8) + (125),
 	}
-	Bot.ChannelMessageSendEmbed(interaction.ChannelID, &embed)
+	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{&embed},
+		},
+	})
 }
 
 type EditArgs struct {
@@ -217,14 +311,24 @@ type EditArgs struct {
 
 func EditQuoteCommand(session *discordgo.Session, interaction *discordgo.InteractionCreate, args EditArgs) {
 	if interaction.Member.User.ID != config.OwnerId {
-		Bot.ChannelMessageSend(interaction.ChannelID, "You do not have access to that command.")
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "You do not have access to that command.",
+			},
+		})
 		return
 	}
 
 	var quote database.Quote
 	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
 	if result.Error != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error),
+			},
+		})
 		return
 	}
 
@@ -232,14 +336,26 @@ func EditQuoteCommand(session *discordgo.Session, interaction *discordgo.Interac
 
 	result = database.Instance.Save(&quote)
 	if result.Error != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error editing quote.\n```\n%s\n```", result.Error))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error editing quote.\n```\n%s\n```", result.Error),
+			},
+		})
 		return
 	}
 
-	Bot.ChannelMessageSendEmbed(interaction.ChannelID, &discordgo.MessageEmbed{
-		Title:       "Quote edited!",
-		Color:       (45 << 16) + (200 << 8) + (95),
-		Description: "The quote has been edited successfully.",
+	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:       "Quote edited!",
+					Color:       (45 << 16) + (200 << 8) + (95),
+					Description: "The quote has been edited successfully.",
+				},
+			},
+		},
 	})
 }
 
@@ -250,7 +366,12 @@ type SearchArgs struct {
 
 func SearchQuotesCommand(session *discordgo.Session, interaction *discordgo.InteractionCreate, args SearchArgs) {
 	if result := database.Instance.Exec("PRAGMA case_sensitive_like = OFF", nil); result.Error != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error enabling case-insensitive like.\n```\n%s\n```", result.Error))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error enabling case-insensitive like.\n```\n%s\n```", result.Error),
+			},
+		})
 		return
 	}
 
@@ -272,7 +393,12 @@ func SearchQuotesCommand(session *discordgo.Session, interaction *discordgo.Inte
 		Offset(int(5 * (args.Page - 1))).
 		Find(&quotes)
 	if result.Error != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error))
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error),
+			},
+		})
 		return
 	}
 
@@ -303,72 +429,55 @@ func SearchQuotesCommand(session *discordgo.Session, interaction *discordgo.Inte
 		})
 	}
 
-	Bot.ChannelMessageSendEmbed(interaction.ChannelID, &embed)
+	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{&embed},
+		},
+	})
 }
 
 func RegisterCommands(parser *switchboard.Switchboard) {
-	var err error
-	err = parser.AddCommand(&switchboard.Command{
+	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "add",
 		Description: "Add a new quote.",
 		Handler:     AddQuoteCommand,
 		GuildID:     config.GuildId,
 	})
-	if err != nil {
-		log.Printf("Error registering add: %s", err)
-	}
-	err = parser.AddCommand(&switchboard.Command{
+	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "get",
 		Description: "Display an individual quote by ID.",
 		Handler:     GetQuoteCommand,
 		GuildID:     config.GuildId,
 	})
-	if err != nil {
-		log.Printf("Error registering get: %s", err)
-	}
-	err = parser.AddCommand(&switchboard.Command{
+	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "random",
 		Description: "Get a random quote.",
 		Handler:     RandomQuoteCommand,
 		GuildID:     config.GuildId,
 	})
-	if err != nil {
-		log.Printf("Error registering random: %s", err)
-	}
-	err = parser.AddCommand(&switchboard.Command{
+	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "list",
 		Description: "List quotes.",
 		Handler:     ListQuotesCommand,
 		GuildID:     config.GuildId,
 	})
-	if err != nil {
-		log.Printf("Error registering list: %s", err)
-	}
-	err = parser.AddCommand(&switchboard.Command{
+	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "remove",
 		Description: "Remove a quote.",
 		Handler:     RemoveQuoteCommand,
 		GuildID:     config.GuildId,
 	})
-	if err != nil {
-		log.Printf("Error registering remove: %s", err)
-	}
-	err = parser.AddCommand(&switchboard.Command{
+	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "edit",
 		Description: "Edit a quote.",
 		Handler:     EditQuoteCommand,
 		GuildID:     config.GuildId,
 	})
-	if err != nil {
-		log.Printf("Error registering edit: %s", err)
-	}
-	err = parser.AddCommand(&switchboard.Command{
+	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "search",
 		Description: "Search for quotes.",
 		Handler:     SearchQuotesCommand,
 		GuildID:     config.GuildId,
 	})
-	if err != nil {
-		log.Printf("Error registering search: %s", err)
-	}
 }
