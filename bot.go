@@ -17,7 +17,6 @@ import (
 type Config struct {
 	DBPath  string `default:"quotes.sqlite" split_words:"true"`
 	Token   string
-	Prefix  string `default:"q!"`
 	OwnerId string `default:"106162668032802816" split_words:"true"`
 	GuildId string `default:"497544520695808000" split_words:"true"`
 	AppId   string `default:"862525831552172045" split_words:"true"`

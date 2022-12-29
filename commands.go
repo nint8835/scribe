@@ -48,15 +48,24 @@ func AddQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCre
 		})
 	}
 
+	embed, err := MakeQuoteEmbed(&quote, interaction.GuildID)
+	if err != nil {
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error generating quote embed.\n```\n%s\n```", err),
+			},
+		})
+		return
+	}
+	embed.Title = fmt.Sprintf("Quote %d added!", quote.Meta.ID)
+	embed.Color = (45 << 16) + (200 << 8) + (95)
+
 	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{
-				{
-					Title:       "Quote added!",
-					Color:       (45 << 16) + (200 << 8) + (95),
-					Description: fmt.Sprintf("Your quote was added. It has been assigned ID %d.", quote.Meta.ID),
-				},
+				embed,
 			},
 		},
 	})
