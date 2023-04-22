@@ -6,9 +6,9 @@ require (
 	github.com/bwmarrin/discordgo v0.26.1
 	github.com/joho/godotenv v1.4.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/nint8835/switchboard v0.0.0-20221226175139-eb491dbab958
 	gorm.io/driver/sqlite v1.3.6
 	gorm.io/gorm v1.23.8
+	pkg.nit.so/switchboard v0.0.0-20230422000756-d731e4cc9888
 )
 
 require (

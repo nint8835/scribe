@@ -9,7 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/nint8835/switchboard"
+	"pkg.nit.so/switchboard"
 
 	"github.com/nint8835/scribe/database"
 )

@@ -16,8 +16,6 @@ github.com/kelseyhightower/envconfig v1.4.0/go.mod h1:cccZRl6mQpaq41TPp5QxidR+Sa
 github.com/mattn/go-sqlite3 v1.14.12/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A/KQRfk6bU=
 github.com/mattn/go-sqlite3 v1.14.15 h1:vfoHhTN1af61xCRSWzFIWzx2YskyMTwHLrExkBOjvxI=
 github.com/mattn/go-sqlite3 v1.14.15/go.mod h1:2eHXhiwb8IkHr+BDWZGa96P6+rkvnG63S2DGjv9HUNg=
-github.com/nint8835/switchboard v0.0.0-20221226175139-eb491dbab958 h1:mcfJoElcy/L48WfS4xAWtSNJfMJBLZ2B93fJwCWBFFg=
-github.com/nint8835/switchboard v0.0.0-20221226175139-eb491dbab958/go.mod h1:JA0cJfahVv8PObVhi5pgcgAp7/gjnx54Nc2fWlYVV44=
 golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b/go.mod h1:T9bdIzuCu7OtxOm1hfPfRQxPLYneinmdGuTeoZ9dtd4=
 golang.org/x/crypto v0.4.0 h1:UVQgzMY87xqpKNgb+kDsll2Igd33HszWHFLmpaRMq/8=
 golang.org/x/crypto v0.4.0/go.mod h1:3quD/ATkf6oY+rnes5c3ExXTbLc8mueNue5/DoinL80=
@@ -33,3 +31,5 @@ gorm.io/driver/sqlite v1.3.6/go.mod h1:Sg1/pvnKtbQ7jLXxfZa+jSHvoX8hoZA8cn4xllOMT
 gorm.io/gorm v1.23.4/go.mod h1:l2lP/RyAtc1ynaTjFksBde/O8v9oOGIApu2/xRitmZk=
 gorm.io/gorm v1.23.8 h1:h8sGJ+biDgBA1AD1Ha9gFCx7h8npU7AsLdlkX0n2TpE=
 gorm.io/gorm v1.23.8/go.mod h1:l2lP/RyAtc1ynaTjFksBde/O8v9oOGIApu2/xRitmZk=
+pkg.nit.so/switchboard v0.0.0-20230422000756-d731e4cc9888 h1:qoriJR1ZbUJcwdVrOoArv3rglGT/xG9Osg4bAWOfRSk=
+pkg.nit.so/switchboard v0.0.0-20230422000756-d731e4cc9888/go.mod h1:6w0eM5WM34YQ+uqM+Sj9o2hO8Qrs+p2nlTDdAP/DkTQ=
