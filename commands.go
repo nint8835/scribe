@@ -3,12 +3,13 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"regexp"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
-	"pkg.nit.so/switchboard"
 	"gorm.io/gorm/clause"
+	"pkg.nit.so/switchboard"
 
 	"github.com/nint8835/scribe/database"
 )
@@ -389,6 +390,31 @@ func SearchQuotesCommand(_ *discordgo.Session, interaction *discordgo.Interactio
 	})
 }
 
+func DbCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args struct{}) {
+	dbFile, err := os.Open(config.DBPath)
+	if err != nil {
+		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error opening database.\n```\n%s\n```", err))
+		return
+	}
+
+	err = Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Files: []*discordgo.File{
+				{
+					Name:        "quotes.sqlite",
+					ContentType: "application/x-sqlite3",
+					Reader:      dbFile,
+				},
+			},
+		},
+	})
+
+	if err != nil {
+		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error sending database.\n```\n%s\n```", err))
+	}
+}
+
 func RegisterCommands(parser *switchboard.Switchboard) {
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "add",
@@ -430,6 +456,12 @@ func RegisterCommands(parser *switchboard.Switchboard) {
 		Name:        "search",
 		Description: "Search for quotes.",
 		Handler:     SearchQuotesCommand,
+		GuildID:     config.GuildId,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:        "db",
+		Description: "Get a copy of the Scribe database.",
+		Handler:     DbCommand,
 		GuildID:     config.GuildId,
 	})
 }
