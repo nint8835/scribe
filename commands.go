@@ -72,6 +72,58 @@ func AddQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCre
 	})
 }
 
+func AddQuoteMessageCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, message *discordgo.Message) {
+	quoteUrl := fmt.Sprintf("https://discord.com/channels/%s/%s/%s", message.GuildID, message.ChannelID, message.ID)
+
+	quote := database.Quote{
+		Text:    message.Content,
+		Authors: []*database.Author{{ID: message.Author.ID}},
+		Source:  &quoteUrl,
+	}
+
+	result := database.Instance.Create(&quote)
+	if result.Error != nil {
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error),
+			},
+		})
+	}
+
+	result = database.Instance.Save(&quote)
+	if result.Error != nil {
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error),
+			},
+		})
+	}
+
+	embed, err := MakeQuoteEmbed(&quote, interaction.GuildID)
+	if err != nil {
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error generating quote embed.\n```\n%s\n```", err),
+			},
+		})
+		return
+	}
+	embed.Title = fmt.Sprintf("Quote %d added!", quote.Meta.ID)
+	embed.Color = (45 << 16) + (200 << 8) + (95)
+
+	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{
+				embed,
+			},
+		},
+	})
+}
+
 type GetArgs struct {
 	ID int `description:"ID of the quote to display."`
 }
@@ -421,6 +473,12 @@ func RegisterCommands(parser *switchboard.Switchboard) {
 		Description: "Add a new quote.",
 		Handler:     AddQuoteCommand,
 		GuildID:     config.GuildId,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:    "Quote Message",
+		Handler: AddQuoteMessageCommand,
+		GuildID: config.GuildId,
+		Type:    switchboard.MessageCommand,
 	})
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "get",
