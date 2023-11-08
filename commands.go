@@ -337,7 +337,7 @@ func EditQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCr
 		return
 	}
 
-	quote.Text = args.Text
+	quote.Text = strings.Replace(args.Text, "\\n", "\n", -1)
 
 	result = database.Instance.Save(&quote)
 	if result.Error != nil {
