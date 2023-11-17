@@ -33,7 +33,5 @@ gorm.io/driver/sqlite v1.3.6/go.mod h1:Sg1/pvnKtbQ7jLXxfZa+jSHvoX8hoZA8cn4xllOMT
 gorm.io/gorm v1.23.4/go.mod h1:l2lP/RyAtc1ynaTjFksBde/O8v9oOGIApu2/xRitmZk=
 gorm.io/gorm v1.23.8 h1:h8sGJ+biDgBA1AD1Ha9gFCx7h8npU7AsLdlkX0n2TpE=
 gorm.io/gorm v1.23.8/go.mod h1:l2lP/RyAtc1ynaTjFksBde/O8v9oOGIApu2/xRitmZk=
-pkg.nit.so/switchboard v0.0.0-20230422000756-d731e4cc9888 h1:qoriJR1ZbUJcwdVrOoArv3rglGT/xG9Osg4bAWOfRSk=
-pkg.nit.so/switchboard v0.0.0-20230422000756-d731e4cc9888/go.mod h1:6w0eM5WM34YQ+uqM+Sj9o2hO8Qrs+p2nlTDdAP/DkTQ=
-pkg.nit.so/switchboard v0.0.0-20231107011452-a429ccd843e3 h1:8YH1FZh9IXqKHao73fpKOx8jkPEU2/PrrnFxPzL8rq8=
-pkg.nit.so/switchboard v0.0.0-20231107011452-a429ccd843e3/go.mod h1:6w0eM5WM34YQ+uqM+Sj9o2hO8Qrs+p2nlTDdAP/DkTQ=
+pkg.nit.so/switchboard v0.0.0-20231117001600-f916fe3dc740 h1:2jh/RVi4Egd6rZhsXviI+42GRgwpDtiUpSAuM8HthTs=
+pkg.nit.so/switchboard v0.0.0-20231117001600-f916fe3dc740/go.mod h1:6w0eM5WM34YQ+uqM+Sj9o2hO8Qrs+p2nlTDdAP/DkTQ=

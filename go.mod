@@ -8,7 +8,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	gorm.io/driver/sqlite v1.3.6
 	gorm.io/gorm v1.23.8
-	pkg.nit.so/switchboard v0.0.0-20231107011452-a429ccd843e3
+	pkg.nit.so/switchboard v0.0.0-20231117001600-f916fe3dc740
 )
 
 require (
