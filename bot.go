@@ -70,6 +70,63 @@ func Run() error {
 	return nil
 }
 
+func RegisterCommands(parser *switchboard.Switchboard) {
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:        "add",
+		Description: "Add a new quote.",
+		Handler:     AddQuoteCommand,
+		GuildID:     config.GuildId,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:    "Quote Message",
+		Handler: AddQuoteMessageCommand,
+		GuildID: config.GuildId,
+		Type:    switchboard.MessageCommand,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:        "get",
+		Description: "Display an individual quote by ID.",
+		Handler:     GetQuoteCommand,
+		GuildID:     config.GuildId,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:        "random",
+		Description: "Get a random quote.",
+		Handler:     RandomQuoteCommand,
+		GuildID:     config.GuildId,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:        "list",
+		Description: "List quotes.",
+		Handler:     ListQuotesCommand,
+		GuildID:     config.GuildId,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:        "remove",
+		Description: "Remove a quote.",
+		Handler:     RemoveQuoteCommand,
+		GuildID:     config.GuildId,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:        "edit",
+		Description: "Edit a quote.",
+		Handler:     EditQuoteCommand,
+		GuildID:     config.GuildId,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:        "search",
+		Description: "Search for quotes.",
+		Handler:     SearchQuotesCommand,
+		GuildID:     config.GuildId,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:        "db",
+		Description: "Get a copy of the Scribe database.",
+		Handler:     DbCommand,
+		GuildID:     config.GuildId,
+	})
+}
+
 func main() {
 	err := Run()
 	if err != nil {
