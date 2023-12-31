@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+
 	"github.com/nint8835/scribe/database"
 )
 
@@ -73,4 +74,48 @@ func MakeQuoteEmbed(quote *database.Quote, guildID string) (*discordgo.MessageEm
 		Fields:      fields,
 		Timestamp:   quote.Meta.CreatedAt.Format(time.RFC3339),
 	}, nil
+}
+
+func addQuote(quote database.Quote, interaction *discordgo.InteractionCreate) {
+	result := database.Instance.Create(&quote)
+	if result.Error != nil {
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error),
+			},
+		})
+	}
+
+	result = database.Instance.Save(&quote)
+	if result.Error != nil {
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error),
+			},
+		})
+	}
+
+	embed, err := MakeQuoteEmbed(&quote, interaction.GuildID)
+	if err != nil {
+		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error generating quote embed.\n```\n%s\n```", err),
+			},
+		})
+		return
+	}
+	embed.Title = fmt.Sprintf("Quote %d added!", quote.Meta.ID)
+	embed.Color = (45 << 16) + (200 << 8) + (95)
+
+	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{
+				embed,
+			},
+		},
+	})
 }
