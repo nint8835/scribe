@@ -76,6 +76,10 @@ func MakeQuoteEmbed(quote *database.Quote, guildID string) (*discordgo.MessageEm
 	}, nil
 }
 
+func GenerateMessageUrl(message *discordgo.Message) string {
+	return fmt.Sprintf("https://discord.com/channels/%s/%s/%s", message.GuildID, message.ChannelID, message.ID)
+}
+
 func addQuote(quote database.Quote, interaction *discordgo.InteractionCreate) {
 	result := database.Instance.Create(&quote)
 	if result.Error != nil {

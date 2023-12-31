@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/nint8835/scribe/database"
@@ -26,7 +24,7 @@ func AddQuoteMessageCommand(_ *discordgo.Session, interaction *discordgo.Interac
 		return
 	}
 
-	quoteUrl := fmt.Sprintf("https://discord.com/channels/%s/%s/%s", message.GuildID, message.ChannelID, message.ID)
+	quoteUrl := GenerateMessageUrl(message)
 
 	quote := database.Quote{
 		Text:    message.Content,

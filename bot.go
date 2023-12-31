@@ -71,17 +71,12 @@ func Run() error {
 }
 
 func RegisterCommands(parser *switchboard.Switchboard) {
+	// Slash commands
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "add",
 		Description: "Add a new quote.",
 		Handler:     AddQuoteCommand,
 		GuildID:     config.GuildId,
-	})
-	_ = parser.AddCommand(&switchboard.Command{
-		Name:    "Quote Message",
-		Handler: AddQuoteMessageCommand,
-		GuildID: config.GuildId,
-		Type:    switchboard.MessageCommand,
 	})
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "get",
@@ -124,6 +119,32 @@ func RegisterCommands(parser *switchboard.Switchboard) {
 		Description: "Get a copy of the Scribe database.",
 		Handler:     DbCommand,
 		GuildID:     config.GuildId,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:        "cancelmulti",
+		Description: "Cancel the current multi-message quote.",
+		Handler:     CancelMultiMessageQuoteCommand,
+		GuildID:     config.GuildId,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:        "savemulti",
+		Description: "Save the current multi-message quote.",
+		Handler:     SaveMultiMessageQuoteCommand,
+		GuildID:     config.GuildId,
+	})
+
+	// Message commands
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:    "Quote Message",
+		Handler: AddQuoteMessageCommand,
+		GuildID: config.GuildId,
+		Type:    switchboard.MessageCommand,
+	})
+	_ = parser.AddCommand(&switchboard.Command{
+		Name:    "Add to Multi-Message Quote",
+		Handler: AddToMultiMessageQuoteCommand,
+		GuildID: config.GuildId,
+		Type:    switchboard.MessageCommand,
 	})
 }
 
