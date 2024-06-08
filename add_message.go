@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/bwmarrin/discordgo"
+	"gorm.io/gorm"
 
 	"github.com/nint8835/scribe/database"
 )
@@ -30,6 +31,9 @@ func AddQuoteMessageCommand(_ *discordgo.Session, interaction *discordgo.Interac
 		Text:    message.Content,
 		Authors: []*database.Author{{ID: message.Author.ID}},
 		Source:  &quoteUrl,
+		Meta: gorm.Model{
+			CreatedAt: message.Timestamp,
+		},
 	}
 
 	addQuote(quote, interaction)

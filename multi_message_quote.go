@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/bwmarrin/discordgo"
+	"gorm.io/gorm"
 
 	"github.com/nint8835/scribe/database"
 )
@@ -171,6 +172,9 @@ func SaveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.I
 		Text:    quoteContent,
 		Authors: authors,
 		Source:  &quoteUrl,
+		Meta: gorm.Model{
+			CreatedAt: pendingMultiMessageQuotes[memberId][0].Timestamp,
+		},
 	}
 
 	addQuote(quote, interaction)
