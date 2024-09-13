@@ -24,7 +24,7 @@ func GenerateAuthorString(authors []*database.Author, guildID string) (string, s
 
 			nick := cmp.Or(user.Nick, user.User.GlobalName)
 
-			if nick != "" {
+			if nick != "" && nick != user.User.Username {
 				name = fmt.Sprintf("%s (%s)", nick, user.User.Username)
 			} else {
 				name = user.User.Username
@@ -35,7 +35,7 @@ func GenerateAuthorString(authors []*database.Author, guildID string) (string, s
 				return "", "", fmt.Errorf("error getting user %s: %w", author.ID, err)
 			}
 
-			if user.GlobalName != "" {
+			if user.GlobalName != "" && user.GlobalName != user.Username {
 				name = fmt.Sprintf("%s (%s)", user.GlobalName, user.Username)
 			} else {
 				name = user.Username
