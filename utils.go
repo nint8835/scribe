@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cmp"
 	"fmt"
 	"strings"
 	"time"
@@ -21,8 +22,10 @@ func GenerateAuthorString(authors []*database.Author, guildID string) (string, s
 				return "", "", fmt.Errorf("error getting guild member %s: %w", author.ID, err)
 			}
 
-			if user.Nick != "" {
-				name = fmt.Sprintf("%s (%s)", user.Nick, user.User.Username)
+			nick := cmp.Or(user.Nick, user.User.GlobalName)
+
+			if nick != "" {
+				name = fmt.Sprintf("%s (%s)", nick, user.User.Username)
 			} else {
 				name = user.User.Username
 			}
@@ -32,7 +35,11 @@ func GenerateAuthorString(authors []*database.Author, guildID string) (string, s
 				return "", "", fmt.Errorf("error getting user %s: %w", author.ID, err)
 			}
 
-			name = user.Username
+			if user.GlobalName != "" {
+				name = fmt.Sprintf("%s (%s)", user.GlobalName, user.Username)
+			} else {
+				name = user.Username
+			}
 		}
 		authorNames = append(authorNames, name)
 	}
