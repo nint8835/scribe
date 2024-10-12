@@ -11,23 +11,40 @@ import (
 	"github.com/nint8835/scribe/database"
 )
 
+func formatDiscordMember(member *discordgo.Member) string {
+	nick := cmp.Or(member.Nick, member.User.GlobalName)
+
+	if nick != "" && nick != member.User.Username {
+		return fmt.Sprintf("%s (%s)", nick, member.User.Username)
+	}
+
+	return member.User.Username
+}
+
+func formatDiscordUser(user *discordgo.User) string {
+	if user.GlobalName != "" && user.GlobalName != user.Username {
+		return fmt.Sprintf("%s (%s)", user.GlobalName, user.Username)
+	}
+
+	return user.Username
+}
+
 func GenerateAuthorString(authors []*database.Author, guildID string) (string, string, error) {
 	authorNames := []string{}
 
 	for _, author := range authors {
 		var name string
 		if guildID != "" {
-			user, err := Bot.GuildMember(guildID, author.ID)
+			member, err := Bot.GuildMember(guildID, author.ID)
 			if err != nil {
-				return "", "", fmt.Errorf("error getting guild member %s: %w", author.ID, err)
-			}
+				user, err := Bot.User(author.ID)
+				if err != nil {
+					return "", "", fmt.Errorf("error getting user %s: %w", author.ID, err)
+				}
 
-			nick := cmp.Or(user.Nick, user.User.GlobalName)
-
-			if nick != "" && nick != user.User.Username {
-				name = fmt.Sprintf("%s (%s)", nick, user.User.Username)
+				name = formatDiscordUser(user)
 			} else {
-				name = user.User.Username
+				name = formatDiscordMember(member)
 			}
 		} else {
 			user, err := Bot.User(author.ID)
@@ -35,11 +52,7 @@ func GenerateAuthorString(authors []*database.Author, guildID string) (string, s
 				return "", "", fmt.Errorf("error getting user %s: %w", author.ID, err)
 			}
 
-			if user.GlobalName != "" && user.GlobalName != user.Username {
-				name = fmt.Sprintf("%s (%s)", user.GlobalName, user.Username)
-			} else {
-				name = user.Username
-			}
+			name = formatDiscordUser(user)
 		}
 		authorNames = append(authorNames, name)
 	}
