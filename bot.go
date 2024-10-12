@@ -109,12 +109,6 @@ func RegisterCommands(parser *switchboard.Switchboard) {
 		GuildID:     config.GuildId,
 	})
 	_ = parser.AddCommand(&switchboard.Command{
-		Name:        "search",
-		Description: "Search for quotes.",
-		Handler:     SearchQuotesCommand,
-		GuildID:     config.GuildId,
-	})
-	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "db",
 		Description: "Get a copy of the Scribe database.",
 		Handler:     DbCommand,
