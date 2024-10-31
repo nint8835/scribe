@@ -16,6 +16,21 @@ type ListArgs struct {
 	Page   int             `default:"1" description:"Page of quotes to display."`
 }
 
+func generateSearchStrings(query string) []string {
+	var searchStrings []string
+	separators := []string{" ", "\n"}
+
+	for _, startSeparator := range separators {
+		for _, endSeparator := range separators {
+			searchStrings = append(searchStrings, "%"+startSeparator+query+endSeparator+"%")
+		}
+
+		searchStrings = append(searchStrings, "%"+startSeparator+query)
+	}
+
+	return searchStrings
+}
+
 func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args ListArgs) {
 	if result := database.Instance.Exec("PRAGMA case_sensitive_like = OFF", nil); result.Error != nil {
 		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
@@ -42,9 +57,11 @@ func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionC
 		if strings.Contains(queryString, "%") {
 			query = query.Where("text LIKE ?", queryString)
 		} else {
-			query = query.Where("text LIKE ?", "% "+queryString+" %").
-				Or("text LIKE ?", "% "+queryString).
-				Or("text LIKE ?", queryString)
+			searchStrings := generateSearchStrings(queryString)
+			query = query.Where("text LIKE ?", queryString)
+			for _, search := range searchStrings {
+				query = query.Or("text LIKE ?", search)
+			}
 		}
 	}
 
