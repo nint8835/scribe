@@ -44,7 +44,7 @@ func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionC
 
 	var quotes []database.Quote
 
-	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
+	query := database.Instance.Debug().Model(&database.Quote{}).Preload(clause.Associations)
 
 	if args.Author != nil {
 		query = query.
@@ -58,10 +58,11 @@ func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionC
 			query = query.Where("text LIKE ?", queryString)
 		} else {
 			searchStrings := generateSearchStrings(queryString)
-			query = query.Where("text LIKE ?", queryString)
+			filterQuery := database.Instance.Where("text LIKE ?", queryString)
 			for _, search := range searchStrings {
-				query = query.Or("text LIKE ?", search)
+				filterQuery = filterQuery.Or("text LIKE ?", search)
 			}
+			query = query.Where(filterQuery)
 		}
 	}
 
