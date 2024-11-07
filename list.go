@@ -44,7 +44,7 @@ func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionC
 
 	var quotes []database.Quote
 
-	query := database.Instance.Debug().Model(&database.Quote{}).Preload(clause.Associations)
+	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
 
 	if args.Author != nil {
 		query = query.
