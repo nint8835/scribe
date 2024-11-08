@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm/clause"
@@ -16,32 +15,7 @@ type ListArgs struct {
 	Page   int             `default:"1" description:"Page of quotes to display."`
 }
 
-func generateSearchStrings(query string) []string {
-	var searchStrings []string
-	separators := []string{" ", "\n"}
-
-	for _, startSeparator := range separators {
-		for _, endSeparator := range separators {
-			searchStrings = append(searchStrings, "%"+startSeparator+query+endSeparator+"%")
-		}
-
-		searchStrings = append(searchStrings, "%"+startSeparator+query)
-	}
-
-	return searchStrings
-}
-
 func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args ListArgs) {
-	if result := database.Instance.Exec("PRAGMA case_sensitive_like = OFF", nil); result.Error != nil {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: fmt.Sprintf("Error enabling case-insensitive like.\n```\n%s\n```", result.Error),
-			},
-		})
-		return
-	}
-
 	var quotes []database.Quote
 
 	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
@@ -54,16 +28,9 @@ func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionC
 
 	if args.Query != nil {
 		queryString := *args.Query
-		if strings.Contains(queryString, "%") {
-			query = query.Where("text LIKE ?", queryString)
-		} else {
-			searchStrings := generateSearchStrings(queryString)
-			filterQuery := database.Instance.Where("text LIKE ?", queryString)
-			for _, search := range searchStrings {
-				filterQuery = filterQuery.Or("text LIKE ?", search)
-			}
-			query = query.Where(filterQuery)
-		}
+
+		filterQuery := database.Instance.Raw("SELECT ROWID FROM quotes_fts WHERE quotes_fts MATCH ?", queryString)
+		query.Where("quotes.ROWID IN (?)", filterQuery)
 	}
 
 	result := query.Limit(5).Offset(5 * (args.Page - 1)).Find(&quotes)
