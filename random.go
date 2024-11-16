@@ -10,10 +10,22 @@ import (
 	"github.com/nint8835/scribe/database"
 )
 
-func RandomQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
+type RandomArgs struct {
+	Author *discordgo.User `description:"Author to pick a random quote from. Omit to pick a quote from any user."`
+}
+
+func RandomQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args RandomArgs) {
 	var quotes []database.Quote
 
-	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).Find(&quotes)
+	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
+
+	if args.Author != nil {
+		query = query.
+			Joins("INNER JOIN quote_authors ON quote_authors.quote_id = quotes.id").
+			Where(map[string]interface{}{"quote_authors.author_id": args.Author.ID})
+	}
+
+	result := query.Find(&quotes)
 	if result.Error != nil {
 		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
