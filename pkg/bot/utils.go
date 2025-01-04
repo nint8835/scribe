@@ -1,4 +1,4 @@
-package main
+package bot
 
 import (
 	"cmp"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/nint8835/scribe/database"
+	database2 "github.com/nint8835/scribe/pkg/database"
 )
 
 func formatDiscordMember(member *discordgo.Member) string {
@@ -29,7 +29,7 @@ func formatDiscordUser(user *discordgo.User) string {
 	return user.Username
 }
 
-func GenerateAuthorString(authors []*database.Author, guildID string) (string, string, error) {
+func GenerateAuthorString(authors []*database2.Author, guildID string) (string, string, error) {
 	authorNames := []string{}
 
 	for _, author := range authors {
@@ -67,7 +67,7 @@ func GenerateAuthorString(authors []*database.Author, guildID string) (string, s
 	return strings.Join(authorNames, ", "), label, nil
 }
 
-func MakeQuoteEmbed(quote *database.Quote, guildID string) (*discordgo.MessageEmbed, error) {
+func MakeQuoteEmbed(quote *database2.Quote, guildID string) (*discordgo.MessageEmbed, error) {
 	authors, authorLabel, err := GenerateAuthorString(quote.Authors, guildID)
 	if err != nil {
 		return &discordgo.MessageEmbed{}, fmt.Errorf("error getting quote authors: %w", err)
@@ -100,8 +100,8 @@ func GenerateMessageUrl(message *discordgo.Message) string {
 	return fmt.Sprintf("https://discord.com/channels/%s/%s/%s", message.GuildID, message.ChannelID, message.ID)
 }
 
-func addQuote(quote database.Quote, interaction *discordgo.InteractionCreate) {
-	result := database.Instance.Create(&quote)
+func addQuote(quote database2.Quote, interaction *discordgo.InteractionCreate) {
+	result := database2.Instance.Create(&quote)
 	if result.Error != nil {
 		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -111,7 +111,7 @@ func addQuote(quote database.Quote, interaction *discordgo.InteractionCreate) {
 		})
 	}
 
-	result = database.Instance.Save(&quote)
+	result = database2.Instance.Save(&quote)
 	if result.Error != nil {
 		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,

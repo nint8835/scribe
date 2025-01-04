@@ -1,4 +1,4 @@
-package main
+package bot
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
 
-	"github.com/nint8835/scribe/database"
+	database2 "github.com/nint8835/scribe/pkg/database"
 )
 
 var pendingMultiMessageQuotes = map[string][]*discordgo.Message{}
@@ -152,10 +152,10 @@ func SaveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.I
 		authorIds[message.Author.ID] = true
 	}
 
-	var authors []*database.Author
+	var authors []*database2.Author
 
 	for authorId := range authorIds {
-		authors = append(authors, &database.Author{ID: authorId})
+		authors = append(authors, &database2.Author{ID: authorId})
 	}
 
 	quoteContent := ""
@@ -168,7 +168,7 @@ func SaveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.I
 		}
 	}
 
-	quote := database.Quote{
+	quote := database2.Quote{
 		Text:    quoteContent,
 		Authors: authors,
 		Source:  &quoteUrl,

@@ -1,10 +1,10 @@
-package main
+package bot
 
 import (
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
 
-	"github.com/nint8835/scribe/database"
+	database2 "github.com/nint8835/scribe/pkg/database"
 )
 
 func AddQuoteMessageCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, message *discordgo.Message) {
@@ -27,9 +27,9 @@ func AddQuoteMessageCommand(_ *discordgo.Session, interaction *discordgo.Interac
 
 	quoteUrl := GenerateMessageUrl(message)
 
-	quote := database.Quote{
+	quote := database2.Quote{
 		Text:    message.Content,
-		Authors: []*database.Author{{ID: message.Author.ID}},
+		Authors: []*database2.Author{{ID: message.Author.ID}},
 		Source:  &quoteUrl,
 		Meta: gorm.Model{
 			CreatedAt: message.Timestamp,

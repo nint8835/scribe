@@ -1,11 +1,11 @@
-package main
+package bot
 
 import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/nint8835/scribe/database"
+	database2 "github.com/nint8835/scribe/pkg/database"
 )
 
 type AddArgs struct {
@@ -15,9 +15,9 @@ type AddArgs struct {
 }
 
 func AddQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args AddArgs) {
-	quote := database.Quote{
+	quote := database2.Quote{
 		Text:    strings.Replace(args.Text, "\\n", "\n", -1),
-		Authors: []*database.Author{{ID: args.Author.ID}},
+		Authors: []*database2.Author{{ID: args.Author.ID}},
 		Source:  args.Source,
 	}
 

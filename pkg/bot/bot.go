@@ -1,4 +1,4 @@
-package main
+package bot
 
 import (
 	"fmt"
@@ -7,39 +7,24 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/joho/godotenv"
-	"github.com/kelseyhightower/envconfig"
 	"pkg.nit.so/switchboard"
 
-	"github.com/nint8835/scribe/database"
+	"github.com/nint8835/scribe/pkg/config"
+	"github.com/nint8835/scribe/pkg/database"
 )
 
-type Config struct {
-	DBPath  string `default:"quotes.sqlite" split_words:"true"`
-	Token   string
-	OwnerId string `default:"106162668032802816" split_words:"true"`
-	GuildId string `default:"497544520695808000" split_words:"true"`
-	AppId   string `default:"862525831552172045" split_words:"true"`
-}
-
-var config Config
 var Bot *discordgo.Session
 
 func Run() error {
-	err := godotenv.Load()
+	err := config.Load()
 	if err != nil {
-		fmt.Printf("Failed to load .env file: %s\n", err.Error())
+		return fmt.Errorf("error loading config: %w", err)
 	}
 
-	err = envconfig.Process("scribe", &config)
-	if err != nil {
-		return fmt.Errorf("error loading config: %s", err)
-	}
-
-	database.Initialize(config.DBPath)
+	database.Initialize(config.Instance.DBPath)
 	database.Migrate()
 
-	Bot, err = discordgo.New(fmt.Sprintf("Bot %s", config.Token))
+	Bot, err = discordgo.New(fmt.Sprintf("Bot %s", config.Instance.Token))
 	if err != nil {
 		return fmt.Errorf("error creating Discord session: %w", err)
 	}
@@ -48,7 +33,7 @@ func Run() error {
 	parser := &switchboard.Switchboard{}
 	Bot.AddHandler(parser.HandleInteractionCreate)
 	RegisterCommands(parser)
-	err = parser.SyncCommands(Bot, config.AppId)
+	err = parser.SyncCommands(Bot, config.Instance.AppId)
 	if err != nil {
 		return fmt.Errorf("error syncing commands: %w", err)
 	}
@@ -76,76 +61,68 @@ func RegisterCommands(parser *switchboard.Switchboard) {
 		Name:        "add",
 		Description: "Add a new quote.",
 		Handler:     AddQuoteCommand,
-		GuildID:     config.GuildId,
+		GuildID:     config.Instance.GuildId,
 	})
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "get",
 		Description: "Display an individual quote by ID.",
 		Handler:     GetQuoteCommand,
-		GuildID:     config.GuildId,
+		GuildID:     config.Instance.GuildId,
 	})
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "random",
 		Description: "Get a random quote.",
 		Handler:     RandomQuoteCommand,
-		GuildID:     config.GuildId,
+		GuildID:     config.Instance.GuildId,
 	})
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "list",
 		Description: "List quotes.",
 		Handler:     ListQuotesCommand,
-		GuildID:     config.GuildId,
+		GuildID:     config.Instance.GuildId,
 	})
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "remove",
 		Description: "Remove a quote.",
 		Handler:     RemoveQuoteCommand,
-		GuildID:     config.GuildId,
+		GuildID:     config.Instance.GuildId,
 	})
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "edit",
 		Description: "Edit a quote.",
 		Handler:     EditQuoteCommand,
-		GuildID:     config.GuildId,
+		GuildID:     config.Instance.GuildId,
 	})
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "db",
 		Description: "Get a copy of the Scribe database.",
 		Handler:     DbCommand,
-		GuildID:     config.GuildId,
+		GuildID:     config.Instance.GuildId,
 	})
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "cancelmulti",
 		Description: "Cancel the current multi-message quote.",
 		Handler:     CancelMultiMessageQuoteCommand,
-		GuildID:     config.GuildId,
+		GuildID:     config.Instance.GuildId,
 	})
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:        "savemulti",
 		Description: "Save the current multi-message quote.",
 		Handler:     SaveMultiMessageQuoteCommand,
-		GuildID:     config.GuildId,
+		GuildID:     config.Instance.GuildId,
 	})
 
 	// Message commands
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:    "Quote Message",
 		Handler: AddQuoteMessageCommand,
-		GuildID: config.GuildId,
+		GuildID: config.Instance.GuildId,
 		Type:    switchboard.MessageCommand,
 	})
 	_ = parser.AddCommand(&switchboard.Command{
 		Name:    "Add to Multi-Message Quote",
 		Handler: AddToMultiMessageQuoteCommand,
-		GuildID: config.GuildId,
+		GuildID: config.Instance.GuildId,
 		Type:    switchboard.MessageCommand,
 	})
-}
-
-func main() {
-	err := Run()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error running Scribe: %s\n", err)
-		os.Exit(1)
-	}
 }

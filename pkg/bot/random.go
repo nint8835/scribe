@@ -1,4 +1,4 @@
-package main
+package bot
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm/clause"
 
-	"github.com/nint8835/scribe/database"
+	database2 "github.com/nint8835/scribe/pkg/database"
 )
 
 type RandomArgs struct {
@@ -15,9 +15,9 @@ type RandomArgs struct {
 }
 
 func RandomQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args RandomArgs) {
-	var quotes []database.Quote
+	var quotes []database2.Quote
 
-	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
+	query := database2.Instance.Model(&database2.Quote{}).Preload(clause.Associations)
 
 	if args.Author != nil {
 		query = query.

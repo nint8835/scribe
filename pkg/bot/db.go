@@ -1,14 +1,16 @@
-package main
+package bot
 
 import (
 	"fmt"
 	"os"
 
 	"github.com/bwmarrin/discordgo"
+
+	"github.com/nint8835/scribe/pkg/config"
 )
 
 func DbCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args struct{}) {
-	dbFile, err := os.Open(config.DBPath)
+	dbFile, err := os.Open(config.Instance.DBPath)
 	if err != nil {
 		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error opening database.\n```\n%s\n```", err))
 		return
