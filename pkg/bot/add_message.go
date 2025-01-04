@@ -7,7 +7,7 @@ import (
 	"github.com/nint8835/scribe/pkg/database"
 )
 
-func (b *Bot) AddQuoteMessageCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, message *discordgo.Message) {
+func (b *Bot) addQuoteMessageCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, message *discordgo.Message) {
 	if message.Content == "" {
 		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,

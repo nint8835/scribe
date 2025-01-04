@@ -9,7 +9,7 @@ import (
 	"github.com/nint8835/scribe/pkg/config"
 )
 
-func (b *Bot) DbCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args struct{}) {
+func (b *Bot) dbCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args struct{}) {
 	dbFile, err := os.Open(config.Instance.DBPath)
 	if err != nil {
 		b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error opening database.\n```\n%s\n```", err))

@@ -49,68 +49,68 @@ func (b *Bot) registerCommands() {
 	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:        "add",
 		Description: "Add a new quote.",
-		Handler:     b.AddQuoteCommand,
+		Handler:     b.addQuoteCommand,
 		GuildID:     config.Instance.GuildId,
 	})
 	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:        "get",
 		Description: "Display an individual quote by ID.",
-		Handler:     b.GetQuoteCommand,
+		Handler:     b.getQuoteCommand,
 		GuildID:     config.Instance.GuildId,
 	})
 	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:        "random",
 		Description: "Get a random quote.",
-		Handler:     b.RandomQuoteCommand,
+		Handler:     b.randomQuoteCommand,
 		GuildID:     config.Instance.GuildId,
 	})
 	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:        "list",
 		Description: "List quotes.",
-		Handler:     b.ListQuotesCommand,
+		Handler:     b.listQuotesCommand,
 		GuildID:     config.Instance.GuildId,
 	})
 	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:        "remove",
 		Description: "Remove a quote.",
-		Handler:     b.RemoveQuoteCommand,
+		Handler:     b.removeQuoteCommand,
 		GuildID:     config.Instance.GuildId,
 	})
 	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:        "edit",
 		Description: "Edit a quote.",
-		Handler:     b.EditQuoteCommand,
+		Handler:     b.editQuoteCommand,
 		GuildID:     config.Instance.GuildId,
 	})
 	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:        "db",
 		Description: "Get a copy of the Scribe database.",
-		Handler:     b.DbCommand,
+		Handler:     b.dbCommand,
 		GuildID:     config.Instance.GuildId,
 	})
 	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:        "cancelmulti",
 		Description: "Cancel the current multi-message quote.",
-		Handler:     b.CancelMultiMessageQuoteCommand,
+		Handler:     b.cancelMultiMessageQuoteCommand,
 		GuildID:     config.Instance.GuildId,
 	})
 	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:        "savemulti",
 		Description: "Save the current multi-message quote.",
-		Handler:     b.SaveMultiMessageQuoteCommand,
+		Handler:     b.saveMultiMessageQuoteCommand,
 		GuildID:     config.Instance.GuildId,
 	})
 
 	// Message commands
 	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:    "Quote Message",
-		Handler: b.AddQuoteMessageCommand,
+		Handler: b.addQuoteMessageCommand,
 		GuildID: config.Instance.GuildId,
 		Type:    switchboard.MessageCommand,
 	})
 	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:    "Add to Multi-Message Quote",
-		Handler: b.AddToMultiMessageQuoteCommand,
+		Handler: b.addToMultiMessageQuoteCommand,
 		GuildID: config.Instance.GuildId,
 		Type:    switchboard.MessageCommand,
 	})

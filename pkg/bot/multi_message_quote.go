@@ -30,7 +30,7 @@ func generateWIPMultiMessageQuoteEmbed(memberId string) *discordgo.MessageEmbed 
 	return embed
 }
 
-func (b *Bot) AddToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, message *discordgo.Message) {
+func (b *Bot) addToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, message *discordgo.Message) {
 	memberId := interaction.Member.User.ID
 
 	if message.Content == "" {
@@ -87,7 +87,7 @@ func (b *Bot) AddToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *d
 	})
 }
 
-func (b *Bot) CancelMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
+func (b *Bot) cancelMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
 	memberId := interaction.Member.User.ID
 
 	if _, ok := pendingMultiMessageQuotes[memberId]; !ok {
@@ -124,7 +124,7 @@ func (b *Bot) CancelMultiMessageQuoteCommand(_ *discordgo.Session, interaction *
 	})
 }
 
-func (b *Bot) SaveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
+func (b *Bot) saveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
 	memberId := interaction.Member.User.ID
 
 	if _, ok := pendingMultiMessageQuotes[memberId]; !ok {

@@ -9,13 +9,13 @@ import (
 	"github.com/nint8835/scribe/pkg/database"
 )
 
-type ListArgs struct {
+type listArgs struct {
 	Author *discordgo.User `description:"Author to display quotes for. Omit to display quotes from all users."`
 	Query  *string         `description:"Optional keyword / phrase to search for."`
 	Page   int             `default:"1" description:"Page of quotes to display."`
 }
 
-func (b *Bot) ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args ListArgs) {
+func (b *Bot) listQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args listArgs) {
 	var quotes []database.Quote
 
 	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
@@ -51,7 +51,7 @@ func (b *Bot) ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.Int
 	}
 
 	for _, quote := range quotes {
-		authors, _, err := b.GenerateAuthorString(quote.Authors, interaction.GuildID)
+		authors, _, err := b.generateAuthorString(quote.Authors, interaction.GuildID)
 		if err != nil {
 			b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote authors.\n```\n%s\n```", result.Error))
 		}

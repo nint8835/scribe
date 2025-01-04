@@ -9,11 +9,11 @@ import (
 	"github.com/nint8835/scribe/pkg/database"
 )
 
-type GetArgs struct {
+type getArgs struct {
 	ID int `description:"ID of the quote to display."`
 }
 
-func (b *Bot) GetQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args GetArgs) {
+func (b *Bot) getQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args getArgs) {
 	var quote database.Quote
 
 	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
@@ -27,7 +27,7 @@ func (b *Bot) GetQuoteCommand(_ *discordgo.Session, interaction *discordgo.Inter
 		return
 	}
 
-	embed, err := b.MakeQuoteEmbed(&quote, interaction.GuildID)
+	embed, err := b.makeQuoteEmbed(&quote, interaction.GuildID)
 	if err != nil {
 		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,

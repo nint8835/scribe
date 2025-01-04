@@ -10,11 +10,11 @@ import (
 	"github.com/nint8835/scribe/pkg/database"
 )
 
-type RemoveArgs struct {
+type removeArgs struct {
 	ID int `description:"ID of the quote to remove."`
 }
 
-func (b *Bot) RemoveQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args RemoveArgs) {
+func (b *Bot) removeQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args removeArgs) {
 	if interaction.Member.User.ID != config.Instance.OwnerId {
 		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,

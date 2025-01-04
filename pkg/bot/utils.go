@@ -29,7 +29,7 @@ func formatDiscordUser(user *discordgo.User) string {
 	return user.Username
 }
 
-func (b *Bot) GenerateAuthorString(authors []*database.Author, guildID string) (string, string, error) {
+func (b *Bot) generateAuthorString(authors []*database.Author, guildID string) (string, string, error) {
 	authorNames := []string{}
 
 	for _, author := range authors {
@@ -67,8 +67,8 @@ func (b *Bot) GenerateAuthorString(authors []*database.Author, guildID string) (
 	return strings.Join(authorNames, ", "), label, nil
 }
 
-func (b *Bot) MakeQuoteEmbed(quote *database.Quote, guildID string) (*discordgo.MessageEmbed, error) {
-	authors, authorLabel, err := b.GenerateAuthorString(quote.Authors, guildID)
+func (b *Bot) makeQuoteEmbed(quote *database.Quote, guildID string) (*discordgo.MessageEmbed, error) {
+	authors, authorLabel, err := b.generateAuthorString(quote.Authors, guildID)
 	if err != nil {
 		return &discordgo.MessageEmbed{}, fmt.Errorf("error getting quote authors: %w", err)
 	}
@@ -121,7 +121,7 @@ func (b *Bot) addQuote(quote database.Quote, interaction *discordgo.InteractionC
 		})
 	}
 
-	embed, err := b.MakeQuoteEmbed(&quote, interaction.GuildID)
+	embed, err := b.makeQuoteEmbed(&quote, interaction.GuildID)
 	if err != nil {
 		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,

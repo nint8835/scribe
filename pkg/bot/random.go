@@ -10,11 +10,11 @@ import (
 	"github.com/nint8835/scribe/pkg/database"
 )
 
-type RandomArgs struct {
+type randomArgs struct {
 	Author *discordgo.User `description:"Author to pick a random quote from. Omit to pick a quote from any user."`
 }
 
-func (b *Bot) RandomQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args RandomArgs) {
+func (b *Bot) randomQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args randomArgs) {
 	var quotes []database.Quote
 
 	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
@@ -38,7 +38,7 @@ func (b *Bot) RandomQuoteCommand(_ *discordgo.Session, interaction *discordgo.In
 
 	quote := quotes[rand.Intn(len(quotes))]
 
-	embed, err := b.MakeQuoteEmbed(&quote, interaction.GuildID)
+	embed, err := b.makeQuoteEmbed(&quote, interaction.GuildID)
 	if err != nil {
 		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,

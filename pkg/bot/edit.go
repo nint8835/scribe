@@ -11,12 +11,12 @@ import (
 	"github.com/nint8835/scribe/pkg/database"
 )
 
-type EditArgs struct {
+type editArgs struct {
 	ID   int    `description:"ID of the quote to edit."`
 	Text string `description:"New text for the quote."`
 }
 
-func (b *Bot) EditQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args EditArgs) {
+func (b *Bot) editQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args editArgs) {
 	if interaction.Member.User.ID != config.Instance.OwnerId {
 		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
