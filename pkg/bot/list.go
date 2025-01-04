@@ -15,7 +15,7 @@ type ListArgs struct {
 	Page   int             `default:"1" description:"Page of quotes to display."`
 }
 
-func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args ListArgs) {
+func (b *Bot) ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args ListArgs) {
 	var quotes []database.Quote
 
 	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
@@ -35,7 +35,7 @@ func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionC
 
 	result := query.Limit(5).Offset(5 * (args.Page - 1)).Find(&quotes)
 	if result.Error != nil {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error),
@@ -51,9 +51,9 @@ func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionC
 	}
 
 	for _, quote := range quotes {
-		authors, _, err := GenerateAuthorString(quote.Authors, interaction.GuildID)
+		authors, _, err := b.GenerateAuthorString(quote.Authors, interaction.GuildID)
 		if err != nil {
-			Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote authors.\n```\n%s\n```", result.Error))
+			b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote authors.\n```\n%s\n```", result.Error))
 		}
 
 		quoteText := quote.Text
@@ -71,7 +71,7 @@ func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionC
 		})
 	}
 
-	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{&embed},

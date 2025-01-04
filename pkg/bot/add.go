@@ -14,12 +14,12 @@ type AddArgs struct {
 	Source *string        `description:"Link to a source for the quote, if available (such as a Discord message, screenshot, etc.)"`
 }
 
-func AddQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args AddArgs) {
+func (b *Bot) AddQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args AddArgs) {
 	quote := database.Quote{
 		Text:    strings.Replace(args.Text, "\\n", "\n", -1),
 		Authors: []*database.Author{{ID: args.Author.ID}},
 		Source:  args.Source,
 	}
 
-	addQuote(quote, interaction)
+	b.addQuote(quote, interaction)
 }

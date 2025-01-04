@@ -9,14 +9,14 @@ import (
 	"github.com/nint8835/scribe/pkg/config"
 )
 
-func DbCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args struct{}) {
+func (b *Bot) DbCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args struct{}) {
 	dbFile, err := os.Open(config.Instance.DBPath)
 	if err != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error opening database.\n```\n%s\n```", err))
+		b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error opening database.\n```\n%s\n```", err))
 		return
 	}
 
-	err = Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	err = b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Files: []*discordgo.File{
@@ -30,6 +30,6 @@ func DbCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, a
 	})
 
 	if err != nil {
-		Bot.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error sending database.\n```\n%s\n```", err))
+		b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error sending database.\n```\n%s\n```", err))
 	}
 }

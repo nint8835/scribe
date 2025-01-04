@@ -14,7 +14,7 @@ type RandomArgs struct {
 	Author *discordgo.User `description:"Author to pick a random quote from. Omit to pick a quote from any user."`
 }
 
-func RandomQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args RandomArgs) {
+func (b *Bot) RandomQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args RandomArgs) {
 	var quotes []database.Quote
 
 	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
@@ -27,7 +27,7 @@ func RandomQuoteCommand(_ *discordgo.Session, interaction *discordgo.Interaction
 
 	result := query.Find(&quotes)
 	if result.Error != nil {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error),
@@ -38,9 +38,9 @@ func RandomQuoteCommand(_ *discordgo.Session, interaction *discordgo.Interaction
 
 	quote := quotes[rand.Intn(len(quotes))]
 
-	embed, err := MakeQuoteEmbed(&quote, interaction.GuildID)
+	embed, err := b.MakeQuoteEmbed(&quote, interaction.GuildID)
 	if err != nil {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error getting quote.\n```\n%s\n```", err),
@@ -49,7 +49,7 @@ func RandomQuoteCommand(_ *discordgo.Session, interaction *discordgo.Interaction
 		return
 	}
 
-	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{embed},

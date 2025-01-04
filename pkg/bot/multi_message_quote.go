@@ -30,11 +30,11 @@ func generateWIPMultiMessageQuoteEmbed(memberId string) *discordgo.MessageEmbed 
 	return embed
 }
 
-func AddToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, message *discordgo.Message) {
+func (b *Bot) AddToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, message *discordgo.Message) {
 	memberId := interaction.Member.User.ID
 
 	if message.Content == "" {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Embeds: []*discordgo.MessageEmbed{
@@ -56,7 +56,7 @@ func AddToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.
 
 	for _, existingMessage := range pendingMultiMessageQuotes[memberId] {
 		if existingMessage.ID == message.ID {
-			Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
 					Embeds: []*discordgo.MessageEmbed{
@@ -78,7 +78,7 @@ func AddToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.
 		return pendingMultiMessageQuotes[memberId][i].Timestamp.Before(pendingMultiMessageQuotes[memberId][j].Timestamp)
 	})
 
-	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{generateWIPMultiMessageQuoteEmbed(memberId)},
@@ -87,11 +87,11 @@ func AddToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.
 	})
 }
 
-func CancelMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
+func (b *Bot) CancelMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
 	memberId := interaction.Member.User.ID
 
 	if _, ok := pendingMultiMessageQuotes[memberId]; !ok {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Embeds: []*discordgo.MessageEmbed{
@@ -109,7 +109,7 @@ func CancelMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo
 
 	delete(pendingMultiMessageQuotes, memberId)
 
-	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{
@@ -124,11 +124,11 @@ func CancelMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo
 	})
 }
 
-func SaveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
+func (b *Bot) SaveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
 	memberId := interaction.Member.User.ID
 
 	if _, ok := pendingMultiMessageQuotes[memberId]; !ok {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Embeds: []*discordgo.MessageEmbed{
@@ -177,7 +177,7 @@ func SaveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.I
 		},
 	}
 
-	addQuote(quote, interaction)
+	b.addQuote(quote, interaction)
 
 	delete(pendingMultiMessageQuotes, memberId)
 }
