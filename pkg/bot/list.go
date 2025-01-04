@@ -6,7 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm/clause"
 
-	database2 "github.com/nint8835/scribe/pkg/database"
+	"github.com/nint8835/scribe/pkg/database"
 )
 
 type ListArgs struct {
@@ -16,9 +16,9 @@ type ListArgs struct {
 }
 
 func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args ListArgs) {
-	var quotes []database2.Quote
+	var quotes []database.Quote
 
-	query := database2.Instance.Model(&database2.Quote{}).Preload(clause.Associations)
+	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
 
 	if args.Author != nil {
 		query = query.
@@ -29,7 +29,7 @@ func ListQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionC
 	if args.Query != nil {
 		queryString := *args.Query
 
-		filterQuery := database2.Instance.Raw("SELECT ROWID FROM quotes_fts WHERE quotes_fts MATCH ?", queryString)
+		filterQuery := database.Instance.Raw("SELECT ROWID FROM quotes_fts WHERE quotes_fts MATCH ?", queryString)
 		query.Where("quotes.ROWID IN (?)", filterQuery)
 	}
 

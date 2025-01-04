@@ -5,7 +5,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	database2 "github.com/nint8835/scribe/pkg/database"
+	"github.com/nint8835/scribe/pkg/database"
 )
 
 type AddArgs struct {
@@ -15,9 +15,9 @@ type AddArgs struct {
 }
 
 func AddQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args AddArgs) {
-	quote := database2.Quote{
+	quote := database.Quote{
 		Text:    strings.Replace(args.Text, "\\n", "\n", -1),
-		Authors: []*database2.Author{{ID: args.Author.ID}},
+		Authors: []*database.Author{{ID: args.Author.ID}},
 		Source:  args.Source,
 	}
 

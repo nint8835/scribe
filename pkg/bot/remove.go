@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm/clause"
 
 	"github.com/nint8835/scribe/pkg/config"
-	database2 "github.com/nint8835/scribe/pkg/database"
+	"github.com/nint8835/scribe/pkg/database"
 )
 
 type RemoveArgs struct {
@@ -25,8 +25,8 @@ func RemoveQuoteCommand(_ *discordgo.Session, interaction *discordgo.Interaction
 		return
 	}
 
-	var quote database2.Quote
-	result := database2.Instance.Model(&database2.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
+	var quote database.Quote
+	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
 	if result.Error != nil {
 		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -37,7 +37,7 @@ func RemoveQuoteCommand(_ *discordgo.Session, interaction *discordgo.Interaction
 		return
 	}
 
-	result = database2.Instance.Delete(&quote)
+	result = database.Instance.Delete(&quote)
 	if result.Error != nil {
 		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,

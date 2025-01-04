@@ -6,7 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm/clause"
 
-	database2 "github.com/nint8835/scribe/pkg/database"
+	"github.com/nint8835/scribe/pkg/database"
 )
 
 type GetArgs struct {
@@ -14,9 +14,9 @@ type GetArgs struct {
 }
 
 func GetQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args GetArgs) {
-	var quote database2.Quote
+	var quote database.Quote
 
-	result := database2.Instance.Model(&database2.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
+	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
 	if result.Error != nil {
 		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
