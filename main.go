@@ -1,15 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/nint8835/scribe/pkg/bot"
 	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/database"
+	"github.com/nint8835/scribe/pkg/web"
 )
 
 func main() {
@@ -33,10 +30,15 @@ func main() {
 		}
 	}()
 
-	fmt.Println("Scribe is now running. Press Ctrl-C to exit.")
-	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
-	<-sc
+	webServer, err := web.New()
+	if err != nil {
+		log.Fatalf("Error creating web server: %s", err)
+	}
+
+	err = webServer.Run()
+	if err != nil {
+		log.Fatalf("Error running web server: %s", err)
+	}
 
 	botInst.Stop()
 }
