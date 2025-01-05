@@ -1,6 +1,6 @@
 module github.com/nint8835/scribe
 
-go 1.23
+go 1.23.4
 
 require (
 	github.com/a-h/templ v0.3.819
@@ -14,6 +14,7 @@ require (
 	github.com/yuin/goldmark v1.7.8
 	golang.org/x/oauth2 v0.25.0
 	gorm.io/gorm v1.25.12
+	pkg.nit.so/goldmark-discord-mentions v0.0.0-20250105222441-5890e04d70c1
 	pkg.nit.so/switchboard v0.0.0-20240930133908-cf045dc997ba
 )
 

@@ -9,7 +9,9 @@ import (
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"golang.org/x/oauth2"
+	goldmark_discord_mentions "pkg.nit.so/goldmark-discord-mentions"
 
+	"github.com/nint8835/scribe/pkg/bot"
 	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/web/static"
 )
@@ -48,12 +50,10 @@ func New() (*Server, error) {
 				TokenURL: "https://discord.com/api/oauth2/token",
 			},
 		},
-		// TODO:
-		//   - Handle Discord mentions
-		//   - Handle Discord emotes?
 		md: goldmark.New(
 			goldmark.WithExtensions(
 				extension.Strikethrough,
+				goldmark_discord_mentions.New(bot.Instance.Session, config.Instance.MentionCachePath),
 			),
 		),
 	}

@@ -94,5 +94,7 @@ modernc.org/strutil v1.2.0 h1:agBi9dp1I+eOnxXeiZawM8F4LawKv4NzGWSaLfyeNZA=
 modernc.org/strutil v1.2.0/go.mod h1:/mdcBmfOibveCTBxUl5B5l6W+TTH1FXPLHZE6bTosX0=
 modernc.org/token v1.1.0 h1:Xl7Ap9dKaEs5kLoOQeQmPWevfnk/DM5qcLcYlA8ys6Y=
 modernc.org/token v1.1.0/go.mod h1:UGzOrNV1mAFSEB63lOFHIpNRUVMvYTc6yu1SMY/XTDM=
+pkg.nit.so/goldmark-discord-mentions v0.0.0-20250105222441-5890e04d70c1 h1:1K1EmLpqpNvlvnVzABVtU0dVZijNYASciZi5yG1vOYs=
+pkg.nit.so/goldmark-discord-mentions v0.0.0-20250105222441-5890e04d70c1/go.mod h1:dZN6Gc/kLvoMyUJAaWdG6uWdKSueDy2mPsKuyT0vHyA=
 pkg.nit.so/switchboard v0.0.0-20240930133908-cf045dc997ba h1:OiDsks1Kf2VMOaVDg01IRFOs2GUJx3jKoGnmgbUfK+k=
 pkg.nit.so/switchboard v0.0.0-20240930133908-cf045dc997ba/go.mod h1:6w0eM5WM34YQ+uqM+Sj9o2hO8Qrs+p2nlTDdAP/DkTQ=

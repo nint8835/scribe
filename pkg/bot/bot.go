@@ -129,6 +129,7 @@ func New() (*Bot, error) {
 		quitChan: make(chan struct{}),
 		parser:   &switchboard.Switchboard{},
 	}
+	Instance = bot
 
 	return bot, nil
 }

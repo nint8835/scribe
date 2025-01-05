@@ -18,13 +18,12 @@ func main() {
 	database.Initialize(config.Instance.DBPath)
 	database.Migrate()
 
-	var botInst *bot.Bot
+	botInst, err := bot.New()
+	if err != nil {
+		log.Fatalf("Error creating bot: %s", err)
+	}
 
 	if config.Instance.RunBot {
-		botInst, err = bot.New()
-		if err != nil {
-			log.Fatalf("Error creating bot: %s", err)
-		}
 
 		go func() {
 			err = botInst.Run()
