@@ -7,6 +7,7 @@ import (
 	"github.com/benbjohnson/hashfs"
 	"github.com/gorilla/sessions"
 	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
 	"golang.org/x/oauth2"
 
 	"github.com/nint8835/scribe/pkg/config"
@@ -48,10 +49,13 @@ func New() (*Server, error) {
 			},
 		},
 		// TODO:
-		//   - Handle GFM
 		//   - Handle Discord mentions
 		//   - Handle Discord emotes?
-		md: goldmark.New(),
+		md: goldmark.New(
+			goldmark.WithExtensions(
+				extension.GFM,
+			),
+		),
 	}
 
 	serverInst.serveMux.HandleFunc("GET /{$}", serverInst.requireAuth(serverInst.handleIndex))

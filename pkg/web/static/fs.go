@@ -8,12 +8,7 @@ import (
 
 //go:embed *.css *.js
 var fs embed.FS
-
-var HashFS *hashfs.FS
-
-func init() {
-	HashFS = hashfs.NewFS(fs)
-}
+var HashFS *hashfs.FS = hashfs.NewFS(fs)
 
 func GetStaticPath(resource string) string {
 	return "/static/" + HashFS.HashName(resource)
