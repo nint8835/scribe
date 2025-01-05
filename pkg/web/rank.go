@@ -168,12 +168,23 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) {
 			return fmt.Errorf("error getting quote B: %w", err)
 		}
 
-		// TODO: This query logs an error in the success case. See if there's a better way that won't result in an error log
-		var existingComparison database.CompletedComparison
-		err = tx.Model(&database.CompletedComparison{}).
-			Where("(quote_a_id = ? AND quote_b_id = ? AND user_id = ?) OR (quote_a_id = ? AND quote_b_id = ? AND user_id = ?)", quoteAIDInt, quoteBIDInt, userId, quoteBIDInt, quoteAIDInt, userId).
-			First(&existingComparison).Error
-		if err == nil {
+		var comparisonExists bool
+		matchingComparisonSubquery := tx.Model(&database.CompletedComparison{}).
+			Where(
+				"(quote_a_id = ? AND quote_b_id = ? AND user_id = ?) OR (quote_a_id = ? AND quote_b_id = ? AND user_id = ?)",
+				quoteAIDInt,
+				quoteBIDInt,
+				userId,
+				quoteBIDInt,
+				quoteAIDInt,
+				userId,
+			).Find(&database.CompletedComparison{})
+		err = tx.Raw("SELECT EXISTS (?)", matchingComparisonSubquery).Scan(&comparisonExists).Error
+		if err != nil {
+			return fmt.Errorf("error checking if comparison exists: %w", err)
+		}
+
+		if comparisonExists {
 			return fmt.Errorf("comparison already exists")
 		}
 
