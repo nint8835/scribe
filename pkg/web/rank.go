@@ -2,6 +2,7 @@ package web
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -17,7 +18,8 @@ import (
 
 var elo *elogo.Elo = elogo.NewElo()
 
-func pickRandomQuotePair(ctx context.Context, userId string) (database.Quote, database.Quote, error) {
+// TODO: See if there is a better way to select a pair of quotes
+func attemptPickRandomQuotePair(ctx context.Context, userId string) (database.Quote, database.Quote, error) {
 	var quoteA database.Quote
 	var quoteB database.Quote
 
@@ -26,8 +28,6 @@ func pickRandomQuotePair(ctx context.Context, userId string) (database.Quote, da
 		return quoteA, quoteB, fmt.Errorf("error getting first random quote: %w", err)
 	}
 
-	// TODO: In the event there are no quotes left to compare for the given first quote, this will error - in the event this occurs, it should draw a new first quote
-	// There's _probably_ a better way to do this, but with 1000 quotes it will take a long time for this to be a problem
 	err = database.Instance.WithContext(ctx).Model(&database.Quote{}).
 		Joins(
 			"LEFT JOIN completed_comparisons ON (completed_comparisons.quote_a_id = quotes.id AND completed_comparisons.quote_b_id = ? AND completed_comparisons.user_id = ?) OR (completed_comparisons.quote_a_id = ? AND completed_comparisons.quote_b_id = quotes.id AND completed_comparisons.user_id = ?)",
@@ -45,6 +45,34 @@ func pickRandomQuotePair(ctx context.Context, userId string) (database.Quote, da
 	return quoteA, quoteB, nil
 }
 
+func fetchRandomQuotePair(ctx context.Context, userId string) (database.Quote, database.Quote, error) {
+	attempts := 0
+
+	var quoteA database.Quote
+	var quoteB database.Quote
+	var err error
+
+	for {
+		if attempts >= 10 {
+			return quoteA, quoteB, errors.New("too many attempts to get random quotes")
+		}
+
+		quoteA, quoteB, err = attemptPickRandomQuotePair(ctx, userId)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				attempts++
+				continue
+			}
+
+			return quoteA, quoteB, err
+		}
+
+		break
+	}
+
+	return quoteA, quoteB, nil
+}
+
 func getRankFormProps(quoteA database.Quote, quoteB database.Quote) components.RankProps {
 	return components.RankProps{
 		QuoteAID:      fmt.Sprintf("%d", quoteA.Meta.ID),
@@ -57,7 +85,7 @@ func getRankFormProps(quoteA database.Quote, quoteB database.Quote) components.R
 func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) {
 	userId := s.getCurrentUserId(r)
 
-	quoteA, quoteB, err := pickRandomQuotePair(r.Context(), userId)
+	quoteA, quoteB, err := fetchRandomQuotePair(r.Context(), userId)
 	if err != nil {
 		http.Error(w, "Error getting quotes", http.StatusInternalServerError)
 		return
@@ -164,7 +192,7 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	quoteA, quoteB, err := pickRandomQuotePair(r.Context(), userId)
+	quoteA, quoteB, err := fetchRandomQuotePair(r.Context(), userId)
 	if err != nil {
 		http.Error(w, "Error getting quotes", http.StatusInternalServerError)
 		return
