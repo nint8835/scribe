@@ -3,7 +3,7 @@ FROM golang:1.23-bookworm AS builder
 WORKDIR /build
 
 ARG TAILWIND_VERSION=v3.4.17
-RUN curl -L -o /usr/local/bin/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/${TAILWIND_VERSION}/tailwindcss-linux-$(dpkg --print-architecture) && \
+RUN curl -L -o /usr/local/bin/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/${TAILWIND_VERSION}/tailwindcss-linux-x64 && \
     chmod +x /usr/local/bin/tailwindcss
 
 COPY go.mod go.sum ./
