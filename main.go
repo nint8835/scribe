@@ -18,17 +18,21 @@ func main() {
 	database.Initialize(config.Instance.DBPath)
 	database.Migrate()
 
-	botInst, err := bot.New()
-	if err != nil {
-		log.Fatalf("Error creating bot: %s", err)
-	}
+	var botInst *bot.Bot
 
-	go func() {
-		err = botInst.Run()
+	if !config.Instance.RunBot {
+		botInst, err = bot.New()
 		if err != nil {
-			log.Fatalf("Error running bot: %s", err)
+			log.Fatalf("Error creating bot: %s", err)
 		}
-	}()
+
+		go func() {
+			err = botInst.Run()
+			if err != nil {
+				log.Fatalf("Error running bot: %s", err)
+			}
+		}()
+	}
 
 	webServer, err := web.New()
 	if err != nil {
@@ -40,5 +44,7 @@ func main() {
 		log.Fatalf("Error running web server: %s", err)
 	}
 
-	botInst.Stop()
+	if botInst != nil {
+		botInst.Stop()
+	}
 }

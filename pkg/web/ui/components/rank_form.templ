@@ -1,0 +1,17 @@
+package components
+
+type RankProps struct {
+    QuoteAID string
+    QuoteAContent string
+
+    QuoteBID string
+    QuoteBContent string
+}
+
+templ RankForm(props RankProps) {
+    <input type="hidden" name="quote_a_id" value={ props.QuoteAID }/>
+    <input type="hidden" name="quote_b_id" value={ props.QuoteBID }/>
+
+    <button type="submit" name="winner" value={ props.QuoteAID }>A</button>
+    <button type="submit" name="winner" value={ props.QuoteBID }>B</button>
+}

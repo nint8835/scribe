@@ -1,7 +1,10 @@
 package ui
 
-import "fmt"
-import "github.com/nint8835/scribe/pkg/web/static"
+import (
+    "fmt"
+
+    "github.com/nint8835/scribe/pkg/web/static"
+)
 
 func getTitleString(title string) string {
     if title == "" {
@@ -12,13 +15,16 @@ func getTitleString(title string) string {
 }
 
 templ Layout(title string) {
+    <!DOCTYPE html>
     <html lang="en">
         <head>
             <title>{ getTitleString(title) }</title>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link rel="stylesheet" href={ static.GetStaticPath("tailwind.css") }/>
+            // TODO: Vendor htmx
+            <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
         </head>
-        <body>
+        <body class="h-screen bg-zinc-800 text-zinc-300">
             { children... }
         </body>
     </html>

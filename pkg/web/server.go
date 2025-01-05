@@ -10,7 +10,6 @@ import (
 
 	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/web/static"
-	"github.com/nint8835/scribe/pkg/web/ui/pages"
 )
 
 // TODO: Better error handling
@@ -29,7 +28,7 @@ func (s *Server) Run() error {
 }
 
 func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
-	pages.Index().Render(r.Context(), w)
+	http.Redirect(w, r, "/rank", http.StatusTemporaryRedirect)
 }
 
 func New() (*Server, error) {
@@ -51,6 +50,9 @@ func New() (*Server, error) {
 	serverInst.serveMux.HandleFunc("GET /{$}", serverInst.requireAuth(serverInst.handleIndex))
 	serverInst.serveMux.HandleFunc("GET /auth/login", serverInst.handleAuthLogin)
 	serverInst.serveMux.HandleFunc("GET /auth/callback", serverInst.handleAuthCallback)
+
+	serverInst.serveMux.HandleFunc("GET /rank", serverInst.requireAuth(serverInst.handleGetRank))
+	serverInst.serveMux.HandleFunc("POST /rank", serverInst.requireAuth(serverInst.handlePostRank))
 
 	serverInst.serveMux.Handle("GET /static/", http.StripPrefix("/static/", hashfs.FileServer(static.HashFS)))
 

@@ -1,9 +1,13 @@
 package database
 
+import "gorm.io/gorm"
+
 type CompletedComparison struct {
-	UserID   string `gorm:"primaryKey"`
+	Meta gorm.Model `gorm:"embedded"`
+
+	UserID   string
 	QuoteAID uint
-	QuoteA   Quote `gorm:"primaryKey;foreignKey:QuoteAID;references:ID"`
+	QuoteA   Quote `gorm:"foreignKey:QuoteAID;references:ID"`
 	QuoteBID uint
-	QuoteB   Quote `gorm:"primaryKey;foreignKey:QuoteBID;references:ID"`
+	QuoteB   Quote `gorm:"foreignKey:QuoteBID;references:ID"`
 }
