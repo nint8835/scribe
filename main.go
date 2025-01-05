@@ -20,7 +20,7 @@ func main() {
 
 	var botInst *bot.Bot
 
-	if !config.Instance.RunBot {
+	if config.Instance.RunBot {
 		botInst, err = bot.New()
 		if err != nil {
 			log.Fatalf("Error creating bot: %s", err)

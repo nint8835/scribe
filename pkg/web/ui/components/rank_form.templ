@@ -12,6 +12,9 @@ templ RankForm(props RankProps) {
     <input type="hidden" name="quote_a_id" value={ props.QuoteAID }/>
     <input type="hidden" name="quote_b_id" value={ props.QuoteBID }/>
 
+    <div>{ props.QuoteAContent }</div>
+    <div>{ props.QuoteBContent }</div>
+
     <button type="submit" name="winner" value={ props.QuoteAID }>A</button>
     <button type="submit" name="winner" value={ props.QuoteBID }>B</button>
 }

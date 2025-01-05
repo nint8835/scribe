@@ -10,4 +10,6 @@ type CompletedComparison struct {
 	QuoteA   Quote `gorm:"foreignKey:QuoteAID;references:ID"`
 	QuoteBID uint
 	QuoteB   Quote `gorm:"foreignKey:QuoteBID;references:ID"`
+	WinnerID uint
+	Winner   Quote `gorm:"foreignKey:WinnerID;references:ID"`
 }
