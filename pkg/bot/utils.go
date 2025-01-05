@@ -1,4 +1,4 @@
-package main
+package bot
 
 import (
 	"cmp"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/nint8835/scribe/database"
+	"github.com/nint8835/scribe/pkg/database"
 )
 
 func formatDiscordMember(member *discordgo.Member) string {
@@ -29,15 +29,15 @@ func formatDiscordUser(user *discordgo.User) string {
 	return user.Username
 }
 
-func GenerateAuthorString(authors []*database.Author, guildID string) (string, string, error) {
+func (b *Bot) generateAuthorString(authors []*database.Author, guildID string) (string, string, error) {
 	authorNames := []string{}
 
 	for _, author := range authors {
 		var name string
 		if guildID != "" {
-			member, err := Bot.GuildMember(guildID, author.ID)
+			member, err := b.Session.GuildMember(guildID, author.ID)
 			if err != nil {
-				user, err := Bot.User(author.ID)
+				user, err := b.Session.User(author.ID)
 				if err != nil {
 					return "", "", fmt.Errorf("error getting user %s: %w", author.ID, err)
 				}
@@ -47,7 +47,7 @@ func GenerateAuthorString(authors []*database.Author, guildID string) (string, s
 				name = formatDiscordMember(member)
 			}
 		} else {
-			user, err := Bot.User(author.ID)
+			user, err := b.Session.User(author.ID)
 			if err != nil {
 				return "", "", fmt.Errorf("error getting user %s: %w", author.ID, err)
 			}
@@ -67,8 +67,8 @@ func GenerateAuthorString(authors []*database.Author, guildID string) (string, s
 	return strings.Join(authorNames, ", "), label, nil
 }
 
-func MakeQuoteEmbed(quote *database.Quote, guildID string) (*discordgo.MessageEmbed, error) {
-	authors, authorLabel, err := GenerateAuthorString(quote.Authors, guildID)
+func (b *Bot) makeQuoteEmbed(quote *database.Quote, guildID string) (*discordgo.MessageEmbed, error) {
+	authors, authorLabel, err := b.generateAuthorString(quote.Authors, guildID)
 	if err != nil {
 		return &discordgo.MessageEmbed{}, fmt.Errorf("error getting quote authors: %w", err)
 	}
@@ -100,10 +100,10 @@ func GenerateMessageUrl(message *discordgo.Message) string {
 	return fmt.Sprintf("https://discord.com/channels/%s/%s/%s", message.GuildID, message.ChannelID, message.ID)
 }
 
-func addQuote(quote database.Quote, interaction *discordgo.InteractionCreate) {
+func (b *Bot) addQuote(quote database.Quote, interaction *discordgo.InteractionCreate) {
 	result := database.Instance.Create(&quote)
 	if result.Error != nil {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error),
@@ -113,7 +113,7 @@ func addQuote(quote database.Quote, interaction *discordgo.InteractionCreate) {
 
 	result = database.Instance.Save(&quote)
 	if result.Error != nil {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error),
@@ -121,9 +121,9 @@ func addQuote(quote database.Quote, interaction *discordgo.InteractionCreate) {
 		})
 	}
 
-	embed, err := MakeQuoteEmbed(&quote, interaction.GuildID)
+	embed, err := b.makeQuoteEmbed(&quote, interaction.GuildID)
 	if err != nil {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error generating quote embed.\n```\n%s\n```", err),
@@ -134,7 +134,7 @@ func addQuote(quote database.Quote, interaction *discordgo.InteractionCreate) {
 	embed.Title = fmt.Sprintf("Quote %d added!", quote.Meta.ID)
 	embed.Color = (45 << 16) + (200 << 8) + (95)
 
-	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{

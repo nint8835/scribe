@@ -22,3 +22,6 @@ quotes.sqlite
 
 data/
 .idea/
+pkg/web/static/tailwind.css
+tmp/
+mentions.json

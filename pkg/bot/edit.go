@@ -1,4 +1,4 @@
-package main
+package bot
 
 import (
 	"fmt"
@@ -7,17 +7,18 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm/clause"
 
-	"github.com/nint8835/scribe/database"
+	"github.com/nint8835/scribe/pkg/config"
+	"github.com/nint8835/scribe/pkg/database"
 )
 
-type EditArgs struct {
+type editArgs struct {
 	ID   int    `description:"ID of the quote to edit."`
 	Text string `description:"New text for the quote."`
 }
 
-func EditQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args EditArgs) {
-	if interaction.Member.User.ID != config.OwnerId {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+func (b *Bot) editQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args editArgs) {
+	if interaction.Member.User.ID != config.Instance.OwnerId {
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: "You do not have access to that command.",
@@ -29,7 +30,7 @@ func EditQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCr
 	var quote database.Quote
 	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
 	if result.Error != nil {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error),
@@ -42,7 +43,7 @@ func EditQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCr
 
 	result = database.Instance.Save(&quote)
 	if result.Error != nil {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error editing quote.\n```\n%s\n```", result.Error),
@@ -51,7 +52,7 @@ func EditQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCr
 		return
 	}
 
-	Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{

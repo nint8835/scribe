@@ -84,5 +84,5 @@ func Migrate() {
 		panic(errors.New("Attempted to migrate uninstantiated database - ensure you call database.Initialize before making any database calls"))
 	}
 
-	Instance.AutoMigrate(&Quote{}, &Author{})
+	Instance.AutoMigrate(&Quote{}, &Author{}, &CompletedComparison{})
 }

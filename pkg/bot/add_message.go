@@ -1,15 +1,15 @@
-package main
+package bot
 
 import (
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
 
-	"github.com/nint8835/scribe/database"
+	"github.com/nint8835/scribe/pkg/database"
 )
 
-func AddQuoteMessageCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, message *discordgo.Message) {
+func (b *Bot) addQuoteMessageCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, message *discordgo.Message) {
 	if message.Content == "" {
-		Bot.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Embeds: []*discordgo.MessageEmbed{
@@ -36,5 +36,5 @@ func AddQuoteMessageCommand(_ *discordgo.Session, interaction *discordgo.Interac
 		},
 	}
 
-	addQuote(quote, interaction)
+	b.addQuote(quote, interaction)
 }
