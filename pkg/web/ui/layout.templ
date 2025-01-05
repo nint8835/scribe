@@ -21,8 +21,7 @@ templ Layout(title string) {
             <title>{ getTitleString(title) }</title>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link rel="stylesheet" href={ static.GetStaticPath("tailwind.css") }/>
-            // TODO: Vendor htmx
-            <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+            <script src={ static.GetStaticPath("htmx.min.js") }></script>
         </head>
         <body class="h-screen bg-zinc-800 text-zinc-300">
             { children... }
