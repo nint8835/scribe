@@ -8,12 +8,18 @@ type RankProps struct {
     QuoteBContent string
 }
 
+templ QuoteDisplay(content string) {
+    <div class="prose prose-invert prose-zinc">
+        @templ.Raw(content)
+    </div>
+}
+
 templ RankForm(props RankProps) {
     <input type="hidden" name="quote_a_id" value={ props.QuoteAID }/>
     <input type="hidden" name="quote_b_id" value={ props.QuoteBID }/>
 
-    <div>{ props.QuoteAContent }</div>
-    <div>{ props.QuoteBContent }</div>
+    @QuoteDisplay(props.QuoteAContent)
+    @QuoteDisplay(props.QuoteBContent)
 
     <button type="submit" name="winner" value={ props.QuoteAID }>A</button>
     <button type="submit" name="winner" value={ props.QuoteBID }>B</button>

@@ -1,6 +1,7 @@
 package web
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -73,13 +74,29 @@ func fetchRandomQuotePair(ctx context.Context, userId string) (database.Quote, d
 	return quoteA, quoteB, nil
 }
 
-func getRankFormProps(quoteA database.Quote, quoteB database.Quote) components.RankProps {
+func (s *Server) getRankFormProps(quoteA database.Quote, quoteB database.Quote) (components.RankProps, error) {
+	quoteAContent, err := s.renderQuoteText(quoteA)
+	if err != nil {
+		return components.RankProps{}, fmt.Errorf("error rendering quote A: %w", err)
+	}
+
+	quoteBContent, err := s.renderQuoteText(quoteB)
+	if err != nil {
+		return components.RankProps{}, fmt.Errorf("error rendering quote B: %w", err)
+	}
+
 	return components.RankProps{
 		QuoteAID:      fmt.Sprintf("%d", quoteA.Meta.ID),
 		QuoteBID:      fmt.Sprintf("%d", quoteB.Meta.ID),
-		QuoteAContent: quoteA.Text,
-		QuoteBContent: quoteB.Text,
-	}
+		QuoteAContent: quoteAContent,
+		QuoteBContent: quoteBContent,
+	}, nil
+}
+
+func (s *Server) renderQuoteText(quote database.Quote) (string, error) {
+	var buf bytes.Buffer
+	err := s.md.Convert([]byte(quote.Text), &buf)
+	return buf.String(), err
 }
 
 func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) {
@@ -91,7 +108,13 @@ func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pages.Rank(getRankFormProps(quoteA, quoteB)).Render(r.Context(), w)
+	props, err := s.getRankFormProps(quoteA, quoteB)
+	if err != nil {
+		http.Error(w, "Error getting rank form props", http.StatusInternalServerError)
+		return
+	}
+
+	pages.Rank(props).Render(r.Context(), w)
 }
 
 func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) {
@@ -198,5 +221,11 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	components.RankForm(getRankFormProps(quoteA, quoteB)).Render(r.Context(), w)
+	props, err := s.getRankFormProps(quoteA, quoteB)
+	if err != nil {
+		http.Error(w, "Error getting rank form props", http.StatusInternalServerError)
+		return
+	}
+
+	components.RankForm(props).Render(r.Context(), w)
 }

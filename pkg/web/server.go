@@ -6,6 +6,7 @@ import (
 
 	"github.com/benbjohnson/hashfs"
 	"github.com/gorilla/sessions"
+	"github.com/yuin/goldmark"
 	"golang.org/x/oauth2"
 
 	"github.com/nint8835/scribe/pkg/config"
@@ -17,6 +18,7 @@ type Server struct {
 	serveMux     *http.ServeMux
 	sessionStore *sessions.CookieStore
 	oauthConfig  *oauth2.Config
+	md           goldmark.Markdown
 }
 
 func (s *Server) Run() error {
@@ -45,6 +47,11 @@ func New() (*Server, error) {
 				TokenURL: "https://discord.com/api/oauth2/token",
 			},
 		},
+		// TODO:
+		//   - Handle GFM
+		//   - Handle Discord mentions
+		//   - Handle Discord emotes?
+		md: goldmark.New(),
 	}
 
 	serverInst.serveMux.HandleFunc("GET /{$}", serverInst.requireAuth(serverInst.handleIndex))
