@@ -10,6 +10,7 @@ require (
 	github.com/gorilla/sessions v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/kortemy/elo-go v0.0.0-20190919090953-f9d3a99fd7b7
 	golang.org/x/oauth2 v0.25.0
 	gorm.io/gorm v1.25.12
 	pkg.nit.so/switchboard v0.0.0-20240930133908-cf045dc997ba
