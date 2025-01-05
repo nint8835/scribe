@@ -53,7 +53,7 @@ func New() (*Server, error) {
 		//   - Handle Discord emotes?
 		md: goldmark.New(
 			goldmark.WithExtensions(
-				extension.GFM,
+				extension.Strikethrough,
 			),
 		),
 	}
