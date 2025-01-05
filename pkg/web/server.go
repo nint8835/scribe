@@ -4,10 +4,12 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/benbjohnson/hashfs"
 	"github.com/gorilla/sessions"
 	"golang.org/x/oauth2"
 
 	"github.com/nint8835/scribe/pkg/config"
+	"github.com/nint8835/scribe/pkg/web/static"
 	"github.com/nint8835/scribe/pkg/web/ui/pages"
 )
 
@@ -49,6 +51,8 @@ func New() (*Server, error) {
 	serverInst.serveMux.HandleFunc("GET /{$}", serverInst.requireAuth(serverInst.handleIndex))
 	serverInst.serveMux.HandleFunc("GET /auth/login", serverInst.handleAuthLogin)
 	serverInst.serveMux.HandleFunc("GET /auth/callback", serverInst.handleAuthCallback)
+
+	serverInst.serveMux.Handle("GET /static/", http.StripPrefix("/static/", hashfs.FileServer(static.HashFS)))
 
 	return serverInst, nil
 }

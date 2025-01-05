@@ -21,9 +21,14 @@ var Instance *Bot
 func (b *Bot) Run() error {
 	b.Session.AddHandler(b.parser.HandleInteractionCreate)
 	b.registerCommands()
-	err := b.parser.SyncCommands(b.Session, config.Instance.AppId)
-	if err != nil {
-		return fmt.Errorf("error syncing commands: %w", err)
+
+	var err error
+
+	if config.Instance.SyncCommands {
+		err := b.parser.SyncCommands(b.Session, config.Instance.AppId)
+		if err != nil {
+			return fmt.Errorf("error syncing commands: %w", err)
+		}
 	}
 
 	if err = b.Session.Open(); err != nil {

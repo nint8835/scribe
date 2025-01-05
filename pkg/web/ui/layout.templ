@@ -1,0 +1,25 @@
+package ui
+
+import "fmt"
+import "github.com/nint8835/scribe/pkg/web/static"
+
+func getTitleString(title string) string {
+    if title == "" {
+        return "Scribe"
+    }
+
+    return fmt.Sprintf("%s - Scribe", title)
+}
+
+templ Layout(title string) {
+    <html lang="en">
+        <head>
+            <title>{ getTitleString(title) }</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="stylesheet" href={ static.GetStaticPath("tailwind.css") }/>
+        </head>
+        <body>
+            { children... }
+        </body>
+    </html>
+}

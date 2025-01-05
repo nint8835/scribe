@@ -1,5 +1,9 @@
 package pages
 
+import "github.com/nint8835/scribe/pkg/web/ui"
+
 templ Index() {
-    <html><body>Hello World</body></html>
+    @ui.Layout("") {
+        Hello world!
+    }
 }

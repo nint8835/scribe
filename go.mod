@@ -4,6 +4,7 @@ go 1.23
 
 require (
 	github.com/a-h/templ v0.3.819
+	github.com/benbjohnson/hashfs v0.2.2
 	github.com/bwmarrin/discordgo v0.28.1
 	github.com/glebarez/sqlite v1.11.0
 	github.com/gorilla/sessions v1.4.0

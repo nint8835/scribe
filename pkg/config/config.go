@@ -18,6 +18,7 @@ type Config struct {
 	ClientId     string `split_words:"true"`
 	ClientSecret string `split_words:"true"`
 	CallbackUrl  string `split_words:"true"`
+	SyncCommands bool   `default:"true" split_words:"true"`
 }
 
 var Instance Config
