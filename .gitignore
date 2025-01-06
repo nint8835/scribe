@@ -25,3 +25,5 @@ data/
 pkg/web/static/tailwind.css
 tmp/
 mentions.json
+node_modules/
+package*
