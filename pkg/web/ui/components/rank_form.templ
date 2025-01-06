@@ -1,33 +1,30 @@
 package components
 
 type RankProps struct {
-    QuoteAID string
-    QuoteAContent string
+	QuoteAID      string
+	QuoteAContent string
 
-    QuoteBID string
-    QuoteBContent string
+	QuoteBID      string
+	QuoteBContent string
 }
 
 var rankButtonClasses = map[string]string{
-    "A": "bg-sky-700 hover:bg-sky-800",
-    "B": "bg-rose-700 hover:bg-rose-800",
+	"A": "bg-sky-700 hover:bg-sky-800",
+	"B": "bg-rose-700 hover:bg-rose-800",
 }
 
 templ QuoteDisplay(label string, id string, content string) {
-    <div class="flex h-full flex-col">
-        <div class="prose prose-invert prose-zinc max-w-none flex-1 overflow-auto whitespace-pre-wrap">
-            @templ.Raw(content)
-        </div>
-        <button class={"w-full rounded-md p-4 transition-colors", rankButtonClasses[label]} type="submit" name="winner" value={ id }>{ label }</button>
-    </div>
+	<div class="flex h-full flex-col">
+		<div class="prose prose-invert prose-zinc max-w-none flex-1 overflow-auto whitespace-pre-wrap">
+			@templ.Raw(content)
+		</div>
+		<button class={ "w-full rounded-md p-4 transition-colors", rankButtonClasses[label] } type="submit" name="winner" value={ id }>{ label }</button>
+	</div>
 }
 
 templ RankForm(props RankProps) {
-    <div class="grid h-dvh w-dvw grid-cols-1 grid-rows-2 gap-4 p-4 md:grid-cols-2 md:grid-rows-1">
-        <input type="hidden" name="quote_a_id" value={ props.QuoteAID }/>
-        <input type="hidden" name="quote_b_id" value={ props.QuoteBID }/>
-
-        @QuoteDisplay("A", props.QuoteAID, props.QuoteAContent)
-        @QuoteDisplay("B", props.QuoteBID, props.QuoteBContent)
-    </div>
+	<input type="hidden" name="quote_a_id" value={ props.QuoteAID }/>
+	<input type="hidden" name="quote_b_id" value={ props.QuoteBID }/>
+	@QuoteDisplay("A", props.QuoteAID, props.QuoteAContent)
+	@QuoteDisplay("B", props.QuoteBID, props.QuoteBContent)
 }

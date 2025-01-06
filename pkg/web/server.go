@@ -64,6 +64,7 @@ func New() (*Server, error) {
 
 	serverInst.serveMux.HandleFunc("GET /rank", serverInst.requireAuth(serverInst.handleGetRank))
 	serverInst.serveMux.HandleFunc("POST /rank", serverInst.requireAuth(serverInst.handlePostRank))
+	serverInst.serveMux.HandleFunc("GET /rank/stats", serverInst.requireAuth(serverInst.handleRankStats))
 
 	serverInst.serveMux.Handle("GET /static/", http.StripPrefix("/static/", hashfs.FileServer(static.HashFS)))
 

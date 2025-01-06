@@ -74,6 +74,30 @@ func fetchRandomQuotePair(ctx context.Context, userId string) (database.Quote, d
 	return quoteA, quoteB, nil
 }
 
+func (s *Server) getRankStatsDisplayProps(id string) (components.RankStatsDisplayProps, error) {
+	var stats components.RankStatsDisplayProps
+
+	err := database.Instance.Model(&database.CompletedComparison{}).Where("user_id = ?", id).Count(&stats.UserRankCount).Error
+	if err != nil {
+		return stats, fmt.Errorf("error getting user rank count: %w", err)
+	}
+
+	err = database.Instance.Model(&database.CompletedComparison{}).Count(&stats.TotalRankCount).Error
+	if err != nil {
+		return stats, fmt.Errorf("error getting total rank count: %w", err)
+	}
+
+	var quoteCount int64
+	err = database.Instance.Model(&database.Quote{}).Count(&quoteCount).Error
+	if err != nil {
+		return stats, fmt.Errorf("error getting quote count: %w", err)
+	}
+
+	stats.MaxRankCount = quoteCount * (quoteCount - 1) / 2
+
+	return stats, nil
+}
+
 func (s *Server) getRankFormProps(quoteA database.Quote, quoteB database.Quote) (components.RankProps, error) {
 	quoteAContent, err := s.renderQuoteText(quoteA)
 	if err != nil {
@@ -114,7 +138,13 @@ func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pages.Rank(props).Render(r.Context(), w)
+	stats, err := s.getRankStatsDisplayProps(userId)
+	if err != nil {
+		http.Error(w, "Error getting rank stats display props", http.StatusInternalServerError)
+		return
+	}
+
+	pages.Rank(props, stats).Render(r.Context(), w)
 }
 
 func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) {
@@ -238,5 +268,25 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	stats, err := s.getRankStatsDisplayProps(userId)
+	if err != nil {
+		http.Error(w, "Error getting rank stats", http.StatusInternalServerError)
+		return
+	}
+	stats.ShouldSwap = true
+
+	components.RankStatsDisplay(stats).Render(r.Context(), w)
 	components.RankForm(props).Render(r.Context(), w)
+}
+
+func (s *Server) handleRankStats(w http.ResponseWriter, r *http.Request) {
+	userId := s.getCurrentUserId(r)
+
+	stats, err := s.getRankStatsDisplayProps(userId)
+	if err != nil {
+		http.Error(w, "Error getting rank stats", http.StatusInternalServerError)
+		return
+	}
+
+	components.RankStatsDisplay(stats).Render(r.Context(), w)
 }

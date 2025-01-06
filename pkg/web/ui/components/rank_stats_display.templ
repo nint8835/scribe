@@ -1,0 +1,42 @@
+package components
+
+import (
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+)
+
+type RankStatsDisplayProps struct {
+	UserRankCount  int64
+	TotalRankCount int64
+	MaxRankCount   int64
+	ShouldSwap     bool
+}
+
+var printer = message.NewPrinter(language.English)
+
+templ StatsValue(value int64) {
+	<span class="text-zinc-200">{ printer.Sprintf("%d", value) }</span>
+}
+
+templ RankStatsDisplay(props RankStatsDisplayProps) {
+	<div
+		class="p-2 italic text-zinc-400"
+		id="rank-stats"
+		hx-get="/rank/stats"
+		hx-trigger="every 60s"
+		hx-swap="outerHTML"
+		if props.ShouldSwap {
+			hx-swap-oob="rank-stats"
+		}
+	>
+		<div>
+			{ "Of " }
+			@StatsValue(props.TotalRankCount)
+			{ " completed ranks, you were responsible for " }
+			@StatsValue(props.UserRankCount)
+			{ ". For the current set of quotes, each user can perform " }
+			@StatsValue(props.MaxRankCount)
+			{ " ranks." }
+		</div>
+	</div>
+}

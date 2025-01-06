@@ -13,6 +13,7 @@ require (
 	github.com/kortemy/elo-go v0.0.0-20190919090953-f9d3a99fd7b7
 	github.com/yuin/goldmark v1.7.8
 	golang.org/x/oauth2 v0.25.0
+	golang.org/x/text v0.21.0
 	gorm.io/gorm v1.25.12
 	pkg.nit.so/goldmark-discord-mentions v0.0.0-20250105222441-5890e04d70c1
 	pkg.nit.so/switchboard v0.0.0-20240930133908-cf045dc997ba
@@ -32,7 +33,6 @@ require (
 	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/exp v0.0.0-20250103183323-7d7fa50e5329 // indirect
 	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
 	modernc.org/libc v1.61.6 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.8.1 // indirect
