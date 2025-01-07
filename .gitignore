@@ -26,4 +26,5 @@ pkg/web/static/tailwind.css
 tmp/
 mentions.json
 node_modules/
-package*
+package.json
+package-lock.json
