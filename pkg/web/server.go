@@ -2,6 +2,7 @@ package web
 
 import (
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/benbjohnson/hashfs"
@@ -67,6 +68,8 @@ func New() (*Server, error) {
 	serverInst.serveMux.HandleFunc("GET /rank/stats", serverInst.requireAuth(serverInst.handleRankStats))
 
 	serverInst.serveMux.Handle("GET /static/", http.StripPrefix("/static/", hashfs.FileServer(static.HashFS)))
+
+	log.Println("Web server listening on port 8000")
 
 	return serverInst, nil
 }
