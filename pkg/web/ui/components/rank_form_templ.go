@@ -47,7 +47,7 @@ func LeftArrow() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<svg class=\"w-3.5 h-3.5\" viewBox=\"0 0 14 14\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M2.55371 5.70094C1.55371 6.27829 1.55371 7.72167 2.55371 8.29902L10.0537 12.6291C11.0537 13.2065 12.3037 12.4848 12.3037 11.3301L12.3037 2.66985C12.3037 1.51515 11.0537 0.793465 10.0537 1.37081L2.55371 5.70094Z\" fill=\"#111827\"></path></svg>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<svg class=\"h-3.5 w-3.5\" viewBox=\"0 0 14 14\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M2.55371 5.70094C1.55371 6.27829 1.55371 7.72167 2.55371 8.29902L10.0537 12.6291C11.0537 13.2065 12.3037 12.4848 12.3037 11.3301L12.3037 2.66985C12.3037 1.51515 11.0537 0.793465 10.0537 1.37081L2.55371 5.70094Z\" fill=\"#111827\"></path></svg>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -76,7 +76,7 @@ func RightArrow() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<svg class=\"w-3.5 h-3.5\" viewBox=\"0 0 14 14\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M11.4463 5.70094C12.4463 6.27829 12.4463 7.72167 11.4463 8.29902L3.94629 12.6291C2.94629 13.2065 1.69629 12.4848 1.69629 11.3301L1.69629 2.66985C1.69629 1.51515 2.94629 0.793465 3.94629 1.37081L11.4463 5.70094Z\" fill=\"#111827\"></path></svg>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<svg class=\"h-3.5 w-3.5\" viewBox=\"0 0 14 14\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M11.4463 5.70094C12.4463 6.27829 12.4463 7.72167 11.4463 8.29902L3.94629 12.6291C2.94629 13.2065 1.69629 12.4848 1.69629 11.3301L1.69629 2.66985C1.69629 1.51515 2.94629 0.793465 3.94629 1.37081L11.4463 5.70094Z\" fill=\"#111827\"></path></svg>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -105,7 +105,7 @@ func Kbd(key string) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<kbd class=\"hidden md:inline-flex min-h-[30px] justify-center items-center py-1 px-1.5 bg-white border border-gray-200 font-mono text-sm text-gray-800 shadow-[0px_2px_0px_0px_rgba(0,0,0,0.08)] rounded-md\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<kbd class=\"hidden min-h-[30px] items-center justify-center rounded-md border border-gray-200 bg-white px-1.5 py-1 font-mono text-sm text-gray-800 shadow-[0px_2px_0px_0px_rgba(0,0,0,0.08)] md:inline-flex\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -166,7 +166,7 @@ func QuoteDisplay(label string, id string, content string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var5 = []any{"w-full rounded-md p-4 transition-colors flex items-center justify-between", rankButtonClasses[label]}
+		var templ_7745c5c3_Var5 = []any{"flex w-full items-center justify-between rounded-md p-4 transition-colors", rankButtonClasses[label]}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
