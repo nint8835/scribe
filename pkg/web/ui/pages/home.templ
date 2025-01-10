@@ -1,0 +1,16 @@
+package pages
+
+import "github.com/nint8835/scribe/pkg/web/ui"
+
+templ Home() {
+	@ui.Layout("Home") {
+		<div class="flex h-screen w-screen flex-col">
+			<header class="py-8 text-center text-4xl font-bold">
+				📜 Scribe
+			</header>
+			<a href="/rank" class="mx-auto rounded-md bg-amber-700 px-4 py-2 shadow-md transition-colors">
+				Rank Quotes
+			</a>
+		</div>
+	}
+}
