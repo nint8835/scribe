@@ -9,8 +9,8 @@ type RankProps struct {
 }
 
 var rankButtonClasses = map[string]string{
-	"A": "bg-sky-700 hover:bg-sky-800",
-	"B": "bg-rose-700 hover:bg-rose-800",
+	"A": "bg-sky-800 [scrollbar-color:white_rgb(7,89,133)] hover:bg-sky-900 hover:[scrollbar-color:white_rgb(12,74,110)]",
+	"B": "bg-rose-800 [scrollbar-color:white_rgb(159,18,57)] hover:bg-rose-900 hover:[scrollbar-color:white_rgb(136,19,55)]",
 }
 
 var keyboardShortcuts = map[string]string{
@@ -18,48 +18,29 @@ var keyboardShortcuts = map[string]string{
 	"B": "ArrowRight",
 }
 
-templ LeftArrow() {
-	<svg class="h-3.5 w-3.5" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-		<path d="M2.55371 5.70094C1.55371 6.27829 1.55371 7.72167 2.55371 8.29902L10.0537 12.6291C11.0537 13.2065 12.3037 12.4848 12.3037 11.3301L12.3037 2.66985C12.3037 1.51515 11.0537 0.793465 10.0537 1.37081L2.55371 5.70094Z" fill="#111827"></path>
+templ QuotationMark() {
+	<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<path d="M3.691 6.292C5.094 4.771 7.217 4 10 4h1v2.819l-.804.161c-1.37.274-2.323.813-2.833 1.604A2.902 2.902 0 0 0 6.925 10H10a1 1 0 0 1 1 1v7c0 1.103-.897 2-2 2H3a1 1 0 0 1-1-1v-5l.003-2.919c-.009-.111-.199-2.741 1.688-4.789zM20 20h-6a1 1 0 0 1-1-1v-5l.003-2.919c-.009-.111-.199-2.741 1.688-4.789C16.094 4.771 18.217 4 21 4h1v2.819l-.804.161c-1.37.274-2.323.813-2.833 1.604A2.902 2.902 0 0 0 17.925 10H21a1 1 0 0 1 1 1v7c0 1.103-.897 2-2 2z"></path>
 	</svg>
-}
-
-templ RightArrow() {
-	<svg class="h-3.5 w-3.5" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-		<path d="M11.4463 5.70094C12.4463 6.27829 12.4463 7.72167 11.4463 8.29902L3.94629 12.6291C2.94629 13.2065 1.69629 12.4848 1.69629 11.3301L1.69629 2.66985C1.69629 1.51515 2.94629 0.793465 3.94629 1.37081L11.4463 5.70094Z" fill="#111827"></path>
-	</svg>
-}
-
-templ Kbd(key string) {
-	<kbd class="hidden min-h-[30px] items-center justify-center rounded-md border border-gray-200 bg-white px-1.5 py-1 font-mono text-sm text-gray-800 shadow-[0px_2px_0px_0px_rgba(0,0,0,0.08)] md:inline-flex">
-		if key == "A" {
-			@LeftArrow()
-		} else if key == "B" {
-			@RightArrow()
-		} else {
-			?
-		}
-	</kbd>
 }
 
 templ QuoteDisplay(label string, id string, content string) {
-	<div class="flex h-full flex-col">
-		<div class="prose prose-invert prose-zinc max-w-none flex-1 overflow-auto whitespace-pre-wrap">
+	<button
+		hx-trigger={ "click, keyup[key=='" + keyboardShortcuts[label] + "'] from:body" }
+		hx-post="/rank"
+		hx-target="#rank-form"
+		class={ "flex min-h-8 w-full flex-row gap-4 rounded-lg p-4 transition-all", rankButtonClasses[label] }
+		type="submit"
+		name="winner"
+		value={ id }
+	>
+		<div class="size-8 shrink-0">
+			@QuotationMark()
+		</div>
+		<div class={ "overflow-y-auto text-left" }>
 			@templ.Raw(content)
 		</div>
-		<button
-			hx-trigger={ "click, keyup[key=='" + keyboardShortcuts[label] + "'] from:body" }
-			hx-post="/rank"
-			hx-target="#rank-form"
-			class={ "flex w-full items-center justify-between rounded-md p-4 transition-colors", rankButtonClasses[label] }
-			type="submit"
-			name="winner"
-			value={ id }
-		>
-			<span class="flex-1 text-center">{ label }</span>
-			@Kbd(label)
-		</button>
-	</div>
+	</button>
 }
 
 templ RankForm(props RankProps) {
