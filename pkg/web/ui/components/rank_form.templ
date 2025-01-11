@@ -9,8 +9,8 @@ type RankProps struct {
 }
 
 var rankButtonClasses = map[string]string{
-	"A": "bg-sky-800 hover:bg-sky-900 [scrollbar-color:white_rgb(7,89,133)] hover:[scrollbar-color:white_rgb(12,74,110)]",
-	"B": "bg-rose-800 hover:bg-rose-900 [scrollbar-color:white_rgb(159,18,57)] hover:[scrollbar-color:white_rgb(136,19,55)]",
+	"A": "bg-sky-800 [scrollbar-color:white_rgb(7,89,133)] hover:bg-sky-900 hover:[scrollbar-color:white_rgb(12,74,110)]",
+	"B": "bg-rose-800 [scrollbar-color:white_rgb(159,18,57)] hover:bg-rose-900 hover:[scrollbar-color:white_rgb(136,19,55)]",
 }
 
 var keyboardShortcuts = map[string]string{
@@ -19,26 +19,28 @@ var keyboardShortcuts = map[string]string{
 }
 
 templ QuotationMark() {
-  <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3.691 6.292C5.094 4.771 7.217 4 10 4h1v2.819l-.804.161c-1.37.274-2.323.813-2.833 1.604A2.902 2.902 0 0 0 6.925 10H10a1 1 0 0 1 1 1v7c0 1.103-.897 2-2 2H3a1 1 0 0 1-1-1v-5l.003-2.919c-.009-.111-.199-2.741 1.688-4.789zM20 20h-6a1 1 0 0 1-1-1v-5l.003-2.919c-.009-.111-.199-2.741 1.688-4.789C16.094 4.771 18.217 4 21 4h1v2.819l-.804.161c-1.37.274-2.323.813-2.833 1.604A2.902 2.902 0 0 0 17.925 10H21a1 1 0 0 1 1 1v7c0 1.103-.897 2-2 2z"/>
-  </svg>
+	<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<path d="M3.691 6.292C5.094 4.771 7.217 4 10 4h1v2.819l-.804.161c-1.37.274-2.323.813-2.833 1.604A2.902 2.902 0 0 0 6.925 10H10a1 1 0 0 1 1 1v7c0 1.103-.897 2-2 2H3a1 1 0 0 1-1-1v-5l.003-2.919c-.009-.111-.199-2.741 1.688-4.789zM20 20h-6a1 1 0 0 1-1-1v-5l.003-2.919c-.009-.111-.199-2.741 1.688-4.789C16.094 4.771 18.217 4 21 4h1v2.819l-.804.161c-1.37.274-2.323.813-2.833 1.604A2.902 2.902 0 0 0 17.925 10H21a1 1 0 0 1 1 1v7c0 1.103-.897 2-2 2z"></path>
+	</svg>
 }
 
 templ QuoteDisplay(label string, id string, content string) {
-  <button
-    hx-trigger={ "click, keyup[key=='" + keyboardShortcuts[label] + "'] from:body" }
-    hx-post="/rank"
-    hx-target="#rank-form"
-    class={ "w-full min-h-8 rounded-lg p-4 transition-all flex flex-row gap-4", rankButtonClasses[label] }
-    type="submit"
-    name="winner"
-    value={ id }
-  >
-    <div class="size-8 shrink-0">@QuotationMark()</div>
-    <div class={ "text-left overflow-y-auto" }>
-      @templ.Raw(content)
-    </div>
-  </button>
+	<button
+		hx-trigger={ "click, keyup[key=='" + keyboardShortcuts[label] + "'] from:body" }
+		hx-post="/rank"
+		hx-target="#rank-form"
+		class={ "flex min-h-8 w-full flex-row gap-4 rounded-lg p-4 transition-all", rankButtonClasses[label] }
+		type="submit"
+		name="winner"
+		value={ id }
+	>
+		<div class="size-8 shrink-0">
+			@QuotationMark()
+		</div>
+		<div class={ "overflow-y-auto text-left" }>
+			@templ.Raw(content)
+		</div>
+	</button>
 }
 
 templ RankForm(props RankProps) {
