@@ -37,7 +37,7 @@ templ QuoteDisplay(label string, id string, content string) {
 		<div class="size-8 shrink-0">
 			@QuotationMark()
 		</div>
-		<div class={ "overflow-y-auto text-left" }>
+		<div class="overflow-y-auto whitespace-pre-wrap text-left">
 			@templ.Raw(content)
 		</div>
 	</button>
