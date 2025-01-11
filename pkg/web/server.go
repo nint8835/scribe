@@ -15,6 +15,7 @@ import (
 	"github.com/nint8835/scribe/pkg/bot"
 	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/web/static"
+	"github.com/nint8835/scribe/pkg/web/ui/pages"
 )
 
 // TODO: Better error handling
@@ -33,8 +34,8 @@ func (s *Server) Run() error {
 	return nil
 }
 
-func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/rank", http.StatusTemporaryRedirect)
+func (s *Server) handleGetHome(w http.ResponseWriter, r *http.Request) {
+	pages.Home().Render(r.Context(), w)
 }
 
 func New() (*Server, error) {
@@ -59,7 +60,8 @@ func New() (*Server, error) {
 		),
 	}
 
-	serverInst.serveMux.HandleFunc("GET /{$}", serverInst.requireAuth(serverInst.handleIndex))
+	serverInst.serveMux.HandleFunc("GET /{$}", serverInst.requireAuth(serverInst.handleGetHome))
+
 	serverInst.serveMux.HandleFunc("GET /auth/login", serverInst.handleAuthLogin)
 	serverInst.serveMux.HandleFunc("GET /auth/callback", serverInst.handleAuthCallback)
 
