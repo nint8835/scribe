@@ -60,6 +60,12 @@ func New() (*Server, error) {
 		),
 	}
 
+	serverInst.sessionStore.Options = &sessions.Options{
+		Path:     "/",
+		HttpOnly: true,
+		MaxAge:   30 * 24 * 60 * 60,
+	}
+
 	serverInst.serveMux.HandleFunc("GET /{$}", serverInst.requireAuth(serverInst.handleGetHome))
 
 	serverInst.serveMux.HandleFunc("GET /auth/login", serverInst.handleAuthLogin)
