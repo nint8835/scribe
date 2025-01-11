@@ -6,7 +6,7 @@ import (
 	"github.com/benbjohnson/hashfs"
 )
 
-//go:embed *.css *.js
+//go:embed *.css *.js *.woff2
 var fs embed.FS
 var HashFS *hashfs.FS = hashfs.NewFS(fs)
 

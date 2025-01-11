@@ -26,3 +26,4 @@ pkg/web/static/tailwind.css
 tmp/
 mentions.json
 .air.toml.local
+.DS_Store
