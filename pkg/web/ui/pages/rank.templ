@@ -8,11 +8,10 @@ import (
 templ Rank(props components.RankProps, stats components.RankStatsDisplayProps) {
 	@ui.Layout("Rank Quotes") {
 		<div class="h-screen w-screen flex flex-col justify-center items-center gap-2 p-4">
-      <div class="w-full max-w-5xl">
-        <form id="rank-form" hx-post="/rank" class="grid flex-1 grid-cols-1 grid-rows-2 gap-4 md:grid-cols-2 md:grid-rows-1">
-          @components.RankForm(props)
-        </form>
-      </div>
+      <form id="rank-form" hx-post="/rank" class="max-w-5xl min-h-0 w-full grid grid-cols-1 grid-rows-2 gap-4 md:grid-cols-2 md:grid-rows-1">
+        @components.RankForm(props)
+      </form>
+      <div class="text-center w-full hidden md:block">← Vote with the arrow keys →</div>
       @components.RankStatsDisplay(stats)
 		</div>
 	}

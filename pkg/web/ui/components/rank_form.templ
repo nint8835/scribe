@@ -8,10 +8,6 @@ type RankProps struct {
 	QuoteBContent string
 }
 
-css scrollbar() {
-  scrollbar-color: white rgb(7, 89, 133);
-}
-
 var rankButtonClasses = map[string]string{
 	"A": "bg-sky-800 hover:bg-sky-900 [scrollbar-color:white_rgb(7,89,133)] hover:[scrollbar-color:white_rgb(12,74,110)]",
 	"B": "bg-rose-800 hover:bg-rose-900 [scrollbar-color:white_rgb(159,18,57)] hover:[scrollbar-color:white_rgb(136,19,55)]",
@@ -33,13 +29,13 @@ templ QuoteDisplay(label string, id string, content string) {
     hx-trigger={ "click, keyup[key=='" + keyboardShortcuts[label] + "'] from:body" }
     hx-post="/rank"
     hx-target="#rank-form"
-    class={ "w-full rounded-lg p-4 transition-all flex flex-row gap-4", rankButtonClasses[label] }
+    class={ "w-full min-h-8 rounded-lg p-4 transition-all flex flex-row gap-4", rankButtonClasses[label] }
     type="submit"
     name="winner"
     value={ id }
   >
     <div class="size-8 shrink-0">@QuotationMark()</div>
-    <div class={ "text-left max-h-96 overflow-y-auto" }>
+    <div class={ "text-left overflow-y-auto" }>
       @templ.Raw(content)
     </div>
   </button>

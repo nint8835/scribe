@@ -16,16 +16,6 @@ type RankProps struct {
 	QuoteBContent string
 }
 
-func scrollbar() templ.CSSClass {
-	templ_7745c5c3_CSSBuilder := templruntime.GetBuilder()
-	templ_7745c5c3_CSSBuilder.WriteString(`scrollbar-color:white rgb(7, 89, 133);`)
-	templ_7745c5c3_CSSID := templ.CSSID(`scrollbar`, templ_7745c5c3_CSSBuilder.String())
-	return templ.ComponentCSSClass{
-		ID:    templ_7745c5c3_CSSID,
-		Class: templ.SafeCSS(`.` + templ_7745c5c3_CSSID + `{` + templ_7745c5c3_CSSBuilder.String() + `}`),
-	}
-}
-
 var rankButtonClasses = map[string]string{
 	"A": "bg-sky-800 hover:bg-sky-900 [scrollbar-color:white_rgb(7,89,133)] hover:[scrollbar-color:white_rgb(12,74,110)]",
 	"B": "bg-rose-800 hover:bg-rose-900 [scrollbar-color:white_rgb(159,18,57)] hover:[scrollbar-color:white_rgb(136,19,55)]",
@@ -86,7 +76,7 @@ func QuoteDisplay(label string, id string, content string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var3 = []any{"w-full rounded-lg p-4 transition-all flex flex-row gap-4", rankButtonClasses[label]}
+		var templ_7745c5c3_Var3 = []any{"w-full min-h-8 rounded-lg p-4 transition-all flex flex-row gap-4", rankButtonClasses[label]}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -98,7 +88,7 @@ func QuoteDisplay(label string, id string, content string) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("click, keyup[key=='" + keyboardShortcuts[label] + "'] from:body")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_form.templ`, Line: 33, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_form.templ`, Line: 29, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -124,7 +114,7 @@ func QuoteDisplay(label string, id string, content string) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_form.templ`, Line: 39, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_form.templ`, Line: 35, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -142,7 +132,7 @@ func QuoteDisplay(label string, id string, content string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var7 = []any{"text-left max-h-96 overflow-y-auto"}
+		var templ_7745c5c3_Var7 = []any{"text-left overflow-y-auto"}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var7...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -204,7 +194,7 @@ func RankForm(props RankProps) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(props.QuoteAID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_form.templ`, Line: 49, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_form.templ`, Line: 45, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -217,7 +207,7 @@ func RankForm(props RankProps) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(props.QuoteBID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_form.templ`, Line: 50, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_form.templ`, Line: 46, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
