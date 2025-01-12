@@ -8,37 +8,41 @@ type RankProps struct {
 	QuoteBContent string
 }
 
-var rankButtonClasses = map[string]string{
-	"A": "bg-sky-800 [scrollbar-color:white_rgb(7,89,133)] hover:bg-sky-900 hover:[scrollbar-color:white_rgb(12,74,110)]",
-	"B": "bg-rose-800 [scrollbar-color:white_rgb(159,18,57)] hover:bg-rose-900 hover:[scrollbar-color:white_rgb(136,19,55)]",
-}
-
 templ QuotationMark() {
 	<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<path d="M3.691 6.292C5.094 4.771 7.217 4 10 4h1v2.819l-.804.161c-1.37.274-2.323.813-2.833 1.604A2.902 2.902 0 0 0 6.925 10H10a1 1 0 0 1 1 1v7c0 1.103-.897 2-2 2H3a1 1 0 0 1-1-1v-5l.003-2.919c-.009-.111-.199-2.741 1.688-4.789zM20 20h-6a1 1 0 0 1-1-1v-5l.003-2.919c-.009-.111-.199-2.741 1.688-4.789C16.094 4.771 18.217 4 21 4h1v2.819l-.804.161c-1.37.274-2.323.813-2.833 1.604A2.902 2.902 0 0 0 17.925 10H21a1 1 0 0 1 1 1v7c0 1.103-.897 2-2 2z"></path>
 	</svg>
 }
 
-templ QuoteDisplay(label string, id string, content string, keyboardKey string, keyboardLabel string) {
+type QuoteDisplayProps struct {
+	id            string
+	content       string
+	keyboardKey   string
+	keyboardLabel string
+	buttonClass   string
+	quoteClass    string
+}
+
+templ QuoteDisplay(props QuoteDisplayProps) {
 	<button
-		hx-trigger={ "click, keyup[key=='" + keyboardKey + "'] from:body" }
+		hx-trigger={ "click, keyup[key=='" + props.keyboardKey + "'] from:body" }
 		hx-post="/rank"
 		hx-target="#rank-form"
-		class="flex flex-col rounded-lg bg-zinc-700 transition-all"
+		class={ "flex flex-col transition-all", props.buttonClass }
 		type="submit"
 		name="winner"
-		value={ id }
+		value={ props.id }
 	>
-		<div class={ "flex h-full min-h-8 w-full flex-row gap-4 rounded-lg p-4", rankButtonClasses[label] }>
+		<div class="mb-[-0.5rem] hidden w-fit rounded-t-lg bg-zinc-700 p-[0_0.5rem_0.5rem_0.5rem] text-center md:block">
+			{ props.keyboardLabel }
+		</div>
+		<div class={ "flex h-full min-h-8 w-full flex-row gap-4 rounded-lg p-4", props.quoteClass }>
 			<div class="size-8 shrink-0">
 				@QuotationMark()
 			</div>
 			<div class={ "overflow-y-auto text-left" }>
-				@templ.Raw(content)
+				@templ.Raw(props.content)
 			</div>
-		</div>
-		<div class="hidden w-full p-1 text-center md:block">
-			{ keyboardLabel }
 		</div>
 	</button>
 }
@@ -46,6 +50,20 @@ templ QuoteDisplay(label string, id string, content string, keyboardKey string, 
 templ RankForm(props RankProps) {
 	<input type="hidden" name="quote_a_id" value={ props.QuoteAID }/>
 	<input type="hidden" name="quote_b_id" value={ props.QuoteBID }/>
-	@QuoteDisplay("A", props.QuoteAID, props.QuoteAContent, "ArrowLeft", "←")
-	@QuoteDisplay("B", props.QuoteBID, props.QuoteBContent, "ArrowRight", "→")
+	@QuoteDisplay(QuoteDisplayProps{
+		id:            props.QuoteAID,
+		content:       props.QuoteAContent,
+		keyboardKey:   "ArrowLeft",
+		keyboardLabel: "←",
+		buttonClass:   "items-start",
+		quoteClass:    "bg-sky-800 [scrollbar-color:white_rgb(7,89,133)] hover:bg-sky-900 hover:[scrollbar-color:white_rgb(12,74,110)]",
+	})
+	@QuoteDisplay(QuoteDisplayProps{
+		id:            props.QuoteBID,
+		content:       props.QuoteBContent,
+		keyboardKey:   "ArrowRight",
+		keyboardLabel: "→",
+		buttonClass:   "items-end",
+		quoteClass:    "bg-rose-800 [scrollbar-color:white_rgb(159,18,57)] hover:bg-rose-900 hover:[scrollbar-color:white_rgb(136,19,55)]",
+	})
 }
