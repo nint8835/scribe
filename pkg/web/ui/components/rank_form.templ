@@ -40,7 +40,7 @@ templ QuoteDisplay(props QuoteDisplayProps) {
 			<div class="size-8 shrink-0">
 				@QuotationMark()
 			</div>
-			<div class={ "overflow-y-auto text-left" }>
+			<div class="max-h-full overflow-y-auto text-left">
 				@templ.Raw(props.content)
 			</div>
 		</div>
