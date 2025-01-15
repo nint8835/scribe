@@ -17,6 +17,8 @@ templ Pagination(props PaginationProps) {
 				hx-get={ props.UrlBase + "?page=" + strconv.Itoa(props.Page-1) }
 				hx-target={ props.Target }
 				hx-push-url="true"
+				hx-swap="innerHTML show:window:top"
+				preload="mouseover"
 			>
 				Previous
 			</button>
@@ -30,6 +32,8 @@ templ Pagination(props PaginationProps) {
 				hx-get={ props.UrlBase + "?page=" + strconv.Itoa(props.Page+1) }
 				hx-target={ props.Target }
 				hx-push-url="true"
+				hx-swap="innerHTML show:window:top"
+				preload="mouseover"
 			>
 				Next
 			</button>
