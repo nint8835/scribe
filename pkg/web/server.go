@@ -67,6 +67,7 @@ func New() (*Server, error) {
 	}
 
 	serverInst.serveMux.HandleFunc("GET /{$}", serverInst.requireAuth(serverInst.handleGetHome))
+	serverInst.serveMux.HandleFunc("GET /leaderboard", serverInst.handleGetLeaderboard)
 
 	serverInst.serveMux.HandleFunc("GET /auth/login", serverInst.handleAuthLogin)
 	serverInst.serveMux.HandleFunc("GET /auth/callback", serverInst.handleAuthCallback)
