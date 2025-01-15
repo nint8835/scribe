@@ -1,0 +1,62 @@
+package pages
+
+import (
+	"github.com/nint8835/scribe/pkg/web/ui"
+	"github.com/nint8835/scribe/pkg/web/ui/components"
+	"strconv"
+)
+
+type LeaderboardQuote struct {
+	Content string
+	Elo     int
+	Rank    int
+}
+
+type LeaderboardProps struct {
+	Quotes     []LeaderboardQuote
+	Page       int
+	TotalPages int
+}
+
+templ LeaderboardContent(props LeaderboardProps) {
+	<div id="leaderboard-content" class="w-full max-w-4xl space-y-6">
+		if props.Page > 1 {
+			<div class="mb-6">
+				@components.Pagination(components.PaginationProps{
+					Page:       props.Page,
+					TotalPages: props.TotalPages,
+					UrlBase:    "/leaderboard",
+					Target:     "#leaderboard-content",
+				})
+			</div>
+		}
+		for _, quote := range props.Quotes {
+			@components.QuoteDisplay(components.QuoteDisplayProps{
+				Content:    quote.Content,
+				Label:      "#" + strconv.Itoa(quote.Rank) + " • " + strconv.Itoa(quote.Elo) + " ELO",
+				QuoteClass: "bg-emerald-800 [scrollbar-color:white_rgb(6,95,70)]",
+				AsButton:   false,
+			})
+		}
+		if len(props.Quotes) == 0 {
+			<div class="text-center font-medium">No ranked quotes found</div>
+		}
+		<div class="mt-6">
+			@components.Pagination(components.PaginationProps{
+				Page:       props.Page,
+				TotalPages: props.TotalPages,
+				UrlBase:    "/leaderboard",
+				Target:     "#leaderboard-content",
+			})
+		</div>
+	</div>
+}
+
+templ Leaderboard(props LeaderboardProps) {
+	@ui.Layout("Leaderboard") {
+		<div class="flex min-h-screen w-full flex-col items-center p-6">
+			<h1 class="mb-4 text-3xl font-bold">Leaderboard</h1>
+			@LeaderboardContent(props)
+		</div>
+	}
+}

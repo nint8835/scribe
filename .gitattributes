@@ -1,2 +1,2 @@
 **/*_templ.go linguist-generated
-pkg/web/static/htmx.min.js linguist-vendored
+pkg/web/static/*.min.js linguist-vendored
