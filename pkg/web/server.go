@@ -69,18 +69,16 @@ func New() (*Server, error) {
 	serverInst.serveMux.HandleFunc("GET /auth/login", serverInst.handleAuthLogin)
 	serverInst.serveMux.HandleFunc("GET /auth/callback", serverInst.handleAuthCallback)
 
-	{
-		// All routes below this point require authentication
-
-		serverInst.serveMux.HandleFunc("GET /{$}", serverInst.requireAuth(serverInst.handleGetHome))
-		serverInst.serveMux.HandleFunc("GET /leaderboard", serverInst.requireAuth(serverInst.handleGetLeaderboard))
-
-		serverInst.serveMux.HandleFunc("GET /rank", serverInst.requireAuth(serverInst.handleGetRank))
-		serverInst.serveMux.HandleFunc("POST /rank", serverInst.requireAuth(serverInst.handlePostRank))
-		serverInst.serveMux.HandleFunc("GET /rank/stats", serverInst.requireAuth(serverInst.handleRankStats))
-	}
-
 	serverInst.serveMux.Handle("GET /static/", http.StripPrefix("/static/", hashfs.FileServer(static.HashFS)))
+
+	// All routes below this point require authentication
+
+	serverInst.serveMux.HandleFunc("GET /{$}", serverInst.requireAuth(serverInst.handleGetHome))
+	serverInst.serveMux.HandleFunc("GET /leaderboard", serverInst.requireAuth(serverInst.handleGetLeaderboard))
+
+	serverInst.serveMux.HandleFunc("GET /rank", serverInst.requireAuth(serverInst.handleGetRank))
+	serverInst.serveMux.HandleFunc("POST /rank", serverInst.requireAuth(serverInst.handlePostRank))
+	serverInst.serveMux.HandleFunc("GET /rank/stats", serverInst.requireAuth(serverInst.handleRankStats))
 
 	log.Println("Web server listening on port 8000")
 
