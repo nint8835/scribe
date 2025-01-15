@@ -141,7 +141,7 @@ func Leaderboard(props LeaderboardProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"flex min-h-screen w-full flex-col items-center p-6\"><h1 class=\"mb-4 text-3xl font-bold\">Leaderboard</h1><div class=\"mb-6 text-sm italic text-zinc-400\">Quotes with 1000 ELO are hidden, as it is assumed they are unranked</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"flex min-h-screen w-full flex-col items-center p-6\"><h1 class=\"mb-4 text-3xl font-bold\">Leaderboard</h1>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

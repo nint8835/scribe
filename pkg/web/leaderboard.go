@@ -21,7 +21,11 @@ func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) {
 	var quotes []database.Quote
 	var total int64
 
-	query := database.Instance.Model(&database.Quote{}).Where("elo != 1000").Order("elo desc")
+	query := database.Instance.Model(&database.Quote{}).
+		Joins("LEFT JOIN completed_comparisons ON quotes.id = completed_comparisons.quote_a_id OR quotes.id = completed_comparisons.quote_b_id").
+		Group("quotes.id").
+		Having("COUNT(completed_comparisons.id) > 0").
+		Order("elo desc")
 
 	if err := query.Count(&total).Error; err != nil {
 		http.Error(w, "Error fetching quotes", http.StatusInternalServerError)
