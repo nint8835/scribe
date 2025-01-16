@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -10,7 +11,7 @@ import (
 
 const QUOTES_PER_PAGE = 10
 
-func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) error {
 	page := 1
 	if pageStr := r.URL.Query().Get("page"); pageStr != "" {
 		if pageNum, err := strconv.Atoi(pageStr); err == nil {
@@ -28,22 +29,20 @@ func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) {
 		Order("elo desc")
 
 	if err := query.Count(&total).Error; err != nil {
-		http.Error(w, "Error fetching quotes", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error counting quotes: %w", err)
 	}
 
 	if err := query.Offset((page - 1) * QUOTES_PER_PAGE).Limit(QUOTES_PER_PAGE).Find(&quotes).Error; err != nil {
-		http.Error(w, "Error fetching quotes", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error fetching quotes: %w", err)
 	}
 
 	formattedQuotes := make([]pages.LeaderboardQuote, len(quotes))
 	for i, quote := range quotes {
 		content, err := s.renderQuoteText(quote)
 		if err != nil {
-			http.Error(w, "Error rendering quotes", http.StatusInternalServerError)
-			return
+			return fmt.Errorf("error rendering quote: %w", err)
 		}
+
 		formattedQuotes[i] = pages.LeaderboardQuote{
 			Content: content,
 			Elo:     quote.Elo,
@@ -62,4 +61,6 @@ func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) {
 	} else {
 		pages.Leaderboard(props).Render(r.Context(), w)
 	}
+
+	return nil
 }

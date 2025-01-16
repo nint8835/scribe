@@ -2,6 +2,7 @@ package web
 
 import (
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -34,8 +35,41 @@ func (s *Server) Run() error {
 	return nil
 }
 
-func (s *Server) handleGetHome(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleGetHome(w http.ResponseWriter, r *http.Request) error {
 	pages.Home().Render(r.Context(), w)
+
+	return nil
+}
+
+type httpError struct {
+	StatusCode int
+	Message    string
+}
+
+func (e httpError) Error() string {
+	return fmt.Sprintf("HTTP %d: %s", e.StatusCode, e.Message)
+}
+
+type errorHandlerFunc func(http.ResponseWriter, *http.Request) error
+
+func errorHandler(handler errorHandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := handler(w, r)
+		if err == nil {
+			return
+		}
+
+		switch typedErr := err.(type) {
+		case httpError:
+			pages.ErrorPage(pages.ErrorPageProps{
+				StatusCode: typedErr.StatusCode,
+				Message:    typedErr.Message,
+			}).Render(r.Context(), w)
+		default:
+			slog.Error("Internal server error", "error", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+		}
+	}
 }
 
 func New() (*Server, error) {
@@ -67,18 +101,18 @@ func New() (*Server, error) {
 	}
 
 	serverInst.serveMux.HandleFunc("GET /auth/login", serverInst.handleAuthLogin)
-	serverInst.serveMux.HandleFunc("GET /auth/callback", serverInst.handleAuthCallback)
+	serverInst.serveMux.HandleFunc("GET /auth/callback", errorHandler(serverInst.handleAuthCallback))
 
 	serverInst.serveMux.Handle("GET /static/", http.StripPrefix("/static/", hashfs.FileServer(static.HashFS)))
 
 	// All routes below this point require authentication
 
-	serverInst.serveMux.HandleFunc("GET /{$}", serverInst.requireAuth(serverInst.handleGetHome))
-	serverInst.serveMux.HandleFunc("GET /leaderboard", serverInst.requireAuth(serverInst.handleGetLeaderboard))
+	serverInst.serveMux.HandleFunc("GET /{$}", errorHandler(serverInst.requireAuth(serverInst.handleGetHome)))
+	serverInst.serveMux.HandleFunc("GET /leaderboard", errorHandler(serverInst.requireAuth(serverInst.handleGetLeaderboard)))
 
-	serverInst.serveMux.HandleFunc("GET /rank", serverInst.requireAuth(serverInst.handleGetRank))
-	serverInst.serveMux.HandleFunc("POST /rank", serverInst.requireAuth(serverInst.handlePostRank))
-	serverInst.serveMux.HandleFunc("GET /rank/stats", serverInst.requireAuth(serverInst.handleRankStats))
+	serverInst.serveMux.HandleFunc("GET /rank", errorHandler(serverInst.requireAuth(serverInst.handleGetRank)))
+	serverInst.serveMux.HandleFunc("POST /rank", errorHandler(serverInst.requireAuth(serverInst.handlePostRank)))
+	serverInst.serveMux.HandleFunc("GET /rank/stats", errorHandler(serverInst.requireAuth(serverInst.handleRankStats)))
 
 	slog.Info("Web server listening on port 8000")
 

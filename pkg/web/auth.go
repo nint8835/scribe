@@ -25,16 +25,16 @@ func (s *Server) getCurrentUserId(r *http.Request) string {
 	return ""
 }
 
-func (s *Server) requireAuth(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (s *Server) requireAuth(handler errorHandlerFunc) errorHandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		userId := s.getCurrentUserId(r)
 
 		if userId == "" {
 			http.Redirect(w, r, "/auth/login", http.StatusTemporaryRedirect)
-			return
+			return nil
 		}
 
-		handler(w, r)
+		return handler(w, r)
 	}
 }
 
@@ -42,35 +42,34 @@ func (s *Server) handleAuthLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, s.oauthConfig.AuthCodeURL("state"), http.StatusTemporaryRedirect)
 }
 
-func (s *Server) handleAuthCallback(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleAuthCallback(w http.ResponseWriter, r *http.Request) error {
 	session := s.getSession(r)
 
 	code := r.URL.Query().Get("code")
 	state := r.URL.Query().Get("state")
 
 	if state != "state" {
-		http.Error(w, "Invalid state", http.StatusBadRequest)
-		return
+		return httpError{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid state.",
+		}
 	}
 
 	token, err := s.oauthConfig.Exchange(r.Context(), code)
 	if err != nil {
-		http.Error(w, "Failed to exchange token", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error exchanging token: %w", err)
 	}
 
 	discordClient, _ := discordgo.New(fmt.Sprintf("Bearer %s", token.AccessToken))
 
 	currentUser, err := discordClient.User("@me")
 	if err != nil {
-		http.Error(w, "Failed to get current user", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error getting current user: %w", err)
 	}
 
 	guilds, err := discordClient.UserGuilds(200, "", "", false)
 	if err != nil {
-		http.Error(w, "Failed to get guilds", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error getting guilds: %w", err)
 	}
 
 	isMember := false
@@ -83,12 +82,15 @@ func (s *Server) handleAuthCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !isMember {
-		http.Error(w, "Not a member of the guild", http.StatusForbidden)
-		return
+		return httpError{
+			StatusCode: http.StatusForbidden,
+			Message:    "You are not a member of the required guild.",
+		}
 	}
 
 	session.Values["userId"] = currentUser.ID
 	session.Save(r, w)
 
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	return nil
 }

@@ -1,0 +1,20 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/nint8835/scribe/pkg/web/ui"
+)
+
+type ErrorPageProps struct {
+	StatusCode int
+	Message    string
+}
+
+templ ErrorPage(props ErrorPageProps) {
+	@ui.Layout("Error") {
+		<div class="flex h-screen w-full flex-col items-center justify-center space-y-4">
+			<h1 class="bg-gradient-to-br from-fuchsia-500 to-sky-500 bg-clip-text text-5xl font-bold text-transparent">{ fmt.Sprintf("%d", props.StatusCode) }</h1>
+			<div class="w-fit whitespace-pre rounded-md bg-zinc-900 p-4 font-mono">{ props.Message }</div>
+		</div>
+	}
+}
