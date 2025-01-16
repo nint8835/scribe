@@ -123,31 +123,30 @@ func (s *Server) renderQuoteText(quote database.Quote) (string, error) {
 	return buf.String(), err
 }
 
-func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) error {
 	userId := s.getCurrentUserId(r)
 
 	quoteA, quoteB, err := fetchRandomQuotePair(r.Context(), userId)
 	if err != nil {
-		http.Error(w, "Error getting quotes", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error getting quotes: %w", err)
 	}
 
 	props, err := s.getRankFormProps(quoteA, quoteB)
 	if err != nil {
-		http.Error(w, "Error getting rank form props", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error getting rank form props: %w", err)
 	}
 
 	stats, err := s.getRankStatsDisplayProps(userId)
 	if err != nil {
-		http.Error(w, "Error getting rank stats display props", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error getting rank stats props: %w", err)
 	}
 
 	pages.Rank(props, stats).Render(r.Context(), w)
+
+	return nil
 }
 
-func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) error {
 	r.ParseForm()
 
 	userId := s.getCurrentUserId(r)
@@ -157,31 +156,41 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) {
 	winner := r.PostForm.Get("winner")
 
 	if quoteAID == "" || quoteBID == "" || winner == "" {
-		http.Error(w, "Missing required fields", http.StatusBadRequest)
-		return
+		return httpError{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Missing required fields.",
+		}
 	}
 
 	if quoteAID == quoteBID {
-		http.Error(w, "Cannot rank the same quote against itself", http.StatusBadRequest)
-		return
+		return httpError{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Cannot rank the same quote against itself.",
+		}
 	}
 
 	quoteAIDInt, err := strconv.ParseUint(quoteAID, 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid quote A ID", http.StatusBadRequest)
-		return
+		return httpError{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid quote A ID.",
+		}
 	}
 
 	quoteBIDInt, err := strconv.ParseUint(quoteBID, 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid quote B ID", http.StatusBadRequest)
-		return
+		return httpError{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid quote B ID.",
+		}
 	}
 
 	winnerInt, err := strconv.ParseUint(winner, 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid winner", http.StatusBadRequest)
-		return
+		return httpError{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid winner.",
+		}
 	}
 
 	err = database.Instance.Transaction(func(tx *gorm.DB) error {
@@ -252,41 +261,40 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) {
 		return nil
 	})
 	if err != nil {
-		http.Error(w, "Error ranking quotes", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error ranking quotes: %w", err)
 	}
 
 	quoteA, quoteB, err := fetchRandomQuotePair(r.Context(), userId)
 	if err != nil {
-		http.Error(w, "Error getting quotes", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error getting next quotes: %w", err)
 	}
 
 	props, err := s.getRankFormProps(quoteA, quoteB)
 	if err != nil {
-		http.Error(w, "Error getting rank form props", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error getting rank form props: %w", err)
 	}
 
 	stats, err := s.getRankStatsDisplayProps(userId)
 	if err != nil {
-		http.Error(w, "Error getting rank stats", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error getting rank stats props: %w", err)
 	}
 	stats.ShouldSwap = true
 
 	components.RankStatsDisplay(stats).Render(r.Context(), w)
 	components.RankForm(props).Render(r.Context(), w)
+
+	return nil
 }
 
-func (s *Server) handleRankStats(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleRankStats(w http.ResponseWriter, r *http.Request) error {
 	userId := s.getCurrentUserId(r)
 
 	stats, err := s.getRankStatsDisplayProps(userId)
 	if err != nil {
-		http.Error(w, "Error getting rank stats", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error getting rank stats props: %w", err)
 	}
 
 	components.RankStatsDisplay(stats).Render(r.Context(), w)
+
+	return nil
 }
