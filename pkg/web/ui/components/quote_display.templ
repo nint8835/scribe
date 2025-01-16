@@ -29,7 +29,7 @@ templ quoteContent(props QuoteDisplayProps) {
 
 templ QuoteDisplay(props QuoteDisplayProps) {
 	<div class={ "flex flex-col", props.ContainerClass }>
-		<div class="mb-[-0.5rem] hidden w-fit rounded-t-lg bg-zinc-700 p-[0_0.5rem_0.5rem_0.5rem] text-center md:block">
+		<div class={ "mb-[-0.5rem] w-fit rounded-t-lg bg-zinc-700 p-[0_0.5rem_0.5rem_0.5rem] text-center md:block", templ.KV("hidden", props.AsButton) }>
 			{ props.Label }
 		</div>
 		if props.AsButton {
