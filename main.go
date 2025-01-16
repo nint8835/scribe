@@ -16,7 +16,6 @@ func main() {
 	}
 
 	database.Initialize(config.Instance.DBPath)
-	database.Migrate()
 
 	botInst, err := bot.New()
 	if err != nil {
