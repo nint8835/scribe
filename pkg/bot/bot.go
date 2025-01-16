@@ -2,7 +2,7 @@ package bot
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/bwmarrin/discordgo"
 	"pkg.nit.so/switchboard"
@@ -32,10 +32,10 @@ func (b *Bot) Run() error {
 		return fmt.Errorf("error opening Discord connection: %w", err)
 	}
 
-	log.Println("Discord bot running")
+	slog.Info("Discord bot running")
 
 	<-b.quitChan
-	fmt.Println("Stopping bot...")
+	slog.Info("Stopping bot...")
 
 	if err = b.Session.Close(); err != nil {
 		return fmt.Errorf("error closing Discord connection: %w", err)

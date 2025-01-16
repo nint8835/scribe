@@ -1,7 +1,6 @@
 package database
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/glebarez/sqlite"
@@ -71,18 +70,12 @@ func Initialize(connectionString string) error {
 	}
 	Instance = newInstance
 
+	Instance.AutoMigrate(&Quote{}, &Author{}, &CompletedComparison{})
+
 	err = initNonGormResources()
 	if err != nil {
 		return fmt.Errorf("error initializing non-GORM resources: %w", err)
 	}
 
 	return nil
-}
-
-func Migrate() {
-	if Instance == nil {
-		panic(errors.New("Attempted to migrate uninstantiated database - ensure you call database.Initialize before making any database calls"))
-	}
-
-	Instance.AutoMigrate(&Quote{}, &Author{}, &CompletedComparison{})
 }
