@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log"
+	"log/slog"
+	"os"
 
 	"github.com/nint8835/scribe/pkg/bot"
 	"github.com/nint8835/scribe/pkg/config"
@@ -12,33 +13,38 @@ import (
 func main() {
 	err := config.Load()
 	if err != nil {
-		log.Fatalf("Error loading config: %s", err)
+		slog.Error("Error loading config", "error", err)
+		os.Exit(1)
 	}
 
 	database.Initialize(config.Instance.DBPath)
 
 	botInst, err := bot.New()
 	if err != nil {
-		log.Fatalf("Error creating bot: %s", err)
+		slog.Error("Error creating bot", "error", err)
+		os.Exit(1)
 	}
 
 	if config.Instance.RunBot {
 		go func() {
 			err = botInst.Run()
 			if err != nil {
-				log.Fatalf("Error running bot: %s", err)
+				slog.Error("Error running bot", "error", err)
+				os.Exit(1)
 			}
 		}()
 	}
 
 	webServer, err := web.New()
 	if err != nil {
-		log.Fatalf("Error creating web server: %s", err)
+		slog.Error("Error creating web server", "error", err)
+		os.Exit(1)
 	}
 
 	err = webServer.Run()
 	if err != nil {
-		log.Fatalf("Error running web server: %s", err)
+		slog.Error("Error running web server", "error", err)
+		os.Exit(1)
 	}
 
 	if botInst != nil {
