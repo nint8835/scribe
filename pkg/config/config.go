@@ -2,10 +2,14 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/lmittmann/tint"
 )
 
 type Config struct {
@@ -20,6 +24,7 @@ type Config struct {
 	CallbackUrl      string `split_words:"true"`
 	RunBot           bool   `default:"true" split_words:"true"`
 	MentionCachePath string `default:"mentions.json" split_words:"true"`
+	LogLevel         string `default:"info" split_words:"true"`
 }
 
 var Instance Config
@@ -28,13 +33,33 @@ func Load() error {
 	err := godotenv.Load()
 	if err != nil && !os.IsNotExist(err) {
 		// TODO: Proper logging
-		fmt.Printf("Failed to load .env file: %s\n", err)
+		slog.Warn("Failed to load .env file", "error", err)
 	}
 
 	err = envconfig.Process("scribe", &Instance)
 	if err != nil {
 		return fmt.Errorf("error loading config: %s", err)
 	}
+
+	level, validLevel := map[string]slog.Level{
+		"debug": slog.LevelDebug,
+		"info":  slog.LevelInfo,
+		"warn":  slog.LevelWarn,
+		"error": slog.LevelError,
+	}[strings.ToLower(Instance.LogLevel)]
+	if !validLevel {
+		return fmt.Errorf("invalid log level: %s", Instance.LogLevel)
+	}
+
+	slog.SetDefault(slog.New(
+		tint.NewHandler(
+			os.Stderr,
+			&tint.Options{
+				TimeFormat: time.Kitchen,
+				Level:      level,
+			},
+		),
+	))
 
 	return nil
 }

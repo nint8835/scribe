@@ -11,6 +11,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/kortemy/elo-go v0.0.0-20190919090953-f9d3a99fd7b7
+	github.com/lmittmann/tint v1.0.6
 	github.com/yuin/goldmark v1.7.8
 	golang.org/x/oauth2 v0.25.0
 	golang.org/x/text v0.21.0

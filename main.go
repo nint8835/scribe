@@ -23,7 +23,6 @@ func main() {
 	}
 
 	if config.Instance.RunBot {
-
 		go func() {
 			err = botInst.Run()
 			if err != nil {
