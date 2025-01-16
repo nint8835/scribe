@@ -61,8 +61,10 @@ func errorHandler(handler errorHandlerFunc) http.HandlerFunc {
 
 		switch typedErr := err.(type) {
 		case httpError:
-			// TODO: Error page
-			http.Error(w, typedErr.Message, typedErr.StatusCode)
+			pages.ErrorPage(pages.ErrorPageProps{
+				StatusCode: typedErr.StatusCode,
+				Message:    typedErr.Message,
+			}).Render(r.Context(), w)
 		default:
 			slog.Error("Internal server error", "error", err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
