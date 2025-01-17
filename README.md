@@ -6,7 +6,6 @@ Discord bot for recording & recalling quotes
 
 - [Install Air](https://github.com/air-verse/air?tab=readme-ov-file#via-go-install-recommended).
   - Ensure `air` is accessible from `$PATH`.
-  - It should be located in `~/go/bin` on Linux.
 - [Install Templ](https://templ.guide/quick-start/installation/#go-install).
 - [Install the Tailwindcss CLI](https://tailwindcss.com/docs/installation).
   - Ensure the `tailwindcss` command is accessible from `$PATH`.
@@ -23,7 +22,7 @@ Create an application on [https://discord.com/developers/applications/](https://
 
 ## Running the app
 
-Just start `air` (make sure the commands `tailwindcss` and `air` are in your `$PATH`)
+Just run `air`
 
 ```shell-session
 air
