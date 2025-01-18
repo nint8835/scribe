@@ -20,7 +20,7 @@ cp .env.dist .env
 
 Create an application on [https://discord.com/developers/applications/](https://discord.com/developers/applications/) and fill out at least the `SCRIBE_TOKEN`, `SCRIBE_GUILD_ID`, and `SCRIBE_APP_ID` fields in `.env`
 
-## Running the app
+### Running the app
 
 Just run `air`
 
@@ -28,7 +28,7 @@ Just run `air`
 air
 ```
 
-### Production data
+## Production data
 
 If you'd like to have the production data to play around with,
 
@@ -36,7 +36,7 @@ If you'd like to have the production data to play around with,
 - Download the `quotes.sqlite` file.
 - Move that file to your `SQLITE_DB_PATH` location, the default is the root of the project directory.
 
-### Website
+## Website
 
 To develop the website, you'll need to ensure its setup to let you log into it using Discord OAuth2
 
