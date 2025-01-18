@@ -15,6 +15,7 @@ import (
 )
 
 type LeaderboardQuote struct {
+	Author  string
 	Content string
 	Elo     int
 	Rank    int
@@ -73,7 +74,7 @@ func LeaderboardContent(props LeaderboardProps) templ.Component {
 		for _, quote := range props.Quotes {
 			templ_7745c5c3_Err = components.QuoteDisplay(components.QuoteDisplayProps{
 				Content:    quote.Content,
-				Label:      "#" + strconv.Itoa(quote.Rank) + " • " + strconv.Itoa(quote.Elo) + " ELO",
+				Label:      "#" + strconv.Itoa(quote.Rank) + " • " + strconv.Itoa(quote.Elo) + " ELO • " + quote.Author,
 				QuoteClass: "bg-emerald-800 [scrollbar-color:white_rgb(6,95,70)]",
 				AsButton:   false,
 			}).Render(ctx, templ_7745c5c3_Buffer)
