@@ -10,7 +10,6 @@ Discord bot for recording & recalling quotes
 - [Install the Tailwindcss CLI](https://tailwindcss.com/docs/installation).
   - Ensure the `tailwindcss` command is accessible from `$PATH`.
   - If you have homebrew installed, use: `brew install tailwindcss`.
-  - If you aren't using the standalone tailwind binary, you will also need to run `npm install -g @tailwindcss/typography`
 
 ### Setup the config
 
