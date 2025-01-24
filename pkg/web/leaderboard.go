@@ -1,13 +1,11 @@
 package web
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/nint8835/scribe/pkg/database"
 	"github.com/nint8835/scribe/pkg/web/ui/pages"
@@ -15,52 +13,10 @@ import (
 
 const QUOTES_PER_PAGE = 10
 
-var nameCache = make(map[string]string)
-var nameCacheMutex sync.Mutex
-
-func GetGlobalName(id string) (string, error) {
-	nameCacheMutex.Lock()
-	if cachedName, found := nameCache[id]; found {
-		nameCacheMutex.Unlock()
-		return cachedName, nil
-	}
-	nameCacheMutex.Unlock()
-
-	url := fmt.Sprintf("https://discordlookup.mesalytic.moe/v1/user/%s", id)
-
-	resp, err := http.Get(url)
-	if err != nil {
-		return "", fmt.Errorf("error making GET request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("API returned non-200 status code: %d", resp.StatusCode)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", fmt.Errorf("error reading response body: %w", err)
-	}
-
-	var responseData map[string]interface{}
-	if err := json.Unmarshal(body, &responseData); err != nil {
-		return "", fmt.Errorf("error parsing JSON response: %w", err)
-	}
-
-	name, ok := responseData["global_name"].(string)
-	if !ok {
-		name, ok = responseData["username"].(string)
-		if !ok {
-			return "", fmt.Errorf("global_name or username key not found or not a string")
-		}
-	}
-
-	nameCacheMutex.Lock()
-	nameCache[id] = name
-	nameCacheMutex.Unlock()
-
-	return name, nil
+func (s *Server) resolveAuthorIDs(ids string) (string, error) {
+	var buf bytes.Buffer
+	err := s.md.Convert([]byte(ids), &buf)
+	return buf.String(), err
 }
 
 func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) error {
@@ -96,19 +52,14 @@ func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) er
 			return fmt.Errorf("error rendering quote: %w", err)
 		}
 
-		authorNames := make([]string, len(quote.Authors))
+		authorIDs := make([]string, len(quote.Authors))
 		for i, author := range quote.Authors {
-			authorName, err := GetGlobalName(author.ID)
-
-			if err == nil {
-				authorNames[i] = authorName
-			} else {
-				authorNames[i] = author.ID
-			}
+			authorIDs[i] = author.ID
 		}
+		authorNames, err := s.resolveAuthorIDs("<@" + strings.Join(authorIDs, ">, <@") + ">")
 
 		formattedQuotes[i] = pages.LeaderboardQuote{
-			Author:  strings.Join(authorNames, ", "),
+			Author:  authorNames,
 			Content: content,
 			Elo:     quote.Elo,
 			Rank:    (page-1)*QUOTES_PER_PAGE + i + 1,
