@@ -3,6 +3,7 @@ package bot
 import (
 	"cmp"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -39,10 +40,11 @@ func (b *Bot) generateAuthorString(authors []*database.Author, guildID string) (
 			if err != nil {
 				user, err := b.Session.User(author.ID)
 				if err != nil {
-					return "", "", fmt.Errorf("error getting user %s: %w", author.ID, err)
+					slog.Error(fmt.Sprintf("error getting user %s", author.ID), "err", err)
+					name = fmt.Sprintf("<@%s>", author.ID)
+				} else {
+					name = formatDiscordUser(user)
 				}
-
-				name = formatDiscordUser(user)
 			} else {
 				name = formatDiscordMember(member)
 			}
