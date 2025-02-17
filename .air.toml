@@ -1,5 +1,5 @@
 [build]
-cmd = "make css && templ generate && go build -o ./tmp/main ."
+cmd = "make css && go tool templ generate && go build -o ./tmp/main ."
 bin = "./tmp/main"
 exclude_regex = ["_templ.go"]
 include_ext = ["go", "templ", "env"]

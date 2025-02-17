@@ -19,7 +19,6 @@ import (
 	"github.com/nint8835/scribe/pkg/web/ui/pages"
 )
 
-// TODO: Better error handling
 type Server struct {
 	serveMux     *http.ServeMux
 	sessionStore *sessions.CookieStore

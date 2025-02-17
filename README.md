@@ -4,17 +4,15 @@ Discord bot for recording & recalling quotes
 
 ## Setup
 
-- [Install Air](https://github.com/air-verse/air?tab=readme-ov-file#via-go-install-recommended).
-  - Ensure `air` is accessible from `$PATH`.
-- [Install Templ](https://templ.guide/quick-start/installation/#go-install).
-- [Install the Tailwindcss CLI](https://tailwindcss.com/docs/installation).
+- Install Go 1.24 or above
+- [Install the Tailwind CLI](https://tailwindcss.com/docs/installation).
   - Ensure the `tailwindcss` command is accessible from `$PATH`.
   - If you have homebrew installed, use: `brew install tailwindcss`.
 
 ### Setup the config
 
 ```shell-session
-cp .env.dist .env 
+cp .env.dist .env
 ```
 
 Create an application on [https://discord.com/developers/applications/](https://discord.com/developers/applications/) and fill out at least the `SCRIBE_TOKEN`, `SCRIBE_GUILD_ID`, and `SCRIBE_APP_ID` fields in `.env`
@@ -24,7 +22,7 @@ Create an application on [https://discord.com/developers/applications/](https://
 Just run `air`
 
 ```shell-session
-air
+go tool air
 ```
 
 ## Production data
