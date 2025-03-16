@@ -16,6 +16,3 @@ jobs:
     uses: nint8835/workflows/.github/workflows/docker-build.yaml@main
     with:
       image_name: nint8835/scribe
-      tag_rules: |
-        type=raw,value=latest,enable={{is_default_branch}}
-        type=raw,value={{branch}}-{{sha}}-{{date 'YYMMDD-HHmmss' tz='America/St_Johns'}},enable={{is_default_branch}}
