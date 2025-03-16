@@ -18,4 +18,4 @@ jobs:
       image_name: nint8835/scribe
       tag_rules: |
         type=raw,value=latest,enable={{is_default_branch}}
-        type=raw,value={{branch}}-{{sha}}-{{date 'YYYYMMDD-HHmmss' tz='America/St_Johns'}},enable={{is_default_branch}}
+        type=raw,value={{branch}}-{{sha}}-{{date 'YYMMDD-HHmmss' tz='America/St_Johns'}},enable={{is_default_branch}}
