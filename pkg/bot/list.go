@@ -27,7 +27,8 @@ func (b *Bot) listQuotesCommand(_ *discordgo.Session, interaction *discordgo.Int
 	}
 
 	if args.Query != nil {
-		queryString := *args.Query
+		// Wrap the provided query in quotes to prevent any special characters from being interpreted as FTS operators
+		queryString := fmt.Sprintf("\"%s\"", *args.Query)
 
 		filterQuery := database.Instance.Raw("SELECT ROWID FROM quotes_fts WHERE quotes_fts MATCH ?", queryString)
 		query.Where("quotes.ROWID IN (?)", filterQuery)
