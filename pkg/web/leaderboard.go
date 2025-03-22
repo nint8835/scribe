@@ -11,7 +11,7 @@ import (
 	"github.com/nint8835/scribe/pkg/web/ui/pages"
 )
 
-const QUOTES_PER_PAGE = 10
+const LEADERBOARD_QUOTES_PER_PAGE = 10
 
 func (s *Server) resolveAuthorIDs(ids string) (string, error) {
 	var buf bytes.Buffer
@@ -41,7 +41,7 @@ func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) er
 		return fmt.Errorf("error counting quotes: %w", err)
 	}
 
-	if err := query.Offset((page - 1) * QUOTES_PER_PAGE).Limit(QUOTES_PER_PAGE).Find(&quotes).Error; err != nil {
+	if err := query.Offset((page - 1) * LEADERBOARD_QUOTES_PER_PAGE).Limit(LEADERBOARD_QUOTES_PER_PAGE).Find(&quotes).Error; err != nil {
 		return fmt.Errorf("error fetching quotes: %w", err)
 	}
 
@@ -65,14 +65,14 @@ func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) er
 			Author:  authorNames,
 			Content: content,
 			Elo:     quote.Elo,
-			Rank:    (page-1)*QUOTES_PER_PAGE + i + 1,
+			Rank:    (page-1)*LEADERBOARD_QUOTES_PER_PAGE + i + 1,
 		}
 	}
 
 	props := pages.LeaderboardProps{
 		Quotes:     formattedQuotes,
 		Page:       page,
-		TotalPages: int((total + QUOTES_PER_PAGE - 1) / QUOTES_PER_PAGE),
+		TotalPages: int((total + LEADERBOARD_QUOTES_PER_PAGE - 1) / LEADERBOARD_QUOTES_PER_PAGE),
 	}
 
 	if r.Header.Get("HX-Request") == "true" {

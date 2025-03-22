@@ -153,7 +153,7 @@ func QuoteDisplay(props QuoteDisplayProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var8 = []any{"mb-[-0.5rem] w-fit flex-row gap-1 rounded-t-lg bg-zinc-700 p-[0_0.5rem_0.5rem_0.5rem] text-center md:flex", templ.KV("hidden", props.AsButton)}
+		var templ_7745c5c3_Var8 = []any{"mb-[-0.5rem] w-fit flex-row gap-1 rounded-t-lg bg-zinc-700 p-[0_0.5rem_0.5rem_0.5rem] text-center md:flex [&_a]:text-emerald-300 [&_a]:transition-colors [&_a]:hover:text-emerald-400", templ.KV("hidden", props.AsButton)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

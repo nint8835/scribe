@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"log/slog"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -21,13 +22,14 @@ type Config struct {
 	CookieSecret     string `split_words:"true"`
 	ClientId         string `split_words:"true"`
 	ClientSecret     string `split_words:"true"`
-	CallbackUrl      string `split_words:"true"`
+	BaseUrl          string `default:"http://localhost:8000" split_words:"true"`
 	RunBot           bool   `default:"true" split_words:"true"`
 	MentionCachePath string `default:"mentions.json" split_words:"true"`
 	LogLevel         string `default:"info" split_words:"true"`
 }
 
 var Instance Config
+var BaseUrl *url.URL
 
 func Load() error {
 	err := godotenv.Load()
@@ -60,6 +62,11 @@ func Load() error {
 			},
 		),
 	))
+
+	BaseUrl, err = url.Parse(Instance.BaseUrl)
+	if err != nil {
+		return fmt.Errorf("error parsing base URL: %w", err)
+	}
 
 	return nil
 }

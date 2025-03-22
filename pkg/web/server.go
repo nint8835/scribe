@@ -72,13 +72,16 @@ func errorHandler(handler errorHandlerFunc) http.HandlerFunc {
 }
 
 func New() (*Server, error) {
+	callbackUrl := *config.BaseUrl
+	callbackUrl.Path = callbackUrl.Path + "/auth/callback"
+
 	serverInst := &Server{
 		serveMux:     http.NewServeMux(),
 		sessionStore: sessions.NewCookieStore([]byte(config.Instance.CookieSecret)),
 		oauthConfig: &oauth2.Config{
 			ClientID:     config.Instance.ClientId,
 			ClientSecret: config.Instance.ClientSecret,
-			RedirectURL:  config.Instance.CallbackUrl,
+			RedirectURL:  callbackUrl.String(),
 			Scopes:       []string{"identify", "guilds"},
 			Endpoint: oauth2.Endpoint{
 				AuthURL:  "https://discord.com/oauth2/authorize",
@@ -108,6 +111,7 @@ func New() (*Server, error) {
 
 	serverInst.serveMux.HandleFunc("GET /{$}", errorHandler(serverInst.requireAuth(serverInst.handleGetHome)))
 	serverInst.serveMux.HandleFunc("GET /leaderboard", errorHandler(serverInst.requireAuth(serverInst.handleGetLeaderboard)))
+	serverInst.serveMux.HandleFunc("GET /list", errorHandler(serverInst.requireAuth(serverInst.handleGetList)))
 
 	serverInst.serveMux.HandleFunc("GET /rank", errorHandler(serverInst.requireAuth(serverInst.handleGetRank)))
 	serverInst.serveMux.HandleFunc("POST /rank", errorHandler(serverInst.requireAuth(serverInst.handlePostRank)))

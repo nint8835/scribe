@@ -1,0 +1,50 @@
+package pages
+
+import (
+	"github.com/nint8835/scribe/pkg/web/ui"
+	"github.com/nint8835/scribe/pkg/web/ui/components"
+)
+
+type ListQuote struct {
+	Label   string
+	Content string
+}
+
+type ListProps struct {
+	components.PaginationProps
+
+	Quotes []ListQuote
+}
+
+templ ListContent(props ListProps) {
+	<div id="list-content" class="w-full max-w-4xl space-y-6">
+		if props.Page > 1 {
+			<div class="mb-6">
+				@components.Pagination(props.PaginationProps)
+			</div>
+		}
+		for _, quote := range props.Quotes {
+			@components.QuoteDisplay(components.QuoteDisplayProps{
+				Content:    quote.Content,
+				Label:      quote.Label,
+				QuoteClass: "bg-emerald-800 [scrollbar-color:white_rgb(6,95,70)]",
+				AsButton:   false,
+			})
+		}
+		if len(props.Quotes) == 0 {
+			<div class="text-center font-medium">No ranked quotes found</div>
+		}
+		<div class="mt-6">
+			@components.Pagination(props.PaginationProps)
+		</div>
+	</div>
+}
+
+templ List(props ListProps) {
+	@ui.Layout("Quotes") {
+		<div class="flex min-h-screen w-full flex-col items-center p-6">
+			<h1 class="mb-4 text-3xl font-bold">Quotes</h1>
+			@ListContent(props)
+		</div>
+	}
+}

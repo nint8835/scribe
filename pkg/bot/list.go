@@ -2,12 +2,17 @@ package bot
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/bwmarrin/discordgo"
-	"gorm.io/gorm/clause"
 
+	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/database"
+	"github.com/nint8835/scribe/pkg/utils"
 )
+
+const WEB_LIST_QUOTES_PER_PAGE = 10
+const BOT_LIST_QUOTES_PER_PAGE = 5
 
 type listArgs struct {
 	Author *discordgo.User `description:"Author to display quotes for. Omit to display quotes from all users."`
@@ -16,45 +21,56 @@ type listArgs struct {
 }
 
 func (b *Bot) listQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args listArgs) {
-	var quotes []database.Quote
-
-	query := database.Instance.Model(&database.Quote{}).Preload(clause.Associations)
+	opts := database.SearchOptions{
+		Page:  args.Page,
+		Limit: BOT_LIST_QUOTES_PER_PAGE,
+		Query: args.Query,
+	}
 
 	if args.Author != nil {
-		query = query.
-			Joins("INNER JOIN quote_authors ON quote_authors.quote_id = quotes.id").
-			Where(map[string]interface{}{"quote_authors.author_id": args.Author.ID})
+		opts.Author = utils.PtrTo(args.Author.ID)
 	}
 
-	if args.Query != nil {
-		// Wrap the provided query in quotes to prevent any special characters from being interpreted as FTS operators
-		queryString := fmt.Sprintf("\"%s\"", *args.Query)
-
-		filterQuery := database.Instance.Raw("SELECT ROWID FROM quotes_fts WHERE quotes_fts MATCH ?", queryString)
-		query.Where("quotes.ROWID IN (?)", filterQuery)
-	}
-
-	result := query.Limit(5).Offset(5 * (args.Page - 1)).Find(&quotes)
-	if result.Error != nil {
-		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: fmt.Sprintf("Error getting quotes.\n```\n%s\n```", result.Error),
-			},
-		})
+	// TODO: Use quote count
+	quotes, totalCount, err := database.Search(opts)
+	if err != nil {
+		b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quotes.\n```\n%s\n```", err))
 		return
 	}
 
+	webUrl := *config.BaseUrl
+	webUrl.Path = "/list"
+	newQuery := webUrl.Query()
+
+	if args.Author != nil {
+		newQuery.Set("author", args.Author.ID)
+	}
+
+	if args.Query != nil {
+		newQuery.Set("query", *args.Query)
+	}
+
+	webPageNumber := int(math.Ceil(float64(args.Page*BOT_LIST_QUOTES_PER_PAGE) / float64(WEB_LIST_QUOTES_PER_PAGE)))
+	if webPageNumber > 1 {
+		newQuery.Set("page", fmt.Sprintf("%d", webPageNumber))
+	}
+
+	webUrl.RawQuery = newQuery.Encode()
+
 	embed := discordgo.MessageEmbed{
-		Title:  "Quotes",
-		Color:  (40 << 16) + (120 << 8) + (120),
-		Fields: []*discordgo.MessageEmbedField{},
+		Title:       "Quotes",
+		Color:       (40 << 16) + (120 << 8) + (120),
+		Fields:      []*discordgo.MessageEmbedField{},
+		Description: fmt.Sprintf("[View in browser](%s)", webUrl.String()),
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: fmt.Sprintf("Page %d of %d", args.Page, int(math.Ceil(float64(totalCount)/float64(BOT_LIST_QUOTES_PER_PAGE)))),
+		},
 	}
 
 	for _, quote := range quotes {
 		authors, _, err := b.generateAuthorString(quote.Authors, interaction.GuildID)
 		if err != nil {
-			b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote authors.\n```\n%s\n```", result.Error))
+			b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote authors.\n```\n%s\n```", err))
 		}
 
 		quoteText := quote.Text
