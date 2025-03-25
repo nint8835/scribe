@@ -34,7 +34,7 @@ templ Pagination(props PaginationProps) {
 		if props.Page < props.TotalPages {
 			<button
 				class="rounded-md border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
-				hx-get={ cmp.Or(props.NextPageUrl, props.UrlBase+"?page="+strconv.Itoa(props.Page-1)) }
+				hx-get={ cmp.Or(props.NextPageUrl, props.UrlBase+"?page="+strconv.Itoa(props.Page+1)) }
 				hx-target={ props.Target }
 				hx-push-url="true"
 				hx-swap="innerHTML show:window:top"

@@ -115,7 +115,7 @@ func Pagination(props PaginationProps) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(cmp.Or(props.NextPageUrl, props.UrlBase+"?page="+strconv.Itoa(props.Page-1)))
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(cmp.Or(props.NextPageUrl, props.UrlBase+"?page="+strconv.Itoa(props.Page+1)))
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/pagination.templ`, Line: 37, Col: 89}
 			}
