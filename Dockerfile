@@ -10,7 +10,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN make prod-css && CGO_ENABLED=0 go build
+RUN make prod-css && go build -a -ldflags '-linkmode external -extldflags "-static"' --tags fts5
 
 FROM gcr.io/distroless/static AS bot
 
