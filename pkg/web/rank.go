@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/rand/v2"
 	"net/http"
 	"strconv"
 
@@ -101,6 +102,10 @@ func attemptPickRandomQuotePair(ctx context.Context, userId string) (database.Qu
 	).Take(&quoteB).Error
 	if err != nil {
 		return quoteA, quoteB, fmt.Errorf("error getting second random quote: %w", err)
+	}
+
+	if rand.IntN(2) == 1 {
+		quoteA, quoteB = quoteB, quoteA
 	}
 
 	return quoteA, quoteB, nil
