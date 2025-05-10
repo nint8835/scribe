@@ -29,6 +29,10 @@ func attemptPickRandomQuotePair(ctx context.Context, userId string) (database.Qu
 		return quoteA, quoteB, fmt.Errorf("error getting first random quote: %w", err)
 	}
 
+	// Needs the following indices, some of which currently aren't in code:
+	// idx_comparisons_user_b_a	FALSE	user_id,quote_b_id,quote_a_id
+	// idx_comparisons_user_a_b	FALSE	user_id,quote_a_id,quote_b_id
+
 	// Find the quote with the closest ELO rating to the first quote that hasn't been compared by this user
 	err = database.Instance.WithContext(ctx).Raw(
 		`WITH
