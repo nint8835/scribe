@@ -29,16 +29,51 @@ func attemptPickRandomQuotePair(ctx context.Context, userId string) (database.Qu
 		return quoteA, quoteB, fmt.Errorf("error getting first random quote: %w", err)
 	}
 
-	err = database.Instance.WithContext(ctx).Model(&database.Quote{}).
-		Joins(
-			"LEFT JOIN completed_comparisons ON (completed_comparisons.quote_a_id = quotes.id AND completed_comparisons.quote_b_id = ? AND completed_comparisons.user_id = ?) OR (completed_comparisons.quote_a_id = ? AND completed_comparisons.quote_b_id = quotes.id AND completed_comparisons.user_id = ?)",
-			quoteA.Meta.ID,
-			userId,
-			quoteA.Meta.ID,
-			userId,
-		).
-		Where("completed_comparisons.id IS NULL AND quotes.id != ?", quoteA.Meta.ID).
-		Order("RANDOM()").Take(&quoteB).Error
+	// Find the quote with the closest ELO rating to the first quote that hasn't been compared by this user
+	err = database.Instance.WithContext(ctx).Raw(
+		`WITH
+			compared_quotes AS (
+				SELECT
+					CASE
+						WHEN c.quote_a_id = ? THEN c.quote_b_id
+						WHEN c.quote_b_id = ? THEN c.quote_a_id
+					END AS compared_quote_id
+			FROM
+				completed_comparisons c
+			WHERE
+				c.user_id = ?
+				AND (
+					c.quote_a_id = ?
+					OR c.quote_b_id = ?
+				)
+			),
+			filtered_quotes AS (
+				SELECT
+					q.*,
+					ABS(q.elo - ?) AS elo_diff
+				FROM
+					quotes q
+					LEFT JOIN compared_quotes cq ON q.id = cq.compared_quote_id
+				WHERE
+					q.deleted_at IS NULL
+					AND q.id != ?
+					AND cq.compared_quote_id IS NULL
+			)
+		SELECT
+			q.*
+		FROM
+			filtered_quotes q
+		ORDER BY
+			elo_diff ASC
+		LIMIT 1`,
+		quoteA.Meta.ID,
+		quoteA.Meta.ID,
+		userId,
+		quoteA.Meta.ID,
+		quoteA.Meta.ID,
+		quoteA.Elo,
+		quoteA.Meta.ID,
+	).Take(&quoteB).Error
 	if err != nil {
 		return quoteA, quoteB, fmt.Errorf("error getting second random quote: %w", err)
 	}
