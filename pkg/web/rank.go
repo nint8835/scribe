@@ -19,7 +19,6 @@ import (
 
 var elo *elogo.Elo = elogo.NewElo()
 
-// TODO: See if there is a better way to select a pair of quotes
 func attemptPickRandomQuotePair(ctx context.Context, userId string) (database.Quote, database.Quote, error) {
 	var quoteA database.Quote
 	var quoteB database.Quote
@@ -29,11 +28,6 @@ func attemptPickRandomQuotePair(ctx context.Context, userId string) (database.Qu
 		return quoteA, quoteB, fmt.Errorf("error getting first random quote: %w", err)
 	}
 
-	// Needs the following indices, some of which currently aren't in code:
-	// idx_comparisons_user_b_a	FALSE	user_id,quote_b_id,quote_a_id
-	// idx_comparisons_user_a_b	FALSE	user_id,quote_a_id,quote_b_id
-
-	// Find the quote with the closest ELO rating to the first quote that hasn't been compared by this user
 	err = database.Instance.WithContext(ctx).Raw(
 		`WITH
 			compared_quotes AS (
@@ -42,14 +36,14 @@ func attemptPickRandomQuotePair(ctx context.Context, userId string) (database.Qu
 						WHEN c.quote_a_id = ? THEN c.quote_b_id
 						WHEN c.quote_b_id = ? THEN c.quote_a_id
 					END AS compared_quote_id
-			FROM
-				completed_comparisons c
-			WHERE
-				c.user_id = ?
-				AND (
-					c.quote_a_id = ?
-					OR c.quote_b_id = ?
-				)
+				FROM
+					completed_comparisons c
+				WHERE
+					c.user_id = ?
+					AND (
+						c.quote_a_id = ?
+						OR c.quote_b_id = ?
+					)
 			),
 			filtered_quotes AS (
 				SELECT

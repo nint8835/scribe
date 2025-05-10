@@ -2,9 +2,13 @@ package database
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"time"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var Instance *gorm.DB
@@ -60,11 +64,31 @@ func initNonGormResources() error {
 		}
 	}
 
+	err = Instance.Exec("CREATE INDEX IF NOT EXISTS idx_comparisons_user_b_a ON completed_comparisons(user_id, quote_b_id, quote_a_id)").Error
+	if err != nil {
+		return fmt.Errorf("error creating idx_comparisons_user_b_a index: %w", err)
+	}
+
+	err = Instance.Exec("CREATE INDEX IF NOT EXISTS idx_comparisons_user_a_b ON completed_comparisons(user_id, quote_a_id, quote_b_id)").Error
+	if err != nil {
+		return fmt.Errorf("error creating idx_comparisons_user_a_b index: %w", err)
+	}
+
 	return nil
 }
 
 func Initialize(connectionString string) error {
-	newInstance, err := gorm.Open(sqlite.Open(connectionString), &gorm.Config{})
+	newInstance, err := gorm.Open(sqlite.Open(connectionString), &gorm.Config{
+		Logger: logger.New(
+			log.New(os.Stdout, "\r\n", log.LstdFlags),
+			logger.Config{
+				SlowThreshold:             1 * time.Second,
+				LogLevel:                  logger.Error,
+				IgnoreRecordNotFoundError: true,
+				Colorful:                  true,
+			},
+		),
+	})
 	if err != nil {
 		return fmt.Errorf("error opening db connection: %w", err)
 	}
