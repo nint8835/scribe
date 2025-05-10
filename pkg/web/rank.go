@@ -23,12 +23,39 @@ func attemptPickRandomQuotePair(ctx context.Context, userId string) (database.Qu
 	var quoteA database.Quote
 	var quoteB database.Quote
 
-	err := database.Instance.WithContext(ctx).Model(&database.Quote{}).Order("RANDOM()").Take(&quoteA).Error
+	db := database.Instance.WithContext(ctx)
+
+	err := db.Raw(
+		`SELECT
+			q.*,
+			COUNT(DISTINCT ca.id) + COUNT(DISTINCT cb.id) AS comparison_count
+		FROM
+			quotes q
+			LEFT JOIN completed_comparisons ca ON (
+				ca.user_id = ?
+				AND ca.quote_a_id = q.id
+			)
+			LEFT JOIN completed_comparisons cb ON (
+				cb.user_id = ?
+				AND cb.quote_b_id = q.id
+			)
+		WHERE
+			q.deleted_at IS NULL
+		GROUP BY
+			q.id
+		ORDER BY
+			comparison_count ASC,
+			random()
+		LIMIT
+		1`,
+		userId,
+		userId,
+	).Take(&quoteA).Error
 	if err != nil {
 		return quoteA, quoteB, fmt.Errorf("error getting first random quote: %w", err)
 	}
 
-	err = database.Instance.WithContext(ctx).Raw(
+	err = db.Raw(
 		`WITH
 			compared_quotes AS (
 				SELECT
