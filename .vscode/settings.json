@@ -8,5 +8,6 @@
     },
     "tailwindCSS.includeLanguages": {
         "templ": "html"
-    }
+    },
+    "files.insertFinalNewline": true
 }

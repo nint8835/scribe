@@ -3,3 +3,8 @@
 @theme {
     --font-sans: "Inter Var", "sans-serif"
 }
+
+.htmx-request {
+    opacity: 0.75;
+    pointer-events: none;
+}
