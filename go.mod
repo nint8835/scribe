@@ -14,6 +14,7 @@ require (
 	github.com/yuin/goldmark v1.7.8
 	golang.org/x/oauth2 v0.25.0
 	golang.org/x/text v0.21.0
+	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12
 	pkg.nit.so/goldmark-discord-mentions v0.0.0-20250105222441-5890e04d70c1
 	pkg.nit.so/switchboard v0.0.0-20240930133908-cf045dc997ba
@@ -58,7 +59,6 @@ require (
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/tools v0.28.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
-	gorm.io/driver/sqlite v1.5.7
 )
 
 tool (
