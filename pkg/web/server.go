@@ -111,6 +111,7 @@ func New() (*Server, error) {
 
 	serverInst.serveMux.HandleFunc("GET /{$}", errorHandler(serverInst.requireAuth(serverInst.handleGetHome)))
 	serverInst.serveMux.HandleFunc("GET /leaderboard", errorHandler(serverInst.requireAuth(serverInst.handleGetLeaderboard)))
+	serverInst.serveMux.HandleFunc("GET /user-leaderboard", errorHandler(serverInst.requireAuth(serverInst.handleGetUserLeaderboard)))
 	serverInst.serveMux.HandleFunc("GET /list", errorHandler(serverInst.requireAuth(serverInst.handleGetList)))
 
 	serverInst.serveMux.HandleFunc("GET /rank", errorHandler(serverInst.requireAuth(serverInst.handleGetRank)))
