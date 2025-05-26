@@ -9,9 +9,10 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"strconv"
+
 	"github.com/nint8835/scribe/pkg/web/ui"
 	"github.com/nint8835/scribe/pkg/web/ui/components"
-	"strconv"
 )
 
 type LeaderboardQuote struct {
