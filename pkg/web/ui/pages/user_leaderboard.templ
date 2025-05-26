@@ -2,9 +2,17 @@ package pages
 
 import (
 	"fmt"
-	"github.com/nint8835/scribe/pkg/web/ui"
 	"strconv"
+
+	"github.com/nint8835/scribe/pkg/web/ui"
 )
+
+type UserLeaderboardProps struct {
+	Users []UserLeaderboardEntry
+
+	RequiredRanks  int
+	RequiredQuotes int
+}
 
 type UserLeaderboardEntry struct {
 	Username string
@@ -12,32 +20,31 @@ type UserLeaderboardEntry struct {
 	Quotes   int
 }
 
-templ UserLeaderboard(users []UserLeaderboardEntry) {
+templ UserLeaderboard(props UserLeaderboardProps) {
 	@ui.Layout("User Leaderboard") {
-		<div class="flex h-screen w-screen flex-col">
-			<header class="py-8 text-center text-4xl font-bold">
-				User Leaderboard
-			</header>
-			<div class="w-full max-w-4xl mx-auto p-6 space-y-6">
-				<div class="grid grid-cols-3 font-semibold text-lg border-b border-zinc-600 pb-2">
-					<div>User</div>
-					<div class="text-center">Average ELO</div>
-					<div class="text-center">Eligible Quotes</div>
-				</div>
-				if len(users) == 0 {
-					<div class="text-center font-medium py-4">No users found</div>
-				} else {
-					for i, user := range users {
-						<div class={ "grid grid-cols-3 py-2", templ.KV("bg-zinc-700 bg-opacity-30", i%2 == 0) }>
-							<div>
-								@templ.Raw(user.Username)
-							</div>
-							<div class="text-center">{ fmt.Sprintf("%.2f", user.Elo) }</div>
-							<div class="text-center">{ strconv.Itoa(user.Quotes) }</div>
-						</div>
-					}
-				}
+		<header class="py-8 text-center text-4xl font-bold">
+			User Leaderboard
+		</header>
+		<div class="mx-auto w-full max-w-4xl p-6">
+			<div class="grid grid-cols-3 border-b border-zinc-600 pb-2 text-lg font-semibold">
+				<div>User</div>
+				<div class="text-center">Average ELO</div>
+				<div class="text-center">Eligible Quotes</div>
 			</div>
+			for i, user := range props.Users {
+				<div class={ "grid grid-cols-3 p-2", templ.KV("bg-opacity-30 bg-zinc-700", i%2 == 1) }>
+					<div>
+						@templ.Raw(user.Username)
+					</div>
+					<div class="text-center">{ fmt.Sprintf("%.2f", user.Elo) }</div>
+					<div class="text-center">{ strconv.Itoa(user.Quotes) }</div>
+				</div>
+			}
+		</div>
+		<div class="py-6 text-center text-sm text-zinc-400">
+			Only quotes with at least { strconv.Itoa(props.RequiredRanks) } ranks are eligible to be counted towards the leaderboard.
+			<br/>
+			Only users with at least { strconv.Itoa(props.RequiredQuotes) } eligible quotes are shown on the leaderboard.
 		</div>
 	}
 }

@@ -145,7 +145,11 @@ func (s *Server) handleGetUserLeaderboard(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	pages.UserLeaderboard(formattedUsers).Render(r.Context(), w)
+	pages.UserLeaderboard(pages.UserLeaderboardProps{
+		Users:          formattedUsers,
+		RequiredRanks:  USER_LEADERBOARD_COMPARISON_THRESHOLD,
+		RequiredQuotes: USER_LEADERBOARD_QUOTE_THRESHOLD,
+	}).Render(r.Context(), w)
 
 	return nil
 }
