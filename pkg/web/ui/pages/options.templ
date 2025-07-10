@@ -1,0 +1,62 @@
+package pages
+
+import "github.com/nint8835/scribe/pkg/web/ui"
+import "github.com/nint8835/scribe/pkg/selection"
+
+type OptionsProps struct {
+	FirstMethod  selection.FirstQuoteMethod
+	SecondMethod selection.SecondQuoteMethod
+}
+
+templ Options(props OptionsProps) {
+	@ui.Layout("Options") {
+		<div class="flex w-full flex-col items-center">
+			<div class="flex w-full max-w-[80ch] flex-col items-center space-y-4 p-4">
+				<h1 class="mb-4 text-3xl font-bold">Options</h1>
+				<div class="bg-green-800 w-full rounded-md p-2">
+					<div class="text-sm">
+						<h2 class="font-semibold text-white">How quote selection works</h2>
+						<p class="text-zinc-200 font-light">
+							When selecting quotes for you to compare, a quote is first selected based on your first quote method.
+							<br/>
+							Then, based on the quote selected, your second quote method is used to select the second quote.
+							<br/>
+							This will be attempted up to 10 times, until a valid pair of quotes can be found.
+						</p>
+					</div>
+				</div>
+				<form action="/options" method="POST">
+					<fieldset>
+						<legend class="font-bold text-zinc-400">First quote method</legend>
+						for _, method := range selection.FirstQuoteMethods {
+							<label class="flex flex-row space-x-2">
+								<input type="radio" name="first_method" value={ method.String() } checked?={ method == props.FirstMethod }/>
+								<div class="flex flex-col">
+									<span class="font-semibold">{ method.DisplayName() }</span>
+									<span class="font-light text-zinc-300 italic">{ method.Description() }</span>
+								</div>
+							</label>
+						}
+					</fieldset>
+					<fieldset>
+						<legend class="font-bold text-zinc-400">Second quote method</legend>
+						for _, method := range selection.SecondQuoteMethods {
+							<label class="flex flex-row space-x-2">
+								<input type="radio" name="second_method" value={ method.String() } checked?={ method== props.SecondMethod }/>
+								<div class="flex flex-col">
+									<span class="font-semibold">{ method.DisplayName() }</span>
+									<span class="font-light text-zinc-300 italic">{ method.Description() }</span>
+								</div>
+							</label>
+						}
+					</fieldset>
+					<div class="flex justify-center">
+						<button type="submit" class="mt-4 rounded-md bg-sky-700 px-4 py-2 text-white hover:bg-sky-800">
+							Save
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	}
+}

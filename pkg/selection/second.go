@@ -66,6 +66,32 @@ const (
 	SecondQuoteMethodClosestRank SecondQuoteMethod = "closest_rank"
 )
 
+func (m SecondQuoteMethod) String() string {
+	return string(m)
+}
+
+func (m SecondQuoteMethod) DisplayName() string {
+	switch m {
+	case SecondQuoteMethodClosestRank:
+		return "Closest rank"
+	default:
+		return "Unknown method"
+	}
+}
+
+func (m SecondQuoteMethod) Description() string {
+	switch m {
+	case SecondQuoteMethodClosestRank:
+		return "Selects a quote that is closest in Elo rating to the first quote, that you have not already ranked."
+	default:
+		return "Unknown method"
+	}
+}
+
+var SecondQuoteMethods = []SecondQuoteMethod{
+	SecondQuoteMethodClosestRank,
+}
+
 var secondQuoteSelectors = map[SecondQuoteMethod]SecondQuoteSelector{
 	SecondQuoteMethodClosestRank: secondQuoteClosestRank,
 }

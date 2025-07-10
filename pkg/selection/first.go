@@ -68,6 +68,37 @@ const (
 	FirstQuoteMethodRandom    FirstQuoteMethod = "random"
 )
 
+func (m FirstQuoteMethod) String() string {
+	return string(m)
+}
+
+func (m FirstQuoteMethod) DisplayName() string {
+	switch m {
+	case FirstQuoteMethodLeastSeen:
+		return "Least seen"
+	case FirstQuoteMethodRandom:
+		return "Random"
+	default:
+		return "Unknown method"
+	}
+}
+
+func (m FirstQuoteMethod) Description() string {
+	switch m {
+	case FirstQuoteMethodLeastSeen:
+		return "Selects the quote that you have completed the least comparisons for."
+	case FirstQuoteMethodRandom:
+		return "Selects a quote completely at random."
+	default:
+		return "Unknown method"
+	}
+}
+
+var FirstQuoteMethods = []FirstQuoteMethod{
+	FirstQuoteMethodLeastSeen,
+	FirstQuoteMethodRandom,
+}
+
 var firstQuoteSelectors = map[FirstQuoteMethod]FirstQuoteSelector{
 	FirstQuoteMethodLeastSeen: firstQuoteLeastSeen,
 	FirstQuoteMethodRandom:    firstQuoteRandom,
