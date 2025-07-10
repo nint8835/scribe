@@ -67,10 +67,28 @@ func (s *Server) renderQuoteText(quote database.Quote) (string, error) {
 	return buf.String(), err
 }
 
+func (s *Server) selectQuotes(r *http.Request) (database.Quote, database.Quote, error) {
+	session := s.getSession(r)
+	userId := s.getCurrentUserId(r)
+
+	firstMethod, firstMethodSet := session.Values["first_method"].(selection.FirstQuoteMethod)
+	secondMethod, secondMethodSet := session.Values["second_method"].(selection.SecondQuoteMethod)
+
+	if !firstMethodSet {
+		firstMethod = selection.FirstQuoteMethodLeastSeen
+	}
+
+	if !secondMethodSet {
+		secondMethod = selection.SecondQuoteMethodClosestRank
+	}
+
+	return selection.SelectQuotes(r.Context(), userId, firstMethod, secondMethod)
+}
+
 func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) error {
 	userId := s.getCurrentUserId(r)
 
-	quoteA, quoteB, err := selection.SelectQuotes(r.Context(), userId, selection.FirstQuoteMethodLeastSeen, selection.SecondQuoteMethodClosestRank)
+	quoteA, quoteB, err := s.selectQuotes(r)
 	if err != nil {
 		return fmt.Errorf("error getting quotes: %w", err)
 	}
@@ -208,7 +226,7 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("error ranking quotes: %w", err)
 	}
 
-	quoteA, quoteB, err := selection.SelectQuotes(r.Context(), userId, selection.FirstQuoteMethodLeastSeen, selection.SecondQuoteMethodClosestRank)
+	quoteA, quoteB, err := s.selectQuotes(r)
 	if err != nil {
 		return fmt.Errorf("error getting next quotes: %w", err)
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	"gorm.io/gorm"
 
@@ -30,6 +31,12 @@ func attemptSelectQuotes(
 }
 
 func SelectQuotes(ctx context.Context, userId string, firstMethod FirstQuoteMethod, secondMethod SecondQuoteMethod) (database.Quote, database.Quote, error) {
+	slog.Debug("Selecting quotes",
+		"user_id", userId,
+		"first_method", firstMethod,
+		"second_method", secondMethod,
+	)
+
 	attempts := 0
 
 	var quoteA database.Quote

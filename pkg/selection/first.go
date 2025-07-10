@@ -2,6 +2,7 @@ package selection
 
 import (
 	"context"
+	"encoding/gob"
 
 	"github.com/nint8835/scribe/pkg/database"
 )
@@ -40,12 +41,36 @@ func firstQuoteLeastSeen(ctx context.Context, userId string) (database.Quote, er
 	return quote, nil
 }
 
+func firstQuoteRandom(ctx context.Context, _ string) (database.Quote, error) {
+	var quote database.Quote
+	db := database.Instance.WithContext(ctx)
+
+	err := db.Raw(`SELECT
+			*
+		FROM
+			quotes
+		WHERE
+			deleted_at IS NULL
+		ORDER BY
+			random()
+		LIMIT
+			1`).Take(&quote).Error
+
+	if err != nil {
+		return database.Quote{}, err
+	}
+
+	return quote, nil
+}
+
 const (
 	FirstQuoteMethodLeastSeen FirstQuoteMethod = "least_seen"
+	FirstQuoteMethodRandom    FirstQuoteMethod = "random"
 )
 
 var firstQuoteSelectors = map[FirstQuoteMethod]FirstQuoteSelector{
 	FirstQuoteMethodLeastSeen: firstQuoteLeastSeen,
+	FirstQuoteMethodRandom:    firstQuoteRandom,
 }
 
 func selectFirstQuote(ctx context.Context, userId string, method FirstQuoteMethod) (database.Quote, error) {
@@ -54,4 +79,8 @@ func selectFirstQuote(ctx context.Context, userId string, method FirstQuoteMetho
 		return database.Quote{}, ErrUnknownMethod
 	}
 	return selector(ctx, userId)
+}
+
+func init() {
+	gob.Register(FirstQuoteMethodLeastSeen)
 }

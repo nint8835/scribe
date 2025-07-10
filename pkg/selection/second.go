@@ -2,6 +2,7 @@ package selection
 
 import (
 	"context"
+	"encoding/gob"
 
 	"github.com/nint8835/scribe/pkg/database"
 )
@@ -75,4 +76,8 @@ func selectSecondQuote(ctx context.Context, userId string, firstQuote database.Q
 		return database.Quote{}, ErrUnknownMethod
 	}
 	return selector(ctx, userId, firstQuote)
+}
+
+func init() {
+	gob.Register(SecondQuoteMethodClosestRank)
 }
