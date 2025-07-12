@@ -11,7 +11,8 @@ func firstQuoteLeastSeen(ctx context.Context, userId string) (database.Quote, er
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
 
-	err := db.Raw(`SELECT
+	err := db.Raw(
+		`SELECT
 			q.*,
 			COUNT(DISTINCT ca.id) + COUNT(DISTINCT cb.id) AS comparison_count
 		FROM
@@ -32,7 +33,10 @@ func firstQuoteLeastSeen(ctx context.Context, userId string) (database.Quote, er
 			comparison_count ASC,
 			random()
 		LIMIT
-		1`, userId, userId).Take(&quote).Error
+		1`,
+		userId,
+		userId,
+	).Take(&quote).Error
 
 	if err != nil {
 		return database.Quote{}, err
@@ -45,7 +49,8 @@ func firstQuoteRandom(ctx context.Context, _ string) (database.Quote, error) {
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
 
-	err := db.Raw(`SELECT
+	err := db.Raw(
+		`SELECT
 			*
 		FROM
 			quotes
@@ -54,7 +59,8 @@ func firstQuoteRandom(ctx context.Context, _ string) (database.Quote, error) {
 		ORDER BY
 			random()
 		LIMIT
-			1`).Take(&quote).Error
+			1`,
+	).Take(&quote).Error
 
 	if err != nil {
 		return database.Quote{}, err
