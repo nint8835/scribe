@@ -2,10 +2,7 @@ package web
 
 import (
 	"bytes"
-	"context"
-	"errors"
 	"fmt"
-	"math/rand/v2"
 	"net/http"
 	"strconv"
 
@@ -14,130 +11,12 @@ import (
 	"gorm.io/gorm/clause"
 
 	"github.com/nint8835/scribe/pkg/database"
+	"github.com/nint8835/scribe/pkg/selection"
 	"github.com/nint8835/scribe/pkg/web/ui/components"
 	"github.com/nint8835/scribe/pkg/web/ui/pages"
 )
 
 var elo *elogo.Elo = elogo.NewElo()
-
-func attemptPickRandomQuotePair(ctx context.Context, userId string) (database.Quote, database.Quote, error) {
-	var quoteA database.Quote
-	var quoteB database.Quote
-
-	db := database.Instance.WithContext(ctx)
-
-	err := db.Raw(
-		`SELECT
-			q.*,
-			COUNT(DISTINCT ca.id) + COUNT(DISTINCT cb.id) AS comparison_count
-		FROM
-			quotes q
-			LEFT JOIN completed_comparisons ca ON (
-				ca.user_id = ?
-				AND ca.quote_a_id = q.id
-			)
-			LEFT JOIN completed_comparisons cb ON (
-				cb.user_id = ?
-				AND cb.quote_b_id = q.id
-			)
-		WHERE
-			q.deleted_at IS NULL
-		GROUP BY
-			q.id
-		ORDER BY
-			comparison_count ASC,
-			random()
-		LIMIT
-		1`,
-		userId,
-		userId,
-	).Take(&quoteA).Error
-	if err != nil {
-		return quoteA, quoteB, fmt.Errorf("error getting first random quote: %w", err)
-	}
-
-	err = db.Raw(
-		`WITH
-			compared_quotes AS (
-				SELECT
-					CASE
-						WHEN c.quote_a_id = ? THEN c.quote_b_id
-						WHEN c.quote_b_id = ? THEN c.quote_a_id
-					END AS compared_quote_id
-				FROM
-					completed_comparisons c
-				WHERE
-					c.user_id = ?
-					AND (
-						c.quote_a_id = ?
-						OR c.quote_b_id = ?
-					)
-			),
-			filtered_quotes AS (
-				SELECT
-					q.*,
-					ABS(q.elo - ?) AS elo_diff
-				FROM
-					quotes q
-					LEFT JOIN compared_quotes cq ON q.id = cq.compared_quote_id
-				WHERE
-					q.deleted_at IS NULL
-					AND q.id != ?
-					AND cq.compared_quote_id IS NULL
-			)
-		SELECT
-			q.*
-		FROM
-			filtered_quotes q
-		ORDER BY
-			elo_diff ASC
-		LIMIT 1`,
-		quoteA.Meta.ID,
-		quoteA.Meta.ID,
-		userId,
-		quoteA.Meta.ID,
-		quoteA.Meta.ID,
-		quoteA.Elo,
-		quoteA.Meta.ID,
-	).Take(&quoteB).Error
-	if err != nil {
-		return quoteA, quoteB, fmt.Errorf("error getting second random quote: %w", err)
-	}
-
-	if rand.IntN(2) == 1 {
-		quoteA, quoteB = quoteB, quoteA
-	}
-
-	return quoteA, quoteB, nil
-}
-
-func fetchRandomQuotePair(ctx context.Context, userId string) (database.Quote, database.Quote, error) {
-	attempts := 0
-
-	var quoteA database.Quote
-	var quoteB database.Quote
-	var err error
-
-	for {
-		if attempts >= 10 {
-			return quoteA, quoteB, errors.New("too many attempts to get random quotes")
-		}
-
-		quoteA, quoteB, err = attemptPickRandomQuotePair(ctx, userId)
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				attempts++
-				continue
-			}
-
-			return quoteA, quoteB, err
-		}
-
-		break
-	}
-
-	return quoteA, quoteB, nil
-}
 
 func (s *Server) getRankStatsDisplayProps(id string) (components.RankStatsDisplayProps, error) {
 	var stats components.RankStatsDisplayProps
@@ -188,10 +67,28 @@ func (s *Server) renderQuoteText(quote database.Quote) (string, error) {
 	return buf.String(), err
 }
 
+func (s *Server) selectQuotes(r *http.Request) (database.Quote, database.Quote, error) {
+	session := s.getSession(r)
+	userId := s.getCurrentUserId(r)
+
+	firstMethod, firstMethodSet := session.Values["first_method"].(selection.FirstQuoteMethod)
+	secondMethod, secondMethodSet := session.Values["second_method"].(selection.SecondQuoteMethod)
+
+	if !firstMethodSet {
+		firstMethod = selection.FirstQuoteMethodLeastSeen
+	}
+
+	if !secondMethodSet {
+		secondMethod = selection.SecondQuoteMethodClosestRank
+	}
+
+	return selection.SelectQuotes(r.Context(), userId, firstMethod, secondMethod)
+}
+
 func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) error {
 	userId := s.getCurrentUserId(r)
 
-	quoteA, quoteB, err := fetchRandomQuotePair(r.Context(), userId)
+	quoteA, quoteB, err := s.selectQuotes(r)
 	if err != nil {
 		return fmt.Errorf("error getting quotes: %w", err)
 	}
@@ -329,7 +226,7 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("error ranking quotes: %w", err)
 	}
 
-	quoteA, quoteB, err := fetchRandomQuotePair(r.Context(), userId)
+	quoteA, quoteB, err := s.selectQuotes(r)
 	if err != nil {
 		return fmt.Errorf("error getting next quotes: %w", err)
 	}
