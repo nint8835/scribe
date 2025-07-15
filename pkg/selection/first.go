@@ -69,9 +69,35 @@ func firstQuoteRandom(ctx context.Context, _ string) (database.Quote, error) {
 	return quote, nil
 }
 
+func firstQuoteHighestElo(ctx context.Context, _ string) (database.Quote, error) {
+	var quote database.Quote
+	db := database.Instance.WithContext(ctx)
+
+	err := db.Raw(
+		`SELECT
+			*
+		FROM
+			quotes
+		WHERE
+			deleted_at IS NULL
+		ORDER BY
+			elo DESC,
+			random()
+		LIMIT
+			1`,
+	).Take(&quote).Error
+
+	if err != nil {
+		return database.Quote{}, err
+	}
+
+	return quote, nil
+}
+
 const (
-	FirstQuoteMethodLeastSeen FirstQuoteMethod = "least_seen"
-	FirstQuoteMethodRandom    FirstQuoteMethod = "random"
+	FirstQuoteMethodLeastSeen  FirstQuoteMethod = "least_seen"
+	FirstQuoteMethodRandom     FirstQuoteMethod = "random"
+	FirstQuoteMethodHighestElo FirstQuoteMethod = "highest_elo"
 )
 
 func (m FirstQuoteMethod) String() string {
@@ -84,6 +110,8 @@ func (m FirstQuoteMethod) DisplayName() string {
 		return "Least seen"
 	case FirstQuoteMethodRandom:
 		return "Random"
+	case FirstQuoteMethodHighestElo:
+		return "Highest Elo"
 	default:
 		return "Unknown method"
 	}
@@ -95,6 +123,8 @@ func (m FirstQuoteMethod) Description() string {
 		return "Selects the quote that you have completed the least comparisons for."
 	case FirstQuoteMethodRandom:
 		return "Selects a quote completely at random."
+	case FirstQuoteMethodHighestElo:
+		return "Selects the quote with the highest Elo rating."
 	default:
 		return "Unknown method"
 	}
@@ -103,11 +133,13 @@ func (m FirstQuoteMethod) Description() string {
 var FirstQuoteMethods = []FirstQuoteMethod{
 	FirstQuoteMethodLeastSeen,
 	FirstQuoteMethodRandom,
+	FirstQuoteMethodHighestElo,
 }
 
 var firstQuoteSelectors = map[FirstQuoteMethod]FirstQuoteSelector{
-	FirstQuoteMethodLeastSeen: firstQuoteLeastSeen,
-	FirstQuoteMethodRandom:    firstQuoteRandom,
+	FirstQuoteMethodLeastSeen:  firstQuoteLeastSeen,
+	FirstQuoteMethodRandom:     firstQuoteRandom,
+	FirstQuoteMethodHighestElo: firstQuoteHighestElo,
 }
 
 func selectFirstQuote(ctx context.Context, userId string, method FirstQuoteMethod) (database.Quote, error) {
