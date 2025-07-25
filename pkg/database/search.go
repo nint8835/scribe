@@ -21,7 +21,7 @@ func Search(opts SearchOptions) ([]Quote, int, error) {
 	if opts.Author != nil {
 		query = query.
 			Joins("INNER JOIN quote_authors ON quote_authors.quote_id = quotes.id").
-			Where(map[string]interface{}{"quote_authors.author_id": opts.Author})
+			Where("quote_authors.author_id = ?", opts.Author)
 	}
 
 	if opts.Query != nil {

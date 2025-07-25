@@ -22,7 +22,7 @@ func (b *Bot) randomQuoteCommand(_ *discordgo.Session, interaction *discordgo.In
 	if args.Author != nil {
 		query = query.
 			Joins("INNER JOIN quote_authors ON quote_authors.quote_id = quotes.id").
-			Where(map[string]interface{}{"quote_authors.author_id": args.Author.ID})
+			Where("quote_authors.author_id = ?", args.Author.ID)
 	}
 
 	result := query.Find(&quotes)
