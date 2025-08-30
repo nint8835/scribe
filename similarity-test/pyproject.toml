@@ -1,0 +1,16 @@
+[project]
+name = "similarity-test"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "sentence-transformers>=5.1.0",
+    "sqlite-vec>=0.1.6",
+]
+
+[dependency-groups]
+dev = ["ruff>=0.12.11"]
+
+[tool.ruff.lint]
+select = ["I"]
