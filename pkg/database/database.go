@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	sqlite_vec "github.com/asg017/sqlite-vec-go-bindings/cgo"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -78,6 +79,8 @@ func initNonGormResources() error {
 }
 
 func Initialize(connectionString string) error {
+	sqlite_vec.Auto()
+
 	newInstance, err := gorm.Open(sqlite.Open(connectionString), &gorm.Config{
 		Logger: logger.New(
 			log.New(os.Stdout, "\r\n", log.LstdFlags),

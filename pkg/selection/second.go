@@ -3,6 +3,10 @@ package selection
 import (
 	"context"
 	"encoding/gob"
+	"fmt"
+
+	sqlite_vec "github.com/asg017/sqlite-vec-go-bindings/cgo"
+	"github.com/knights-analytics/hugot"
 
 	"github.com/nint8835/scribe/pkg/database"
 )
@@ -119,6 +123,59 @@ func secondQuoteFurthestRank(ctx context.Context, userId string, firstQuote data
 	return quote, nil
 }
 
+func secondQuoteSemanticSimilarity(ctx context.Context, userId string, firstQuote database.Quote) (database.Quote, error) {
+	var quote database.Quote
+	db := database.Instance.WithContext(ctx)
+
+	session, err := hugot.NewGoSession()
+	if err != nil {
+		return database.Quote{}, fmt.Errorf("failed to create Hugot session: %w", err)
+	}
+
+	downloadOptions := hugot.NewDownloadOptions()
+	downloadOptions.OnnxFilePath = "onnx/model.onnx"
+	modelPath, err := hugot.DownloadModel(
+		"sentence-transformers/all-MiniLM-L6-v2",
+		"./models/",
+		downloadOptions,
+	)
+	if err != nil {
+		return database.Quote{}, fmt.Errorf("failed to download model: %w", err)
+	}
+
+	config := hugot.FeatureExtractionConfig{
+		ModelPath: modelPath,
+		Name:      "embeddingPipeline",
+	}
+
+	embeddingPipeline, err := hugot.NewPipeline(session, config)
+	if err != nil {
+		return database.Quote{}, fmt.Errorf("failed to create embedding pipeline: %w", err)
+	}
+
+	result, err := embeddingPipeline.RunPipeline([]string{firstQuote.Text})
+	if err != nil {
+		return database.Quote{}, fmt.Errorf("failed to run embedding pipeline: %w", err)
+	}
+
+	encodedEmbedding, err := sqlite_vec.SerializeFloat32(result.Embeddings[0])
+	if err != nil {
+		return database.Quote{}, fmt.Errorf("failed to serialize embedding: %w", err)
+	}
+
+	err = db.Raw(
+		`SELECT q.* FROM quote_embeddings qe LEFT JOIN quotes q ON qe.rowid = q.id WHERE qe.embedding MATCH ? AND qe.k = 5 AND q.id != ? AND q.deleted_at IS NULL`,
+		encodedEmbedding,
+		firstQuote.Meta.ID,
+	).Take(&quote).Error
+
+	if err != nil {
+		return database.Quote{}, err
+	}
+
+	return quote, nil
+}
+
 func secondQuoteRandom(ctx context.Context, userId string, firstQuote database.Quote) (database.Quote, error) {
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
@@ -167,9 +224,10 @@ func secondQuoteRandom(ctx context.Context, userId string, firstQuote database.Q
 }
 
 const (
-	SecondQuoteMethodClosestRank  SecondQuoteMethod = "closest_rank"
-	SecondQuoteMethodFurthestRank SecondQuoteMethod = "furthest_rank"
-	SecondQuoteMethodRandom       SecondQuoteMethod = "random"
+	SecondQuoteMethodClosestRank        SecondQuoteMethod = "closest_rank"
+	SecondQuoteMethodFurthestRank       SecondQuoteMethod = "furthest_rank"
+	SecondQuoteMethodSemanticSimilarity SecondQuoteMethod = "semantic_similarity"
+	SecondQuoteMethodRandom             SecondQuoteMethod = "random"
 )
 
 func (m SecondQuoteMethod) String() string {
@@ -182,6 +240,8 @@ func (m SecondQuoteMethod) DisplayName() string {
 		return "Closest rank"
 	case SecondQuoteMethodFurthestRank:
 		return "Furthest rank"
+	case SecondQuoteMethodSemanticSimilarity:
+		return "Semantic similarity"
 	case SecondQuoteMethodRandom:
 		return "Random"
 	default:
@@ -195,6 +255,8 @@ func (m SecondQuoteMethod) Description() string {
 		return "Selects a quote that is closest in Elo rating to the first quote, that you have not already ranked."
 	case SecondQuoteMethodFurthestRank:
 		return "Selects a quote that is furthest in Elo rating from the first quote, that you have not already ranked."
+	case SecondQuoteMethodSemanticSimilarity:
+		return "Selects a quote that is semantically similar to the first quote, that you have not already ranked."
 	case SecondQuoteMethodRandom:
 		return "Selects a random quote that you have not already ranked against the first quote."
 	default:
@@ -205,13 +267,15 @@ func (m SecondQuoteMethod) Description() string {
 var SecondQuoteMethods = []SecondQuoteMethod{
 	SecondQuoteMethodClosestRank,
 	SecondQuoteMethodFurthestRank,
+	SecondQuoteMethodSemanticSimilarity,
 	SecondQuoteMethodRandom,
 }
 
 var secondQuoteSelectors = map[SecondQuoteMethod]SecondQuoteSelector{
-	SecondQuoteMethodClosestRank:  secondQuoteClosestRank,
-	SecondQuoteMethodFurthestRank: secondQuoteFurthestRank,
-	SecondQuoteMethodRandom:       secondQuoteRandom,
+	SecondQuoteMethodClosestRank:        secondQuoteClosestRank,
+	SecondQuoteMethodFurthestRank:       secondQuoteFurthestRank,
+	SecondQuoteMethodSemanticSimilarity: secondQuoteSemanticSimilarity,
+	SecondQuoteMethodRandom:             secondQuoteRandom,
 }
 
 func selectSecondQuote(ctx context.Context, userId string, firstQuote database.Quote, method SecondQuoteMethod) (database.Quote, error) {
