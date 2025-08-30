@@ -52,6 +52,8 @@ func (b *Bot) editQuoteCommand(_ *discordgo.Session, interaction *discordgo.Inte
 		return
 	}
 
+	//TODO: Update embedding
+
 	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{

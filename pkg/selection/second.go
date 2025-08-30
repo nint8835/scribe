@@ -6,9 +6,9 @@ import (
 	"fmt"
 
 	sqlite_vec "github.com/asg017/sqlite-vec-go-bindings/cgo"
-	"github.com/knights-analytics/hugot"
 
 	"github.com/nint8835/scribe/pkg/database"
+	"github.com/nint8835/scribe/pkg/embedding"
 )
 
 func secondQuoteClosestRank(ctx context.Context, userId string, firstQuote database.Quote) (database.Quote, error) {
@@ -127,33 +127,7 @@ func secondQuoteSemanticSimilarity(ctx context.Context, userId string, firstQuot
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
 
-	session, err := hugot.NewGoSession()
-	if err != nil {
-		return database.Quote{}, fmt.Errorf("failed to create Hugot session: %w", err)
-	}
-
-	downloadOptions := hugot.NewDownloadOptions()
-	downloadOptions.OnnxFilePath = "onnx/model.onnx"
-	modelPath, err := hugot.DownloadModel(
-		"sentence-transformers/all-MiniLM-L6-v2",
-		"./models/",
-		downloadOptions,
-	)
-	if err != nil {
-		return database.Quote{}, fmt.Errorf("failed to download model: %w", err)
-	}
-
-	config := hugot.FeatureExtractionConfig{
-		ModelPath: modelPath,
-		Name:      "embeddingPipeline",
-	}
-
-	embeddingPipeline, err := hugot.NewPipeline(session, config)
-	if err != nil {
-		return database.Quote{}, fmt.Errorf("failed to create embedding pipeline: %w", err)
-	}
-
-	result, err := embeddingPipeline.RunPipeline([]string{firstQuote.Text})
+	result, err := embedding.Pipeline.RunPipeline([]string{firstQuote.Text})
 	if err != nil {
 		return database.Quote{}, fmt.Errorf("failed to run embedding pipeline: %w", err)
 	}
@@ -163,6 +137,7 @@ func secondQuoteSemanticSimilarity(ctx context.Context, userId string, firstQuot
 		return database.Quote{}, fmt.Errorf("failed to serialize embedding: %w", err)
 	}
 
+	//TODO: Dejank this query
 	err = db.Raw(
 		`SELECT q.* FROM quote_embeddings qe LEFT JOIN quotes q ON qe.rowid = q.id WHERE qe.embedding MATCH ? AND qe.k = 5 AND q.id != ? AND q.deleted_at IS NULL`,
 		encodedEmbedding,

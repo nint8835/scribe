@@ -123,6 +123,8 @@ func (b *Bot) addQuote(quote database.Quote, interaction *discordgo.InteractionC
 		})
 	}
 
+	//TODO: Create embedding
+
 	embed, err := b.makeQuoteEmbed(&quote, interaction.GuildID)
 	if err != nil {
 		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
