@@ -9,15 +9,17 @@ def serialize_f32(vector: list[float]) -> bytes:
     return struct.pack("%sf" % len(vector), *vector)
 
 
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
 db = sqlite3.connect("quotes.sqlite")
 db.enable_load_extension(True)
 sqlite_vec.load(db)
 db.enable_load_extension(False)
 
 db.execute("DROP TABLE IF EXISTS vec_items")
-db.execute("CREATE VIRTUAL TABLE vec_items USING vec0(embedding float[384])")
-
-model = SentenceTransformer("all-MiniLM-L6-v2")
+db.execute(
+    "CREATE VIRTUAL TABLE vec_items USING vec0(embedding float[384] distance_metric=cosine)"
+)
 
 quotes = db.execute("SELECT id, text FROM quotes").fetchall()
 for quote_id, text in quotes:
@@ -32,12 +34,10 @@ target_quote = input("Enter a quote: ")
 target_embedding = model.encode(target_quote)
 
 results = db.execute(
-    "SELECT rowid, distance FROM vec_items WHERE embedding MATCH ? ORDER BY distance LIMIT 5",
+    "SELECT rowid, distance, quotes.text FROM vec_items LEFT JOIN quotes ON quotes.id = vec_items.rowid WHERE vec_items.embedding MATCH ? AND vec_items.k=5 ORDER BY distance",
     [serialize_f32(target_embedding)],
 ).fetchall()
-
-for rowid, distance in results:
-    quote = db.execute("SELECT text FROM quotes WHERE id = ?", (rowid,)).fetchone()
-    print(f"{distance:.3f}: {quote[0]}")
+for rowid, distance, text in results:
+    print(f"{rowid}: {distance:.4f} - {text}")
 
 db.close()
