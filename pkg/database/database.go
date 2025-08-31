@@ -11,6 +11,8 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"github.com/nint8835/scribe/pkg/embedding"
 )
 
 var Instance *gorm.DB
@@ -110,7 +112,34 @@ func initializeQuoteEmbeddings() error {
 		return fmt.Errorf("error creating quote_embeddings table: %w", err)
 	}
 
-	//TODO: Backfill embeddings
+	var quotes []Quote
+	err = Instance.Find(&quotes).Error
+	if err != nil {
+		return fmt.Errorf("error querying quotes for backfill: %w", err)
+	}
+
+	slog.Info("Backfilling quote embeddings - this may take a while", "count", len(quotes))
+
+	for _, quote := range quotes {
+		slog.Info("Backfilling embedding for quote", "id", quote.Meta.ID)
+		encodedEmbedding, err := embedding.EmbedQuote(quote.Text)
+		if err != nil {
+			log.Printf("error embedding quote ID %d for backfill: %v", quote.Meta.ID, err)
+			continue
+		}
+
+		err = Instance.Exec(
+			"INSERT INTO quote_embeddings(rowid, embedding) VALUES(?, ?)",
+			quote.Meta.ID,
+			encodedEmbedding,
+		).Error
+		if err != nil {
+			log.Printf("error inserting embedding for quote ID %d for backfill: %v", quote.Meta.ID, err)
+			continue
+		}
+	}
+
+	slog.Info("Finished backfilling quote embeddings")
 
 	return nil
 }
