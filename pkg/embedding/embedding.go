@@ -14,6 +14,8 @@ import (
 var Pipeline *pipelines.FeatureExtractionPipeline
 
 func Initialize() error {
+	slog.Debug("Initializing embedding support")
+
 	session, err := hugot.NewGoSession()
 	if err != nil {
 		return fmt.Errorf("failed to create Hugot session: %w", err)
@@ -27,6 +29,7 @@ func Initialize() error {
 	downloadOptions := hugot.NewDownloadOptions()
 	downloadOptions.OnnxFilePath = "onnx/model.onnx"
 
+	slog.Debug("Downloading embedding model")
 	modelPath, err := hugot.DownloadModel(
 		"sentence-transformers/all-MiniLM-L6-v2",
 		modelsDir,
@@ -41,10 +44,13 @@ func Initialize() error {
 		Name:      "embeddingPipeline",
 	}
 
+	slog.Debug("Creating embedding pipeline", "modelPath", modelPath)
 	embeddingPipeline, err := hugot.NewPipeline(session, config)
 	if err != nil {
 		return fmt.Errorf("failed to create embedding pipeline: %w", err)
 	}
+
+	slog.Debug("Pipeline created successfully")
 
 	Pipeline = embeddingPipeline
 	return nil
