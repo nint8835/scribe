@@ -137,11 +137,51 @@ func secondQuoteSemanticSimilarity(ctx context.Context, userId string, firstQuot
 		return database.Quote{}, fmt.Errorf("failed to serialize embedding: %w", err)
 	}
 
-	//TODO: Dejank this query
 	err = db.Raw(
-		`SELECT q.* FROM quote_embeddings qe LEFT JOIN quotes q ON qe.rowid = q.id WHERE qe.embedding MATCH ? AND qe.k = 5 AND q.id != ? AND q.deleted_at IS NULL`,
-		encodedEmbedding,
+		`WITH
+			compared_quotes AS (
+				SELECT
+					CASE
+						WHEN c.quote_a_id = ? THEN c.quote_b_id
+						WHEN c.quote_b_id = ? THEN c.quote_a_id
+					END AS compared_quote_id
+				FROM
+					completed_comparisons c
+				WHERE
+					c.user_id = ?
+					AND (
+						c.quote_a_id = ?
+						OR c.quote_b_id = ?
+					)
+			),
+			filtered_quotes AS (
+				SELECT
+					q.*
+				FROM
+					quotes q
+					LEFT JOIN compared_quotes cq ON q.id = cq.compared_quote_id
+				WHERE
+					q.deleted_at IS NULL
+					AND q.id != ?
+					AND cq.compared_quote_id IS NULL
+			)
+		SELECT
+			q.*
+		FROM
+			quote_embeddings qe
+			JOIN filtered_quotes q ON q.id = qe.rowid
+		WHERE
+			qe.embedding MATCH ?
+			AND qe.k = 5
+		ORDER BY
+			distance`,
 		firstQuote.Meta.ID,
+		firstQuote.Meta.ID,
+		userId,
+		firstQuote.Meta.ID,
+		firstQuote.Meta.ID,
+		firstQuote.Meta.ID,
+		encodedEmbedding,
 	).Take(&quote).Error
 
 	if err != nil {
