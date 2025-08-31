@@ -164,8 +164,9 @@ func secondQuoteSemanticSimilarity(ctx context.Context, userId string, firstQuot
 			quote_embeddings qe
 			JOIN filtered_quotes q ON q.id = qe.rowid
 		WHERE
-			qe.embedding MATCH ?
-			AND qe.k = 5
+			qe.rowid IN (SELECT id FROM filtered_quotes)
+			AND qe.embedding MATCH ?
+			AND qe.k = 1
 		ORDER BY
 			distance`,
 		firstQuote.Meta.ID,
