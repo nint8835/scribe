@@ -3,6 +3,7 @@ package embedding
 import (
 	"fmt"
 	"log/slog"
+	"os"
 	"strings"
 
 	sqlite_vec "github.com/asg017/sqlite-vec-go-bindings/cgo"
@@ -18,11 +19,17 @@ func Initialize() error {
 		return fmt.Errorf("failed to create Hugot session: %w", err)
 	}
 
+	modelsDir := "./models/"
+	if err := os.MkdirAll(modelsDir, 0755); err != nil {
+		return fmt.Errorf("failed to create models directory: %w", err)
+	}
+
 	downloadOptions := hugot.NewDownloadOptions()
 	downloadOptions.OnnxFilePath = "onnx/model.onnx"
+
 	modelPath, err := hugot.DownloadModel(
 		"sentence-transformers/all-MiniLM-L6-v2",
-		"./models/",
+		modelsDir,
 		downloadOptions,
 	)
 	if err != nil {
