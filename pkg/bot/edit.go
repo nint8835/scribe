@@ -9,6 +9,7 @@ import (
 
 	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/database"
+	"github.com/nint8835/scribe/pkg/embedding"
 )
 
 type editArgs struct {
@@ -47,6 +48,32 @@ func (b *Bot) editQuoteCommand(_ *discordgo.Session, interaction *discordgo.Inte
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error editing quote.\n```\n%s\n```", result.Error),
+			},
+		})
+		return
+	}
+
+	encodedEmbedding, err := embedding.EmbedQuote(quote.Text)
+	if err != nil {
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error creating quote embedding.\n```\n%s\n```", err),
+			},
+		})
+		return
+	}
+
+	err = database.Instance.Exec(
+		"UPDATE quote_embeddings SET embedding = ? WHERE rowid = ?",
+		encodedEmbedding,
+		quote.Meta.ID,
+	).Error
+	if err != nil {
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error saving quote embedding.\n```\n%s\n```", err),
 			},
 		})
 		return

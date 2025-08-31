@@ -10,6 +10,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/nint8835/scribe/pkg/database"
+	"github.com/nint8835/scribe/pkg/embedding"
 )
 
 func formatDiscordMember(member *discordgo.Member) string {
@@ -121,6 +122,32 @@ func (b *Bot) addQuote(quote database.Quote, interaction *discordgo.InteractionC
 				Content: fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error),
 			},
 		})
+	}
+
+	encodedEmbedding, err := embedding.EmbedQuote(quote.Text)
+	if err != nil {
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error creating quote embedding.\n```\n%s\n```", err),
+			},
+		})
+		return
+	}
+
+	err = database.Instance.Exec(
+		"INSERT INTO quote_embeddings(rowid, embedding) VALUES(?, ?)",
+		quote.Meta.ID,
+		encodedEmbedding,
+	).Error
+	if err != nil {
+		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error saving quote embedding.\n```\n%s\n```", err),
+			},
+		})
+		return
 	}
 
 	embed, err := b.makeQuoteEmbed(&quote, interaction.GuildID)

@@ -7,6 +7,7 @@ import (
 	"github.com/nint8835/scribe/pkg/bot"
 	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/database"
+	"github.com/nint8835/scribe/pkg/embedding"
 	"github.com/nint8835/scribe/pkg/web"
 )
 
@@ -14,6 +15,12 @@ func main() {
 	err := config.Load()
 	if err != nil {
 		slog.Error("Error loading config", "error", err)
+		os.Exit(1)
+	}
+
+	err = embedding.Initialize()
+	if err != nil {
+		slog.Error("Error initializing embedding", "error", err)
 		os.Exit(1)
 	}
 
