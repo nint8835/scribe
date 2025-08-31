@@ -2,6 +2,8 @@ package embedding
 
 import (
 	"fmt"
+	"log/slog"
+	"strings"
 
 	sqlite_vec "github.com/asg017/sqlite-vec-go-bindings/cgo"
 	"github.com/knights-analytics/hugot"
@@ -42,8 +44,24 @@ func Initialize() error {
 }
 
 func EmbedQuote(text string) ([]byte, error) {
-	//TODO: Preprocess text to remove mentions
-	result, err := Pipeline.RunPipeline([]string{text})
+	// Preprocess text to remove mentions
+	lines := strings.Split(text, "\n")
+	for i, line := range lines {
+		// Remove Discord mention prefix pattern like "<@178958252820791296>: "
+		if strings.HasPrefix(line, "<@") {
+			colonIndex := strings.Index(line, ": ")
+			if colonIndex != -1 {
+				lines[i] = line[colonIndex+2:]
+			}
+		}
+	}
+	preprocessedText := strings.Join(lines, "\n")
+
+	if text != preprocessedText {
+		slog.Debug("Preprocessed quote text for embedding", "original", text, "preprocessed", preprocessedText)
+	}
+
+	result, err := Pipeline.RunPipeline([]string{preprocessedText})
 	if err != nil {
 		return []byte{}, fmt.Errorf("failed to run embedding pipeline: %w", err)
 	}
