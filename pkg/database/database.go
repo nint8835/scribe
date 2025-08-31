@@ -118,6 +118,11 @@ func initializeQuoteEmbeddings() error {
 		return fmt.Errorf("error querying quotes for backfill: %w", err)
 	}
 
+	if len(quotes) == 0 {
+		slog.Debug("No quotes found, skipping backfill of quote embeddings")
+		return nil
+	}
+
 	slog.Info("Backfilling quote embeddings - this may take a while", "count", len(quotes))
 
 	for _, quote := range quotes {

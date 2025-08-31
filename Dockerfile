@@ -1,11 +1,11 @@
-FROM golang:1.24-alpine AS builder
-
-RUN apk add --no-cache make gcc musl-dev
+FROM golang:1.24 AS builder
 
 WORKDIR /build
 
+RUN apt-get update && apt-get install -y libsqlite3-dev
+
 ARG TAILWIND_VERSION=v4.0.6
-RUN wget -O /usr/local/bin/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/${TAILWIND_VERSION}/tailwindcss-linux-x64-musl && \
+RUN wget -O /usr/local/bin/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/${TAILWIND_VERSION}/tailwindcss-linux-x64 && \
     chmod +x /usr/local/bin/tailwindcss
 
 COPY go.mod go.sum ./
