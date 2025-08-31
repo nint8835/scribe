@@ -3,6 +3,7 @@ package embedding
 import (
 	"fmt"
 
+	sqlite_vec "github.com/asg017/sqlite-vec-go-bindings/cgo"
 	"github.com/knights-analytics/hugot"
 	"github.com/knights-analytics/hugot/pipelines"
 )
@@ -38,4 +39,19 @@ func Initialize() error {
 
 	Pipeline = embeddingPipeline
 	return nil
+}
+
+func EmbedQuote(text string) ([]byte, error) {
+	//TODO: Preprocess text to remove mentions
+	result, err := Pipeline.RunPipeline([]string{text})
+	if err != nil {
+		return []byte{}, fmt.Errorf("failed to run embedding pipeline: %w", err)
+	}
+
+	encodedEmbedding, err := sqlite_vec.SerializeFloat32(result.Embeddings[0])
+	if err != nil {
+		return []byte{}, fmt.Errorf("failed to serialize embedding: %w", err)
+	}
+
+	return encodedEmbedding, nil
 }

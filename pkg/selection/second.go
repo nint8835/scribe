@@ -5,8 +5,6 @@ import (
 	"encoding/gob"
 	"fmt"
 
-	sqlite_vec "github.com/asg017/sqlite-vec-go-bindings/cgo"
-
 	"github.com/nint8835/scribe/pkg/database"
 	"github.com/nint8835/scribe/pkg/embedding"
 )
@@ -127,12 +125,7 @@ func secondQuoteSemanticSimilarity(ctx context.Context, userId string, firstQuot
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
 
-	result, err := embedding.Pipeline.RunPipeline([]string{firstQuote.Text})
-	if err != nil {
-		return database.Quote{}, fmt.Errorf("failed to run embedding pipeline: %w", err)
-	}
-
-	encodedEmbedding, err := sqlite_vec.SerializeFloat32(result.Embeddings[0])
+	encodedEmbedding, err := embedding.EmbedQuote(firstQuote.Text)
 	if err != nil {
 		return database.Quote{}, fmt.Errorf("failed to serialize embedding: %w", err)
 	}
