@@ -11,6 +11,10 @@ import (
 )
 
 func (s *Server) getSession(r *http.Request) *sessions.Session {
+	if config.Instance.CookieSecret == "" {
+		panic("SCRIBE_COOKIE_SECRET is not set - sessions will not function correctly.")
+	}
+
 	session, _ := s.sessionStore.Get(r, "session")
 	return session
 }
