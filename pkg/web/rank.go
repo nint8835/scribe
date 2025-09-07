@@ -75,11 +75,11 @@ func (s *Server) selectQuotes(r *http.Request) (database.Quote, database.Quote, 
 	secondMethod, secondMethodSet := session.Values["second_method"].(selection.SecondQuoteMethod)
 
 	if !firstMethodSet {
-		firstMethod = selection.FirstQuoteMethodLeastSeen
+		firstMethod = selection.DefaultFirstQuoteMethod
 	}
 
 	if !secondMethodSet {
-		secondMethod = selection.SecondQuoteMethodClosestRank
+		secondMethod = selection.DefaultSecondQuoteMethod
 	}
 
 	return selection.SelectQuotes(r.Context(), userId, firstMethod, secondMethod)

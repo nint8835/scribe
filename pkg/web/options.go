@@ -19,7 +19,7 @@ func (s *Server) handleGetOptions(w http.ResponseWriter, r *http.Request) error 
 	}
 
 	if !secondMethodSet {
-		secondMethod = selection.SecondQuoteMethodClosestRank
+		secondMethod = selection.SecondQuoteMethodSemanticSimilarity
 	}
 
 	pages.Options(

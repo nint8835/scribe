@@ -287,10 +287,12 @@ var secondQuoteSelectors = map[SecondQuoteMethod]SecondQuoteSelector{
 	SecondQuoteMethodRandom:             secondQuoteRandom,
 }
 
+var DefaultSecondQuoteMethod = SecondQuoteMethodSemanticSimilarity
+
 func selectSecondQuote(ctx context.Context, userId string, firstQuote database.Quote, method SecondQuoteMethod) (database.Quote, error) {
 	selector, ok := secondQuoteSelectors[method]
 	if !ok {
-		return database.Quote{}, ErrUnknownMethod
+		selector = secondQuoteSelectors[DefaultSecondQuoteMethod]
 	}
 	return selector(ctx, userId, firstQuote)
 }
