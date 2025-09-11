@@ -32,6 +32,7 @@ func (b *Bot) semanticQueryCommand(_ *discordgo.Session, interaction *discordgo.
 		WHERE
 			quote_embeddings.embedding MATCH ?
 			AND quote_embeddings.k = 5
+			AND quotes.deleted_at IS NULL
 		ORDER BY
 			quote_embeddings.distance ASC
 		`,
