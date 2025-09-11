@@ -104,6 +104,12 @@ func (b *Bot) registerCommands() {
 		Handler:     b.saveMultiMessageQuoteCommand,
 		GuildID:     config.Instance.GuildId,
 	})
+	_ = b.parser.AddCommand(&switchboard.Command{
+		Name:        "semanticquery",
+		Description: "Search for quotes semantically.",
+		Handler:     b.semanticQueryCommand,
+		GuildID:     config.Instance.GuildId,
+	})
 
 	// Message commands
 	_ = b.parser.AddCommand(&switchboard.Command{
