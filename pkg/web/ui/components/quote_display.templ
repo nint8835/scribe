@@ -37,7 +37,7 @@ templ QuoteDisplay(props QuoteDisplayProps) {
 				hx-trigger={ "click, keyup[key=='" + props.KeyboardKey + "'] from:body" }
 				hx-post="/rank"
 				hx-target="#rank-form"
-				class="max-h-full w-full transition-all"
+				class="max-h-full w-full flex-grow transition-all"
 				type="submit"
 				name="winner"
 				value={ props.ID }

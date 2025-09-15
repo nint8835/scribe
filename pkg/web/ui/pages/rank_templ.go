@@ -13,7 +13,7 @@ import (
 	"github.com/nint8835/scribe/pkg/web/ui/components"
 )
 
-func Rank(props components.RankProps, stats components.RankStatsDisplayProps) templ.Component {
+func Rank(props components.RankProps, stats components.RankStatsDisplayProps, rankResult *components.RankResultProps) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -46,7 +46,7 @@ func Rank(props components.RankProps, stats components.RankStatsDisplayProps) te
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex h-screen w-screen flex-col items-center justify-center gap-2 p-4\"><form id=\"rank-form\" hx-post=\"/rank\" class=\"grid min-h-0 w-full max-w-5xl grid-cols-1 grid-rows-2 gap-4 md:grid-cols-2 md:grid-rows-1\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex h-full flex-col items-center p-4\"><div class=\"flex max-w-5xl flex-1 flex-col items-center justify-center gap-4\"><form id=\"rank-form\" hx-post=\"/rank\" class=\"grid min-h-0 w-full grid-cols-1 grid-rows-2 gap-4 md:grid-cols-2 md:grid-rows-1\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -54,7 +54,7 @@ func Rank(props components.RankProps, stats components.RankStatsDisplayProps) te
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</form><div id=\"rank-results\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -62,7 +62,7 @@ func Rank(props components.RankProps, stats components.RankStatsDisplayProps) te
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

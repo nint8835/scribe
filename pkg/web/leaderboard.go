@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/nint8835/scribe/pkg/database"
 	"github.com/nint8835/scribe/pkg/web/ui/pages"
@@ -58,13 +57,9 @@ func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) er
 			return fmt.Errorf("error rendering quote: %w", err)
 		}
 
-		authorMentions := make([]string, len(quote.Authors))
-		for i, author := range quote.Authors {
-			authorMentions[i] = fmt.Sprintf("<@%s>", author.ID)
-		}
-		authorNames, err := s.resolveAuthorIDs(strings.Join(authorMentions, ", "))
+		authorNames, err := s.formatAuthors(quote)
 		if err != nil {
-			return fmt.Errorf("error resolving author IDs: %w", err)
+			return fmt.Errorf("error formatting author names: %w", err)
 		}
 
 		formattedQuotes[i] = pages.LeaderboardQuote{
