@@ -17,9 +17,9 @@ type RankResultProps struct {
 
 templ formatRankDisplay(newRank int, change int) {
 	if change > 0 {
-		<span class="text-green-400 font-semibold">#{strconv.Itoa(newRank)} (+{strconv.Itoa(change)})</span>
+		<span class="font-semibold text-green-400">#{strconv.Itoa(newRank)} (+{strconv.Itoa(change)})</span>
 	} else if change < 0 {
-		<span class="text-red-400 font-semibold">#{strconv.Itoa(newRank)} ({strconv.Itoa(change)})</span>
+		<span class="font-semibold text-red-400">#{strconv.Itoa(newRank)} ({strconv.Itoa(change)})</span>
 	} else {
 		<span class="text-zinc-400">#{strconv.Itoa(newRank)} (0)</span>
 	}
@@ -29,17 +29,17 @@ templ RankResult(props RankResultProps) {
 	{{ quoteARankChange := props.QuoteARankBefore - props.QuoteARankAfter }}
 	{{ quoteBRankChange := props.QuoteBRankBefore - props.QuoteBRankAfter }}
 
-	<div id="rank-results" class="bg-zinc-700 rounded p-2 [&_p]:inline w-full" hx-swap-oob="true">
-		<div class="text-sm mb-0.5">
+	<div id="rank-results" class="w-full rounded bg-zinc-700 p-2 [&_p]:inline" hx-swap-oob="true">
+		<div class="mb-0.5 text-sm">
 			<span class="mr-1">@formatRankDisplay(props.QuoteARankAfter, quoteARankChange)</span>
-			<span class="prose prose-sm inline" style="max-width: none;">@templ.Raw(props.QuoteAContent)</span>
+			<span class="prose prose-sm inline max-w-none">@templ.Raw(props.QuoteAContent)</span>
 		</div>
 		<div class="ml-4 text-xs text-zinc-400 italic">
 			{"— "}@templ.Raw(props.QuoteAAuthors)
 		</div>
-		<div class="text-sm mb-0.5 mt-2">
+		<div class="mt-2 mb-0.5 text-sm">
 			<span class="mr-1">@formatRankDisplay(props.QuoteBRankAfter, quoteBRankChange)</span>
-			<span class="prose prose-sm inline" style="max-width: none;">@templ.Raw(props.QuoteBContent)</span>
+			<span class="prose prose-sm inline max-w-none">@templ.Raw(props.QuoteBContent)</span>
 		</div>
 		<div class="ml-4 text-xs text-zinc-400 italic">
 			{"— "}@templ.Raw(props.QuoteBAuthors)

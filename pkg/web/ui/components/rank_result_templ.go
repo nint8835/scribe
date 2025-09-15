@@ -45,7 +45,7 @@ func formatRankDisplay(newRank int, change int) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if change > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<span class=\"text-green-400 font-semibold\">#")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<span class=\"font-semibold text-green-400\">#")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -76,7 +76,7 @@ func formatRankDisplay(newRank int, change int) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else if change < 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"text-red-400 font-semibold\">#")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"font-semibold text-red-400\">#")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -152,7 +152,7 @@ func RankResult(props RankResultProps) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		quoteARankChange := props.QuoteARankBefore - props.QuoteARankAfter
 		quoteBRankChange := props.QuoteBRankBefore - props.QuoteBRankAfter
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div id=\"rank-results\" class=\"bg-zinc-700 rounded p-2 [&_p]:inline w-full\" hx-swap-oob=\"true\"><div class=\"text-sm mb-0.5\"><span class=\"mr-1\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div id=\"rank-results\" class=\"w-full rounded bg-zinc-700 p-2 [&_p]:inline\" hx-swap-oob=\"true\"><div class=\"mb-0.5 text-sm\"><span class=\"mr-1\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -160,7 +160,7 @@ func RankResult(props RankResultProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span> <span class=\"prose prose-sm inline\" style=\"max-width: none;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span> <span class=\"prose prose-sm inline max-w-none\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -185,7 +185,7 @@ func RankResult(props RankResultProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div><div class=\"text-sm mb-0.5 mt-2\"><span class=\"mr-1\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div><div class=\"mt-2 mb-0.5 text-sm\"><span class=\"mr-1\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -193,7 +193,7 @@ func RankResult(props RankResultProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</span> <span class=\"prose prose-sm inline\" style=\"max-width: none;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</span> <span class=\"prose prose-sm inline max-w-none\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

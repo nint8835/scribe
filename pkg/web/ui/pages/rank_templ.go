@@ -46,7 +46,7 @@ func Rank(props components.RankProps, stats components.RankStatsDisplayProps, ra
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col h-full items-center p-4\"><div class=\"max-w-5xl flex-1 flex flex-col items-center justify-center gap-4\"><form id=\"rank-form\" hx-post=\"/rank\" class=\"grid min-h-0 w-full grid-cols-1 grid-rows-2 gap-4 md:grid-cols-2 md:grid-rows-1\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex h-full flex-col items-center p-4\"><div class=\"flex max-w-5xl flex-1 flex-col items-center justify-center gap-4\"><form id=\"rank-form\" hx-post=\"/rank\" class=\"grid min-h-0 w-full grid-cols-1 grid-rows-2 gap-4 md:grid-cols-2 md:grid-rows-1\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

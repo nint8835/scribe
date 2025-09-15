@@ -197,7 +197,7 @@ func QuoteDisplay(props QuoteDisplayProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-post=\"/rank\" hx-target=\"#rank-form\" class=\"max-h-full flex-grow w-full transition-all\" type=\"submit\" name=\"winner\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-post=\"/rank\" hx-target=\"#rank-form\" class=\"max-h-full w-full flex-grow transition-all\" type=\"submit\" name=\"winner\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
