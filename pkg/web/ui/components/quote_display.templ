@@ -21,7 +21,7 @@ templ quoteContent(props QuoteDisplayProps) {
 		<div class="size-8 shrink-0">
 			@QuotationMark()
 		</div>
-		<div class="max-h-full overflow-y-auto whitespace-pre-wrap text-left">
+		<div class="max-h-full overflow-y-auto text-left">
 			@templ.Raw(props.Content)
 		</div>
 	</div>
@@ -37,7 +37,7 @@ templ QuoteDisplay(props QuoteDisplayProps) {
 				hx-trigger={ "click, keyup[key=='" + props.KeyboardKey + "'] from:body" }
 				hx-post="/rank"
 				hx-target="#rank-form"
-				class="max-h-full w-full flex-grow transition-all"
+				class="max-h-full w-full flex-grow transition-all [&_p]:whitespace-pre-wrap"
 				type="submit"
 				name="winner"
 				value={ props.ID }
