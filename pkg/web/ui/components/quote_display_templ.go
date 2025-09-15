@@ -94,7 +94,7 @@ func quoteContent(props QuoteDisplayProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"max-h-full overflow-y-auto whitespace-pre-wrap text-left\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"max-h-full overflow-y-auto text-left\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -197,7 +197,7 @@ func QuoteDisplay(props QuoteDisplayProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-post=\"/rank\" hx-target=\"#rank-form\" class=\"max-h-full w-full flex-grow transition-all\" type=\"submit\" name=\"winner\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-post=\"/rank\" hx-target=\"#rank-form\" class=\"max-h-full w-full flex-grow transition-all [&_p]:whitespace-pre-wrap\" type=\"submit\" name=\"winner\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
