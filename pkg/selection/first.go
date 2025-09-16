@@ -77,6 +77,32 @@ func firstQuoteLeastSeenGlobal(ctx context.Context, userId string) (database.Quo
 	return quote, nil
 }
 
+func firstQuoteMostAverage(ctx context.Context, userId string) (database.Quote, error) {
+	var quote database.Quote
+	db := database.Instance.WithContext(ctx)
+
+	err := db.Raw(
+		`SELECT
+			q.*,
+			ABS(q.elo - 1000) AS elo_diff
+		FROM
+			quotes q
+		WHERE
+			q.deleted_at IS NULL
+		ORDER BY
+			elo_diff ASC,
+			random()
+		LIMIT
+			1`,
+	).Take(&quote).Error
+
+	if err != nil {
+		return database.Quote{}, err
+	}
+
+	return quote, nil
+}
+
 func firstQuoteRandom(ctx context.Context, _ string) (database.Quote, error) {
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
@@ -104,6 +130,7 @@ func firstQuoteRandom(ctx context.Context, _ string) (database.Quote, error) {
 const (
 	FirstQuoteMethodLeastSeen       FirstQuoteMethod = "least_seen"
 	FirstQuoteMethodLeastSeenGlobal FirstQuoteMethod = "least_seen_global"
+	FirstQuoteMethodMostAverage     FirstQuoteMethod = "most_average"
 	FirstQuoteMethodRandom          FirstQuoteMethod = "random"
 )
 
@@ -117,6 +144,8 @@ func (m FirstQuoteMethod) DisplayName() string {
 		return "Least seen"
 	case FirstQuoteMethodLeastSeenGlobal:
 		return "Least seen (global)"
+	case FirstQuoteMethodMostAverage:
+		return "Most average"
 	case FirstQuoteMethodRandom:
 		return "Random"
 	default:
@@ -130,6 +159,8 @@ func (m FirstQuoteMethod) Description() string {
 		return "Selects the quote that you have completed the least comparisons for."
 	case FirstQuoteMethodLeastSeenGlobal:
 		return "Selects the quote that has had the least comparisons completed for, across all users."
+	case FirstQuoteMethodMostAverage:
+		return "Selects the quote with an Elo rating closest to the average / starting Elo rating."
 	case FirstQuoteMethodRandom:
 		return "Selects a quote completely at random."
 	default:
@@ -140,12 +171,14 @@ func (m FirstQuoteMethod) Description() string {
 var FirstQuoteMethods = []FirstQuoteMethod{
 	FirstQuoteMethodLeastSeen,
 	FirstQuoteMethodLeastSeenGlobal,
+	FirstQuoteMethodMostAverage,
 	FirstQuoteMethodRandom,
 }
 
 var firstQuoteSelectors = map[FirstQuoteMethod]FirstQuoteSelector{
 	FirstQuoteMethodLeastSeen:       firstQuoteLeastSeen,
 	FirstQuoteMethodLeastSeenGlobal: firstQuoteLeastSeenGlobal,
+	FirstQuoteMethodMostAverage:     firstQuoteMostAverage,
 	FirstQuoteMethodRandom:          firstQuoteRandom,
 }
 
