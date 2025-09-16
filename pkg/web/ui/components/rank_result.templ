@@ -29,7 +29,7 @@ templ RankResult(props RankResultProps) {
 	{{ quoteARankChange := props.QuoteARankBefore - props.QuoteARankAfter }}
 	{{ quoteBRankChange := props.QuoteBRankBefore - props.QuoteBRankAfter }}
 
-	<div id="rank-results" class="w-full rounded-lg bg-zinc-700 p-2 [&_p]:inline" hx-swap-oob="true">
+	<div id="rank-results" class="w-full rounded bg-zinc-700 p-2 [&_p]:inline" hx-swap-oob="true">
 		<div class="mb-0.5 text-sm">
 			<span class="mr-1">@formatRankDisplay(props.QuoteARankAfter, quoteARankChange)</span>
 			<span class="prose prose-sm inline max-w-none">@templ.Raw(props.QuoteAContent)</span>
