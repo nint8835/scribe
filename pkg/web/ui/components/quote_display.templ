@@ -21,7 +21,7 @@ templ quoteContent(props QuoteDisplayProps) {
 		<div class="size-8 shrink-0">
 			@QuotationMark()
 		</div>
-		<div class="max-h-full overflow-y-auto whitespace-pre-wrap text-left">
+		<div class="max-h-full overflow-y-auto text-left [&_p]:whitespace-pre-wrap">
 			@templ.Raw(props.Content)
 		</div>
 	</div>
