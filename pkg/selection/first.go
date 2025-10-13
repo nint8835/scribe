@@ -142,6 +142,45 @@ func firstQuoteClosestElo(ctx context.Context, userId string) (database.Quote, e
 	return quote, nil
 }
 
+func firstQuoteClosestTiebreakHighest(ctx context.Context, userId string) (database.Quote, error) {
+	var quote database.Quote
+	db := database.Instance.WithContext(ctx)
+
+	err := db.Raw(
+		`WITH
+			elo_diffs AS (
+				SELECT
+					*,
+					LEAD(elo, 1) OVER (
+						ORDER BY
+							elo
+					) - elo AS next_diff,
+					elo - LAG(elo, 1) OVER (
+						ORDER BY
+							elo
+					) AS prev_diff
+				FROM
+					quotes
+				WHERE
+					deleted_at IS NULL
+			)
+		SELECT
+			*
+		FROM
+			elo_diffs
+		ORDER BY
+			MIN(COALESCE(next_diff, 9999999), COALESCE(prev_diff, 9999999)) ASC,
+			elo DESC
+		LIMIT
+			1`,
+	).Take(&quote).Error
+	if err != nil {
+		return database.Quote{}, err
+	}
+
+	return quote, nil
+}
+
 func firstQuoteRandom(ctx context.Context, _ string) (database.Quote, error) {
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
@@ -167,11 +206,12 @@ func firstQuoteRandom(ctx context.Context, _ string) (database.Quote, error) {
 }
 
 const (
-	FirstQuoteMethodLeastSeen       FirstQuoteMethod = "least_seen"
-	FirstQuoteMethodLeastSeenGlobal FirstQuoteMethod = "least_seen_global"
-	FirstQuoteMethodMostAverage     FirstQuoteMethod = "most_average"
-	FirstQuoteMethodClosestElo      FirstQuoteMethod = "closest_elo"
-	FirstQuoteMethodRandom          FirstQuoteMethod = "random"
+	FirstQuoteMethodLeastSeen              FirstQuoteMethod = "least_seen"
+	FirstQuoteMethodLeastSeenGlobal        FirstQuoteMethod = "least_seen_global"
+	FirstQuoteMethodMostAverage            FirstQuoteMethod = "most_average"
+	FirstQuoteMethodClosestElo             FirstQuoteMethod = "closest_elo"
+	FirstQuoteMethodClosestTiebreakHighest FirstQuoteMethod = "closest_elo_tiebreak_highest"
+	FirstQuoteMethodRandom                 FirstQuoteMethod = "random"
 )
 
 func (m FirstQuoteMethod) String() string {
@@ -188,6 +228,8 @@ func (m FirstQuoteMethod) DisplayName() string {
 		return "Most average"
 	case FirstQuoteMethodClosestElo:
 		return "Closest Elo"
+	case FirstQuoteMethodClosestTiebreakHighest:
+		return "Closest Elo (tiebreak highest)"
 	case FirstQuoteMethodRandom:
 		return "Random"
 	default:
@@ -205,6 +247,8 @@ func (m FirstQuoteMethod) Description() string {
 		return "Selects the quote with an Elo rating closest to the average / starting Elo rating."
 	case FirstQuoteMethodClosestElo:
 		return "Selects the quote with the Elo closest to its neighbours in the leaderboard."
+	case FirstQuoteMethodClosestTiebreakHighest:
+		return "Selects the quote with the Elo closest to its neighbours in the leaderboard. In the case of a tie, selects the quote with the highest Elo."
 	case FirstQuoteMethodRandom:
 		return "Selects a quote completely at random."
 	default:
@@ -217,15 +261,17 @@ var FirstQuoteMethods = []FirstQuoteMethod{
 	FirstQuoteMethodLeastSeenGlobal,
 	FirstQuoteMethodMostAverage,
 	FirstQuoteMethodClosestElo,
+	FirstQuoteMethodClosestTiebreakHighest,
 	FirstQuoteMethodRandom,
 }
 
 var firstQuoteSelectors = map[FirstQuoteMethod]FirstQuoteSelector{
-	FirstQuoteMethodLeastSeen:       firstQuoteLeastSeen,
-	FirstQuoteMethodLeastSeenGlobal: firstQuoteLeastSeenGlobal,
-	FirstQuoteMethodMostAverage:     firstQuoteMostAverage,
-	FirstQuoteMethodClosestElo:      firstQuoteClosestElo,
-	FirstQuoteMethodRandom:          firstQuoteRandom,
+	FirstQuoteMethodLeastSeen:              firstQuoteLeastSeen,
+	FirstQuoteMethodLeastSeenGlobal:        firstQuoteLeastSeenGlobal,
+	FirstQuoteMethodMostAverage:            firstQuoteMostAverage,
+	FirstQuoteMethodClosestElo:             firstQuoteClosestElo,
+	FirstQuoteMethodClosestTiebreakHighest: firstQuoteClosestTiebreakHighest,
+	FirstQuoteMethodRandom:                 firstQuoteRandom,
 }
 
 var DefaultFirstQuoteMethod = FirstQuoteMethodLeastSeen
