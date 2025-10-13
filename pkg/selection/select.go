@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"math/rand"
 
 	"gorm.io/gorm"
 
@@ -25,6 +26,10 @@ func attemptSelectQuotes(
 	secondQuote, err := selectSecondQuote(ctx, userId, firstQuote, secondMethod)
 	if err != nil {
 		return database.Quote{}, database.Quote{}, fmt.Errorf("error selecting second quote: %w", err)
+	}
+
+	if rand.Intn(2) == 0 {
+		return secondQuote, firstQuote, nil
 	}
 
 	return firstQuote, secondQuote, nil
