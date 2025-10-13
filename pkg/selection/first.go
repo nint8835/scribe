@@ -103,6 +103,45 @@ func firstQuoteMostAverage(ctx context.Context, userId string) (database.Quote, 
 	return quote, nil
 }
 
+func firstQuoteClosestElo(ctx context.Context, userId string) (database.Quote, error) {
+	var quote database.Quote
+	db := database.Instance.WithContext(ctx)
+
+	err := db.Raw(
+		`WITH
+			elo_diffs AS (
+				SELECT
+					*,
+					LEAD(elo, 1) OVER (
+						ORDER BY
+							elo
+					) - elo AS next_diff,
+					elo - LAG(elo, 1) OVER (
+						ORDER BY
+							elo
+					) AS prev_diff
+				FROM
+					quotes
+				WHERE
+					deleted_at IS NULL
+			)
+		SELECT
+			*
+		FROM
+			elo_diffs
+		ORDER BY
+			MIN(COALESCE(next_diff, 9999999), COALESCE(prev_diff, 9999999)) ASC,
+			RANDOM()
+		LIMIT
+			1`,
+	).Take(&quote).Error
+	if err != nil {
+		return database.Quote{}, err
+	}
+
+	return quote, nil
+}
+
 func firstQuoteRandom(ctx context.Context, _ string) (database.Quote, error) {
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
@@ -131,6 +170,7 @@ const (
 	FirstQuoteMethodLeastSeen       FirstQuoteMethod = "least_seen"
 	FirstQuoteMethodLeastSeenGlobal FirstQuoteMethod = "least_seen_global"
 	FirstQuoteMethodMostAverage     FirstQuoteMethod = "most_average"
+	FirstQuoteMethodClosestElo      FirstQuoteMethod = "closest_elo"
 	FirstQuoteMethodRandom          FirstQuoteMethod = "random"
 )
 
@@ -146,6 +186,8 @@ func (m FirstQuoteMethod) DisplayName() string {
 		return "Least seen (global)"
 	case FirstQuoteMethodMostAverage:
 		return "Most average"
+	case FirstQuoteMethodClosestElo:
+		return "Closest Elo"
 	case FirstQuoteMethodRandom:
 		return "Random"
 	default:
@@ -161,6 +203,8 @@ func (m FirstQuoteMethod) Description() string {
 		return "Selects the quote that has had the least comparisons completed for, across all users."
 	case FirstQuoteMethodMostAverage:
 		return "Selects the quote with an Elo rating closest to the average / starting Elo rating."
+	case FirstQuoteMethodClosestElo:
+		return "Selects the quote with the Elo closest to its neighbours in the leaderboard."
 	case FirstQuoteMethodRandom:
 		return "Selects a quote completely at random."
 	default:
@@ -172,6 +216,7 @@ var FirstQuoteMethods = []FirstQuoteMethod{
 	FirstQuoteMethodLeastSeen,
 	FirstQuoteMethodLeastSeenGlobal,
 	FirstQuoteMethodMostAverage,
+	FirstQuoteMethodClosestElo,
 	FirstQuoteMethodRandom,
 }
 
@@ -179,6 +224,7 @@ var firstQuoteSelectors = map[FirstQuoteMethod]FirstQuoteSelector{
 	FirstQuoteMethodLeastSeen:       firstQuoteLeastSeen,
 	FirstQuoteMethodLeastSeenGlobal: firstQuoteLeastSeenGlobal,
 	FirstQuoteMethodMostAverage:     firstQuoteMostAverage,
+	FirstQuoteMethodClosestElo:      firstQuoteClosestElo,
 	FirstQuoteMethodRandom:          firstQuoteRandom,
 }
 
