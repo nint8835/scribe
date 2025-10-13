@@ -181,6 +181,34 @@ func firstQuoteClosestTiebreakHighest(ctx context.Context, userId string) (datab
 	return quote, nil
 }
 
+func firstQuoteLastWinner(ctx context.Context, userId string) (database.Quote, error) {
+	var quote database.Quote
+	db := database.Instance.WithContext(ctx)
+
+	err := db.Raw(
+		`SELECT
+			*
+		FROM
+			completed_comparisons
+			JOIN quotes ON quotes.id = completed_comparisons.winner_id
+		WHERE
+			completed_comparisons.user_id = ?
+			AND completed_comparisons.deleted_at IS NULL
+			AND quotes.deleted_at IS NULL
+		ORDER BY
+			completed_comparisons.id DESC
+		LIMIT
+			1`,
+		userId,
+	).Take(&quote).Error
+
+	if err != nil {
+		return database.Quote{}, err
+	}
+
+	return quote, nil
+}
+
 func firstQuoteRandom(ctx context.Context, _ string) (database.Quote, error) {
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
@@ -211,6 +239,7 @@ const (
 	FirstQuoteMethodMostAverage            FirstQuoteMethod = "most_average"
 	FirstQuoteMethodClosestElo             FirstQuoteMethod = "closest_elo"
 	FirstQuoteMethodClosestTiebreakHighest FirstQuoteMethod = "closest_elo_tiebreak_highest"
+	FirstQuoteMethodLastWinner             FirstQuoteMethod = "last_winner"
 	FirstQuoteMethodRandom                 FirstQuoteMethod = "random"
 )
 
@@ -230,6 +259,8 @@ func (m FirstQuoteMethod) DisplayName() string {
 		return "Closest Elo"
 	case FirstQuoteMethodClosestTiebreakHighest:
 		return "Closest Elo (tiebreak highest)"
+	case FirstQuoteMethodLastWinner:
+		return "Last winner"
 	case FirstQuoteMethodRandom:
 		return "Random"
 	default:
@@ -249,6 +280,8 @@ func (m FirstQuoteMethod) Description() string {
 		return "Selects the quote with the Elo closest to its neighbours in the leaderboard."
 	case FirstQuoteMethodClosestTiebreakHighest:
 		return "Selects the quote with the Elo closest to its neighbours in the leaderboard. In the case of a tie, selects the quote with the highest Elo."
+	case FirstQuoteMethodLastWinner:
+		return "Selects the quote that you last voted as the winner in a comparison."
 	case FirstQuoteMethodRandom:
 		return "Selects a quote completely at random."
 	default:
@@ -262,6 +295,7 @@ var FirstQuoteMethods = []FirstQuoteMethod{
 	FirstQuoteMethodMostAverage,
 	FirstQuoteMethodClosestElo,
 	FirstQuoteMethodClosestTiebreakHighest,
+	FirstQuoteMethodLastWinner,
 	FirstQuoteMethodRandom,
 }
 
@@ -271,6 +305,7 @@ var firstQuoteSelectors = map[FirstQuoteMethod]FirstQuoteSelector{
 	FirstQuoteMethodMostAverage:            firstQuoteMostAverage,
 	FirstQuoteMethodClosestElo:             firstQuoteClosestElo,
 	FirstQuoteMethodClosestTiebreakHighest: firstQuoteClosestTiebreakHighest,
+	FirstQuoteMethodLastWinner:             firstQuoteLastWinner,
 	FirstQuoteMethodRandom:                 firstQuoteRandom,
 }
 
