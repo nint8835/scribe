@@ -7,6 +7,7 @@ require (
 	github.com/asg017/sqlite-vec-go-bindings v0.1.6
 	github.com/benbjohnson/hashfs v0.2.2
 	github.com/bwmarrin/discordgo v0.29.0
+	github.com/goccy/go-graphviz v0.2.9
 	github.com/gorilla/sessions v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/kelseyhightower/envconfig v1.4.0
@@ -35,15 +36,19 @@ require (
 	github.com/cli/safeexec v1.0.1 // indirect
 	github.com/creack/pty v1.1.23 // indirect
 	github.com/daulet/tokenizers v1.22.2 // indirect
+	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.17.0 // indirect
+	github.com/flopp/go-findfont v0.1.0 // indirect
+	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-errors/errors v1.5.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gofrs/flock v0.12.1 // indirect
 	github.com/gohugoio/hugo v0.134.3 // indirect
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/gomlx/exceptions v0.0.3 // indirect
 	github.com/gomlx/go-huggingface v0.2.2 // indirect
 	github.com/gomlx/gomlx v0.22.1 // indirect
@@ -69,11 +74,13 @@ require (
 	github.com/sugarme/regexpset v0.0.0-20200920021344-4d4ec8eaf93c // indirect
 	github.com/sugarme/tokenizer v0.2.3-0.20250806005049-d78f65a68e82 // indirect
 	github.com/tdewolff/parse/v2 v2.7.15 // indirect
+	github.com/tetratelabs/wazero v1.8.1 // indirect
 	github.com/viant/afs v1.26.3 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/yalue/onnxruntime_go v1.21.0 // indirect
 	golang.org/x/crypto v0.41.0 // indirect
 	golang.org/x/exp v0.0.0-20250819193227-8b4c13bb791b // indirect
+	golang.org/x/image v0.26.0 // indirect
 	golang.org/x/mod v0.27.0 // indirect
 	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/sync v0.16.0 // indirect

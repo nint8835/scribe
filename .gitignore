@@ -28,3 +28,5 @@ mentions.json
 .air.toml.local
 .DS_Store
 models
+
+graph.*
