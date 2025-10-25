@@ -3,6 +3,8 @@ package bot
 import (
 	"fmt"
 	"sort"
+	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
@@ -20,8 +22,15 @@ func generateWIPMultiMessageQuoteEmbed(memberId string) *discordgo.MessageEmbed 
 	}
 
 	for _, message := range pendingMultiMessageQuotes[memberId] {
+		messageTitle := message.Author.Username
+
+		// Include a link to the message if this is a real message
+		if message.ID != "" {
+			messageTitle += fmt.Sprintf(" (%s)", GenerateMessageUrl(message))
+		}
+
 		embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
-			Name:   fmt.Sprintf("%s (%s)", message.Author.Username, GenerateMessageUrl(message)),
+			Name:   messageTitle,
 			Value:  message.Content,
 			Inline: false,
 		})
@@ -74,6 +83,39 @@ func (b *Bot) addToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *d
 	}
 
 	pendingMultiMessageQuotes[memberId] = append(pendingMultiMessageQuotes[memberId], message)
+	sort.Slice(pendingMultiMessageQuotes[memberId], func(i, j int) bool {
+		return pendingMultiMessageQuotes[memberId][i].Timestamp.Before(pendingMultiMessageQuotes[memberId][j].Timestamp)
+	})
+
+	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{generateWIPMultiMessageQuoteEmbed(memberId)},
+			Flags:  discordgo.MessageFlagsEphemeral,
+		},
+	})
+}
+
+type slashAddMultiMessageQuoteArgs struct {
+	Text   string         `description:"Text for the line to add. To insert a new line, insert \\n."`
+	Author discordgo.User `description:"Author of the line."`
+}
+
+func (b *Bot) slashAddMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args slashAddMultiMessageQuoteArgs) {
+	memberId := interaction.Member.User.ID
+
+	if _, ok := pendingMultiMessageQuotes[memberId]; !ok {
+		pendingMultiMessageQuotes[memberId] = []*discordgo.Message{}
+	}
+
+	// Create a fake message for the data provided, to enable re-using all the same quote generation logic
+	lineMessage := &discordgo.Message{
+		Content:   strings.ReplaceAll(args.Text, "\\n", "\n"),
+		Author:    &args.Author,
+		Timestamp: time.Now(),
+	}
+
+	pendingMultiMessageQuotes[memberId] = append(pendingMultiMessageQuotes[memberId], lineMessage)
 	sort.Slice(pendingMultiMessageQuotes[memberId], func(i, j int) bool {
 		return pendingMultiMessageQuotes[memberId][i].Timestamp.Before(pendingMultiMessageQuotes[memberId][j].Timestamp)
 	})
@@ -144,7 +186,12 @@ func (b *Bot) saveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *di
 		return
 	}
 
-	quoteUrl := GenerateMessageUrl(pendingMultiMessageQuotes[memberId][0])
+	var quoteUrl *string
+
+	if pendingMultiMessageQuotes[memberId][0].ID != "" {
+		url := GenerateMessageUrl(pendingMultiMessageQuotes[memberId][0])
+		quoteUrl = &url
+	}
 
 	authorIds := map[string]bool{}
 
@@ -171,7 +218,7 @@ func (b *Bot) saveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *di
 	quote := database.Quote{
 		Text:    quoteContent,
 		Authors: authors,
-		Source:  &quoteUrl,
+		Source:  quoteUrl,
 		Meta: gorm.Model{
 			CreatedAt: pendingMultiMessageQuotes[memberId][0].Timestamp,
 		},

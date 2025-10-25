@@ -93,6 +93,12 @@ func (b *Bot) registerCommands() {
 		GuildID:     config.Instance.GuildId,
 	})
 	_ = b.parser.AddCommand(&switchboard.Command{
+		Name:        "addmulti",
+		Description: "Manually add a line to a multi-message quote.",
+		Handler:     b.slashAddMultiMessageQuoteCommand,
+		GuildID:     config.Instance.GuildId,
+	})
+	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:        "cancelmulti",
 		Description: "Cancel the current multi-message quote.",
 		Handler:     b.cancelMultiMessageQuoteCommand,
