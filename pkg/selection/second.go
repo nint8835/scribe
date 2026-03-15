@@ -9,46 +9,51 @@ import (
 	"github.com/nint8835/scribe/pkg/embedding"
 )
 
-func secondQuoteClosestRank(ctx context.Context, userId string, firstQuote database.Quote) (database.Quote, error) {
+func secondQuoteClosestRank(ctx context.Context, userId string, firstQuote database.Quote, tiebreaker TiebreakerMethod) (database.Quote, error) {
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
 
 	err := db.Raw(
-		`WITH
-			compared_quotes AS (
-				SELECT
-					CASE
-						WHEN c.quote_a_id = ? THEN c.quote_b_id
-						WHEN c.quote_b_id = ? THEN c.quote_a_id
-					END AS compared_quote_id
-				FROM
-					completed_comparisons c
-				WHERE
-					c.user_id = ?
-					AND (
-						c.quote_a_id = ?
-						OR c.quote_b_id = ?
-					)
-			),
-			filtered_quotes AS (
-				SELECT
-					q.*,
-					ABS(q.elo - ?) AS elo_diff
-				FROM
-					quotes q
-					LEFT JOIN compared_quotes cq ON q.id = cq.compared_quote_id
-				WHERE
-					q.deleted_at IS NULL
-					AND q.id != ?
-					AND cq.compared_quote_id IS NULL
-			)
-		SELECT
-			q.*
-		FROM
-			filtered_quotes q
-		ORDER BY
-			elo_diff ASC
-		LIMIT 1`,
+		fmt.Sprintf(
+			`WITH
+				compared_quotes AS (
+					SELECT
+						CASE
+							WHEN c.quote_a_id = ? THEN c.quote_b_id
+							WHEN c.quote_b_id = ? THEN c.quote_a_id
+						END AS compared_quote_id
+					FROM
+						completed_comparisons c
+					WHERE
+						c.user_id = ?
+						AND (
+							c.quote_a_id = ?
+							OR c.quote_b_id = ?
+						)
+				),
+				filtered_quotes AS (
+					SELECT
+						q.*,
+						ABS(q.elo - ?) AS elo_diff
+					FROM
+						quotes q
+						LEFT JOIN compared_quotes cq ON q.id = cq.compared_quote_id
+					WHERE
+						q.deleted_at IS NULL
+						AND q.id != ?
+						AND cq.compared_quote_id IS NULL
+				)
+			SELECT
+				q.*
+			FROM
+				filtered_quotes q
+			ORDER BY
+				elo_diff ASC,
+				%s
+			LIMIT 
+				1`,
+			tiebreakerSQL[tiebreaker],
+		),
 		firstQuote.Meta.ID,
 		firstQuote.Meta.ID,
 		userId,
@@ -65,46 +70,51 @@ func secondQuoteClosestRank(ctx context.Context, userId string, firstQuote datab
 	return quote, nil
 }
 
-func secondQuoteFurthestRank(ctx context.Context, userId string, firstQuote database.Quote) (database.Quote, error) {
+func secondQuoteFurthestRank(ctx context.Context, userId string, firstQuote database.Quote, tiebreaker TiebreakerMethod) (database.Quote, error) {
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
 
 	err := db.Raw(
-		`WITH
-			compared_quotes AS (
-				SELECT
-					CASE
-						WHEN c.quote_a_id = ? THEN c.quote_b_id
-						WHEN c.quote_b_id = ? THEN c.quote_a_id
-					END AS compared_quote_id
-				FROM
-					completed_comparisons c
-				WHERE
-					c.user_id = ?
-					AND (
-						c.quote_a_id = ?
-						OR c.quote_b_id = ?
-					)
-			),
-			filtered_quotes AS (
-				SELECT
-					q.*,
-					ABS(q.elo - ?) AS elo_diff
-				FROM
-					quotes q
-					LEFT JOIN compared_quotes cq ON q.id = cq.compared_quote_id
-				WHERE
-					q.deleted_at IS NULL
-					AND q.id != ?
-					AND cq.compared_quote_id IS NULL
-			)
-		SELECT
-			q.*
-		FROM
-			filtered_quotes q
-		ORDER BY
-			elo_diff DESC
-		LIMIT 1`,
+		fmt.Sprintf(
+			`WITH
+				compared_quotes AS (
+					SELECT
+						CASE
+							WHEN c.quote_a_id = ? THEN c.quote_b_id
+							WHEN c.quote_b_id = ? THEN c.quote_a_id
+						END AS compared_quote_id
+					FROM
+						completed_comparisons c
+					WHERE
+						c.user_id = ?
+						AND (
+							c.quote_a_id = ?
+							OR c.quote_b_id = ?
+						)
+				),
+				filtered_quotes AS (
+					SELECT
+						q.*,
+						ABS(q.elo - ?) AS elo_diff
+					FROM
+						quotes q
+						LEFT JOIN compared_quotes cq ON q.id = cq.compared_quote_id
+					WHERE
+						q.deleted_at IS NULL
+						AND q.id != ?
+						AND cq.compared_quote_id IS NULL
+				)
+			SELECT
+				q.*
+			FROM
+				filtered_quotes q
+			ORDER BY
+				elo_diff DESC,
+				%s
+			LIMIT
+				1`,
+			tiebreakerSQL[tiebreaker],
+		),
 		firstQuote.Meta.ID,
 		firstQuote.Meta.ID,
 		userId,
@@ -121,7 +131,7 @@ func secondQuoteFurthestRank(ctx context.Context, userId string, firstQuote data
 	return quote, nil
 }
 
-func secondQuoteSemanticSimilarity(ctx context.Context, userId string, firstQuote database.Quote) (database.Quote, error) {
+func secondQuoteSemanticSimilarity(ctx context.Context, userId string, firstQuote database.Quote, _ TiebreakerMethod) (database.Quote, error) {
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
 
@@ -185,12 +195,12 @@ func secondQuoteSemanticSimilarity(ctx context.Context, userId string, firstQuot
 	return quote, nil
 }
 
-func secondQuoteRandom(ctx context.Context, userId string, firstQuote database.Quote) (database.Quote, error) {
+func secondQuoteRandom(ctx context.Context, userId string, firstQuote database.Quote, _ TiebreakerMethod) (database.Quote, error) {
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
 	err := db.Raw(
 		`SELECT
-			*		
+			*
 		FROM
 			quotes
 		WHERE
@@ -217,7 +227,8 @@ func secondQuoteRandom(ctx context.Context, userId string, firstQuote database.Q
 			)
 		ORDER BY
 			random()
-		LIMIT 1`,
+		LIMIT
+			1`,
 		firstQuote.Meta.ID,
 		userId,
 		firstQuote.Meta.ID,
@@ -289,12 +300,12 @@ var secondQuoteSelectors = map[SecondQuoteMethod]SecondQuoteSelector{
 
 var DefaultSecondQuoteMethod = SecondQuoteMethodSemanticSimilarity
 
-func selectSecondQuote(ctx context.Context, userId string, firstQuote database.Quote, method SecondQuoteMethod) (database.Quote, error) {
+func selectSecondQuote(ctx context.Context, userId string, firstQuote database.Quote, method SecondQuoteMethod, tiebreaker TiebreakerMethod) (database.Quote, error) {
 	selector, ok := secondQuoteSelectors[method]
 	if !ok {
 		selector = secondQuoteSelectors[DefaultSecondQuoteMethod]
 	}
-	return selector(ctx, userId, firstQuote)
+	return selector(ctx, userId, firstQuote, tiebreaker)
 }
 
 func init() {

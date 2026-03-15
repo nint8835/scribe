@@ -4,8 +4,9 @@ import "github.com/nint8835/scribe/pkg/web/ui"
 import "github.com/nint8835/scribe/pkg/selection"
 
 type OptionsProps struct {
-	FirstMethod  selection.FirstQuoteMethod
-	SecondMethod selection.SecondQuoteMethod
+	FirstMethod      selection.FirstQuoteMethod
+	SecondMethod     selection.SecondQuoteMethod
+	TiebreakerMethod selection.TiebreakerMethod
 }
 
 templ Options(props OptionsProps) {
@@ -22,6 +23,8 @@ templ Options(props OptionsProps) {
 							Then, based on the quote selected, your second quote method is used to select the second quote.
 							<br/>
 							This will be attempted up to 10 times, until a valid pair of quotes can be found.
+							<br/>
+							For applicable methods, your selected tiebreaker method will be used to break ties.
 						</p>
 					</div>
 				</div>
@@ -43,6 +46,18 @@ templ Options(props OptionsProps) {
 						for _, method := range selection.SecondQuoteMethods {
 							<label class="flex flex-row space-x-2">
 								<input type="radio" name="second_method" value={ method.String() } checked?={ method== props.SecondMethod }/>
+								<div class="flex flex-col">
+									<span class="font-semibold">{ method.DisplayName() }</span>
+									<span class="font-light text-zinc-300 italic">{ method.Description() }</span>
+								</div>
+							</label>
+						}
+					</fieldset>
+					<fieldset>
+						<legend class="font-bold text-zinc-400">Tiebreaker method</legend>
+						for _, method := range selection.TiebreakerMethods {
+							<label class="flex flex-row space-x-2">
+								<input type="radio" name="tiebreaker_method" value={ method.String() } checked?={ method == props.TiebreakerMethod }/>
 								<div class="flex flex-col">
 									<span class="font-semibold">{ method.DisplayName() }</span>
 									<span class="font-light text-zinc-300 italic">{ method.Description() }</span>

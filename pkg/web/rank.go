@@ -119,6 +119,7 @@ func (s *Server) selectQuotes(r *http.Request) (database.Quote, database.Quote, 
 
 	firstMethod, firstMethodSet := session.Values["first_method"].(selection.FirstQuoteMethod)
 	secondMethod, secondMethodSet := session.Values["second_method"].(selection.SecondQuoteMethod)
+	tiebreakerMethod, tiebreakerMethodSet := session.Values["tiebreaker_method"].(selection.TiebreakerMethod)
 
 	if !firstMethodSet {
 		firstMethod = selection.DefaultFirstQuoteMethod
@@ -128,7 +129,11 @@ func (s *Server) selectQuotes(r *http.Request) (database.Quote, database.Quote, 
 		secondMethod = selection.DefaultSecondQuoteMethod
 	}
 
-	return selection.SelectQuotes(r.Context(), userId, firstMethod, secondMethod)
+	if !tiebreakerMethodSet {
+		tiebreakerMethod = selection.DefaultTiebreakerMethod
+	}
+
+	return selection.SelectQuotes(r.Context(), userId, firstMethod, secondMethod, tiebreakerMethod)
 }
 
 func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) error {

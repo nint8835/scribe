@@ -17,13 +17,14 @@ func attemptSelectQuotes(
 	userId string,
 	firstMethod FirstQuoteMethod,
 	secondMethod SecondQuoteMethod,
+	tiebreaker TiebreakerMethod,
 ) (database.Quote, database.Quote, error) {
-	firstQuote, err := selectFirstQuote(ctx, userId, firstMethod)
+	firstQuote, err := selectFirstQuote(ctx, userId, firstMethod, tiebreaker)
 	if err != nil {
 		return database.Quote{}, database.Quote{}, fmt.Errorf("error selecting first quote: %w", err)
 	}
 
-	secondQuote, err := selectSecondQuote(ctx, userId, firstQuote, secondMethod)
+	secondQuote, err := selectSecondQuote(ctx, userId, firstQuote, secondMethod, tiebreaker)
 	if err != nil {
 		return database.Quote{}, database.Quote{}, fmt.Errorf("error selecting second quote: %w", err)
 	}
@@ -35,11 +36,12 @@ func attemptSelectQuotes(
 	return firstQuote, secondQuote, nil
 }
 
-func SelectQuotes(ctx context.Context, userId string, firstMethod FirstQuoteMethod, secondMethod SecondQuoteMethod) (database.Quote, database.Quote, error) {
+func SelectQuotes(ctx context.Context, userId string, firstMethod FirstQuoteMethod, secondMethod SecondQuoteMethod, tiebreaker TiebreakerMethod) (database.Quote, database.Quote, error) {
 	slog.Debug("Selecting quotes",
 		"user_id", userId,
 		"first_method", firstMethod,
 		"second_method", secondMethod,
+		"tiebreaker", tiebreaker,
 	)
 
 	attempts := 0
@@ -53,7 +55,7 @@ func SelectQuotes(ctx context.Context, userId string, firstMethod FirstQuoteMeth
 			return quoteA, quoteB, ErrTooManyAttempts
 		}
 
-		quoteA, quoteB, err = attemptSelectQuotes(ctx, userId, firstMethod, secondMethod)
+		quoteA, quoteB, err = attemptSelectQuotes(ctx, userId, firstMethod, secondMethod, tiebreaker)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				attempts++
