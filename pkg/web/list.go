@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 	"time"
 	_ "time/tzdata"
 
@@ -66,20 +65,16 @@ func (s *Server) handleGetList(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("error searching quotes: %w", err)
 	}
 
-	formattedQuotes := make([]pages.ListQuote, len(quotes))
+	formattedQuotes := make([]components.PageQuote, len(quotes))
 	for i, quote := range quotes {
 		content, err := s.renderQuoteText(quote)
 		if err != nil {
 			return fmt.Errorf("error rendering quote: %w", err)
 		}
 
-		authorMentions := make([]string, len(quote.Authors))
-		for i, author := range quote.Authors {
-			authorMentions[i] = fmt.Sprintf("<@%s>", author.ID)
-		}
-		authorNames, err := s.resolveAuthorIDs(strings.Join(authorMentions, ", "))
+		authorNames, err := s.formatAuthors(quote)
 		if err != nil {
-			return fmt.Errorf("error resolving author IDs: %w", err)
+			return fmt.Errorf("error formatting author names: %w", err)
 		}
 
 		quoteLabel := fmt.Sprintf("#%d • %s • %s", quote.Meta.ID, authorNames, quote.Meta.CreatedAt.In(nlLoc).Format("January 2 2006, 3:04 PM"))
@@ -94,21 +89,24 @@ func (s *Server) handleGetList(w http.ResponseWriter, r *http.Request) error {
 			quoteLabel += " • " + sourceLinkBuf.String()
 		}
 
-		formattedQuotes[i] = pages.ListQuote{
+		formattedQuotes[i] = components.PageQuote{
 			Content: content,
 			Label:   quoteLabel,
 		}
 	}
 
 	props := pages.ListProps{
-		Quotes: formattedQuotes,
-		PaginationProps: components.PaginationProps{
-			UrlBase:     "/list",
-			Target:      "#list-content",
-			Page:        page,
-			TotalPages:  int((totalCount + bot.WEB_LIST_QUOTES_PER_PAGE - 1) / bot.WEB_LIST_QUOTES_PER_PAGE),
-			PrevPageUrl: generatePageURL(r.URL, q, page-1),
-			NextPageUrl: generatePageURL(r.URL, q, page+1),
+		QuoteListProps: components.QuoteListProps{
+			PaginationProps: components.PaginationProps{
+				UrlBase:     "/list",
+				Target:      "#list-content",
+				Page:        page,
+				TotalPages:  int((totalCount + bot.WEB_LIST_QUOTES_PER_PAGE - 1) / bot.WEB_LIST_QUOTES_PER_PAGE),
+				PrevPageUrl: generatePageURL(r.URL, q, page-1),
+				NextPageUrl: generatePageURL(r.URL, q, page+1),
+			},
+			Quotes:    formattedQuotes,
+			EmptyText: "No quotes found",
 		},
 	}
 

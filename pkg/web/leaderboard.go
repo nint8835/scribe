@@ -1,12 +1,12 @@
 package web
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/nint8835/scribe/pkg/database"
+	"github.com/nint8835/scribe/pkg/web/ui/components"
 	"github.com/nint8835/scribe/pkg/web/ui/pages"
 )
 
@@ -17,12 +17,6 @@ const USER_LEADERBOARD_COMPARISON_THRESHOLD = 10
 
 // Number of quotes a user must have to be included in the leaderboard
 const USER_LEADERBOARD_QUOTE_THRESHOLD = 5
-
-func (s *Server) resolveAuthorIDs(ids string) (string, error) {
-	var buf bytes.Buffer
-	err := s.md.Convert([]byte(ids), &buf)
-	return buf.String(), err
-}
 
 func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) error {
 	page := 1
@@ -50,7 +44,7 @@ func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) er
 		return fmt.Errorf("error fetching quotes: %w", err)
 	}
 
-	formattedQuotes := make([]pages.LeaderboardQuote, len(quotes))
+	formattedQuotes := make([]components.PageQuote, len(quotes))
 	for i, quote := range quotes {
 		content, err := s.renderQuoteText(quote)
 		if err != nil {
@@ -62,18 +56,24 @@ func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) er
 			return fmt.Errorf("error formatting author names: %w", err)
 		}
 
-		formattedQuotes[i] = pages.LeaderboardQuote{
-			Author:  authorNames,
+		rank := (page-1)*LEADERBOARD_QUOTES_PER_PAGE + i + 1
+		formattedQuotes[i] = components.PageQuote{
 			Content: content,
-			Elo:     quote.Elo,
-			Rank:    (page-1)*LEADERBOARD_QUOTES_PER_PAGE + i + 1,
+			Label:   fmt.Sprintf("#%d • %d ELO • %s", rank, quote.Elo, authorNames),
 		}
 	}
 
 	props := pages.LeaderboardProps{
-		Quotes:     formattedQuotes,
-		Page:       page,
-		TotalPages: int((total + LEADERBOARD_QUOTES_PER_PAGE - 1) / LEADERBOARD_QUOTES_PER_PAGE),
+		QuoteListProps: components.QuoteListProps{
+			PaginationProps: components.PaginationProps{
+				Page:       page,
+				TotalPages: int((total + LEADERBOARD_QUOTES_PER_PAGE - 1) / LEADERBOARD_QUOTES_PER_PAGE),
+				UrlBase:    "/leaderboard",
+				Target:     "#leaderboard-content",
+			},
+			Quotes:    formattedQuotes,
+			EmptyText: "No ranked quotes found",
+		},
 	}
 
 	if r.Header.Get("HX-Request") == "true" {
@@ -128,7 +128,7 @@ func (s *Server) handleGetUserLeaderboard(w http.ResponseWriter, r *http.Request
 
 	formattedUsers := make([]pages.UserLeaderboardEntry, len(users))
 	for i, user := range users {
-		username, err := s.resolveAuthorIDs(fmt.Sprintf("<@%s>", user.AuthorID))
+		username, err := s.renderMarkdown(fmt.Sprintf("<@%s>", user.AuthorID))
 		if err != nil {
 			return fmt.Errorf("error resolving author IDs: %w", err)
 		}

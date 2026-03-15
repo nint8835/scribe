@@ -1,0 +1,35 @@
+package components
+
+type PageQuote struct {
+	Label   string
+	Content string
+}
+
+type QuoteListProps struct {
+	PaginationProps
+
+	Quotes    []PageQuote
+	EmptyText string
+}
+
+templ QuoteListContent(props QuoteListProps) {
+	if props.Page > 1 {
+		<div class="mb-6">
+			@Pagination(props.PaginationProps)
+		</div>
+	}
+	for _, quote := range props.Quotes {
+		@QuoteDisplay(QuoteDisplayProps{
+			Content:    quote.Content,
+			Label:      quote.Label,
+			QuoteClass: "bg-emerald-800 [scrollbar-color:white_rgb(6,95,70)]",
+			AsButton:   false,
+		})
+	}
+	if len(props.Quotes) == 0 {
+		<div class="text-center font-medium">{ props.EmptyText }</div>
+	}
+	<div class="mt-6">
+		@Pagination(props.PaginationProps)
+	</div>
+}
