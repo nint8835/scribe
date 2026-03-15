@@ -77,9 +77,15 @@ func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) er
 	}
 
 	if r.Header.Get("HX-Request") == "true" {
-		pages.LeaderboardContent(props).Render(r.Context(), w)
+		err := pages.LeaderboardContent(props).Render(r.Context(), w)
+		if err != nil {
+			return fmt.Errorf("error rendering leaderboard content: %w", err)
+		}
 	} else {
-		pages.Leaderboard(props).Render(r.Context(), w)
+		err := pages.Leaderboard(props).Render(r.Context(), w)
+		if err != nil {
+			return fmt.Errorf("error rendering leaderboard: %w", err)
+		}
 	}
 
 	return nil
@@ -140,11 +146,14 @@ func (s *Server) handleGetUserLeaderboard(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	pages.UserLeaderboard(pages.UserLeaderboardProps{
+	err = pages.UserLeaderboard(pages.UserLeaderboardProps{
 		Users:          formattedUsers,
 		RequiredRanks:  USER_LEADERBOARD_COMPARISON_THRESHOLD,
 		RequiredQuotes: USER_LEADERBOARD_QUOTE_THRESHOLD,
 	}).Render(r.Context(), w)
+	if err != nil {
+		return fmt.Errorf("error rendering user leaderboard: %w", err)
+	}
 
 	return nil
 }

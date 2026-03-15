@@ -111,9 +111,15 @@ func (s *Server) handleGetList(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	if r.Header.Get("HX-Request") == "true" {
-		pages.ListContent(props).Render(r.Context(), w)
+		err = pages.ListContent(props).Render(r.Context(), w)
+		if err != nil {
+			return fmt.Errorf("error rendering list content: %w", err)
+		}
 	} else {
-		pages.List(props).Render(r.Context(), w)
+		err = pages.List(props).Render(r.Context(), w)
+		if err != nil {
+			return fmt.Errorf("error rendering list: %w", err)
+		}
 	}
 
 	return nil

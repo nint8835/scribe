@@ -1,6 +1,8 @@
 package bot
 
 import (
+	"log/slog"
+
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
 
@@ -9,7 +11,7 @@ import (
 
 func (b *Bot) addQuoteMessageCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, message *discordgo.Message) {
 	if message.Content == "" {
-		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		err := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Embeds: []*discordgo.MessageEmbed{
@@ -22,6 +24,9 @@ func (b *Bot) addQuoteMessageCommand(_ *discordgo.Session, interaction *discordg
 				Flags: discordgo.MessageFlagsEphemeral,
 			},
 		})
+		if err != nil {
+			slog.Error("error sending interaction response", "error", err)
+		}
 		return
 	}
 

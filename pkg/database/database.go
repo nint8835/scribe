@@ -168,7 +168,9 @@ func Initialize(connectionString string) error {
 	}
 	Instance = newInstance
 
-	Instance.AutoMigrate(&Quote{}, &Author{}, &CompletedComparison{})
+	if err = Instance.AutoMigrate(&Quote{}, &Author{}, &CompletedComparison{}); err != nil {
+		return fmt.Errorf("error running migrations: %w", err)
+	}
 
 	err = initNonGormResources()
 	if err != nil {

@@ -35,7 +35,10 @@ func (s *Server) Run() error {
 }
 
 func (s *Server) handleGetHome(w http.ResponseWriter, r *http.Request) error {
-	pages.Home().Render(r.Context(), w)
+	err := pages.Home().Render(r.Context(), w)
+	if err != nil {
+		return fmt.Errorf("error rendering home: %w", err)
+	}
 
 	return nil
 }
@@ -60,10 +63,13 @@ func errorHandler(handler errorHandlerFunc) http.HandlerFunc {
 
 		switch typedErr := err.(type) {
 		case httpError:
-			pages.ErrorPage(pages.ErrorPageProps{
+			renderErr := pages.ErrorPage(pages.ErrorPageProps{
 				StatusCode: typedErr.StatusCode,
 				Message:    typedErr.Message,
 			}).Render(r.Context(), w)
+			if renderErr != nil {
+				slog.Error("error rendering error page", "error", renderErr)
+			}
 		default:
 			slog.Error("Internal server error", "error", err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)

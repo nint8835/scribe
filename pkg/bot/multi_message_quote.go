@@ -2,6 +2,7 @@ package bot
 
 import (
 	"fmt"
+	"log/slog"
 	"sort"
 	"strings"
 	"time"
@@ -43,7 +44,7 @@ func (b *Bot) addToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *d
 	memberId := interaction.Member.User.ID
 
 	if message.Content == "" {
-		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Embeds: []*discordgo.MessageEmbed{
@@ -56,6 +57,9 @@ func (b *Bot) addToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *d
 				Flags: discordgo.MessageFlagsEphemeral,
 			},
 		})
+		if respondErr != nil {
+			slog.Error("error sending interaction response", "error", respondErr)
+		}
 		return
 	}
 
@@ -65,7 +69,7 @@ func (b *Bot) addToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *d
 
 	for _, existingMessage := range pendingMultiMessageQuotes[memberId] {
 		if existingMessage.ID == message.ID {
-			b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
 					Embeds: []*discordgo.MessageEmbed{
@@ -78,6 +82,9 @@ func (b *Bot) addToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *d
 					Flags: discordgo.MessageFlagsEphemeral,
 				},
 			})
+			if respondErr != nil {
+				slog.Error("error sending interaction response", "error", respondErr)
+			}
 			return
 		}
 	}
@@ -87,13 +94,16 @@ func (b *Bot) addToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *d
 		return pendingMultiMessageQuotes[memberId][i].Timestamp.Before(pendingMultiMessageQuotes[memberId][j].Timestamp)
 	})
 
-	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{generateWIPMultiMessageQuoteEmbed(memberId)},
 			Flags:  discordgo.MessageFlagsEphemeral,
 		},
 	})
+	if respondErr != nil {
+		slog.Error("error sending interaction response", "error", respondErr)
+	}
 }
 
 type slashAddMultiMessageQuoteArgs struct {
@@ -120,20 +130,23 @@ func (b *Bot) slashAddMultiMessageQuoteCommand(_ *discordgo.Session, interaction
 		return pendingMultiMessageQuotes[memberId][i].Timestamp.Before(pendingMultiMessageQuotes[memberId][j].Timestamp)
 	})
 
-	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{generateWIPMultiMessageQuoteEmbed(memberId)},
 			Flags:  discordgo.MessageFlagsEphemeral,
 		},
 	})
+	if respondErr != nil {
+		slog.Error("error sending interaction response", "error", respondErr)
+	}
 }
 
 func (b *Bot) cancelMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
 	memberId := interaction.Member.User.ID
 
 	if _, ok := pendingMultiMessageQuotes[memberId]; !ok {
-		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Embeds: []*discordgo.MessageEmbed{
@@ -146,12 +159,15 @@ func (b *Bot) cancelMultiMessageQuoteCommand(_ *discordgo.Session, interaction *
 				Flags: discordgo.MessageFlagsEphemeral,
 			},
 		})
+		if respondErr != nil {
+			slog.Error("error sending interaction response", "error", respondErr)
+		}
 		return
 	}
 
 	delete(pendingMultiMessageQuotes, memberId)
 
-	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{
@@ -164,13 +180,16 @@ func (b *Bot) cancelMultiMessageQuoteCommand(_ *discordgo.Session, interaction *
 			Flags: discordgo.MessageFlagsEphemeral,
 		},
 	})
+	if respondErr != nil {
+		slog.Error("error sending interaction response", "error", respondErr)
+	}
 }
 
 func (b *Bot) saveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
 	memberId := interaction.Member.User.ID
 
 	if _, ok := pendingMultiMessageQuotes[memberId]; !ok {
-		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Embeds: []*discordgo.MessageEmbed{
@@ -183,6 +202,9 @@ func (b *Bot) saveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *di
 				Flags: discordgo.MessageFlagsEphemeral,
 			},
 		})
+		if respondErr != nil {
+			slog.Error("error sending interaction response", "error", respondErr)
+		}
 		return
 	}
 
@@ -209,7 +231,7 @@ func (b *Bot) saveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *di
 
 	for _, message := range pendingMultiMessageQuotes[memberId] {
 		if len(authors) > 1 {
-			quoteContent.WriteString(fmt.Sprintf("%s: %s\n", message.Author.Mention(), message.Content))
+			fmt.Fprintf(&quoteContent, "%s: %s\n", message.Author.Mention(), message.Content)
 		} else {
 			quoteContent.WriteString(message.Content + "\n")
 		}

@@ -2,6 +2,7 @@ package bot
 
 import (
 	"fmt"
+	"log/slog"
 	"math"
 
 	"github.com/bwmarrin/discordgo"
@@ -33,7 +34,10 @@ func (b *Bot) listQuotesCommand(_ *discordgo.Session, interaction *discordgo.Int
 	// TODO: Use quote count
 	quotes, totalCount, err := database.Search(opts)
 	if err != nil {
-		b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quotes.\n```\n%s\n```", err))
+		_, sendErr := b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quotes.\n```\n%s\n```", err))
+		if sendErr != nil {
+			slog.Error("error sending channel message", "error", sendErr)
+		}
 		return
 	}
 
@@ -69,7 +73,10 @@ func (b *Bot) listQuotesCommand(_ *discordgo.Session, interaction *discordgo.Int
 	for _, quote := range quotes {
 		authors, _, err := b.generateAuthorString(quote.Authors, interaction.GuildID)
 		if err != nil {
-			b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote authors.\n```\n%s\n```", err))
+			_, sendErr := b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote authors.\n```\n%s\n```", err))
+			if sendErr != nil {
+				slog.Error("error sending channel message", "error", sendErr)
+			}
 		}
 
 		quoteText := quote.Text
@@ -87,10 +94,13 @@ func (b *Bot) listQuotesCommand(_ *discordgo.Session, interaction *discordgo.Int
 		})
 	}
 
-	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	err = b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{&embed},
 		},
 	})
+	if err != nil {
+		slog.Error("error sending interaction response", "error", err)
+	}
 }

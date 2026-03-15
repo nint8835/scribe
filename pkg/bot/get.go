@@ -2,6 +2,7 @@ package bot
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm/clause"
@@ -18,30 +19,39 @@ func (b *Bot) getQuoteCommand(_ *discordgo.Session, interaction *discordgo.Inter
 
 	result := database.Instance.Model(&database.Quote{}).Preload(clause.Associations).First(&quote, args.ID)
 	if result.Error != nil {
-		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error getting quote.\n```\n%s\n```", result.Error),
 			},
 		})
+		if respondErr != nil {
+			slog.Error("error sending interaction response", "error", respondErr)
+		}
 		return
 	}
 
 	embed, err := b.makeQuoteEmbed(&quote, interaction.GuildID)
 	if err != nil {
-		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error getting quote.\n```\n%s\n```", err),
 			},
 		})
+		if respondErr != nil {
+			slog.Error("error sending interaction response", "error", respondErr)
+		}
 		return
 	}
 
-	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	err = b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{embed},
 		},
 	})
+	if err != nil {
+		slog.Error("error sending interaction response", "error", err)
+	}
 }

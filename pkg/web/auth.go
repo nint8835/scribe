@@ -93,7 +93,10 @@ func (s *Server) handleAuthCallback(w http.ResponseWriter, r *http.Request) erro
 	}
 
 	session.Values["userId"] = currentUser.ID
-	session.Save(r, w)
+	err = session.Save(r, w)
+	if err != nil {
+		return fmt.Errorf("error saving session: %w", err)
+	}
 
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 	return nil

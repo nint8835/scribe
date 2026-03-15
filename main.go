@@ -24,7 +24,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	database.Initialize(config.Instance.DBPath)
+	err = database.Initialize(config.Instance.DBPath)
+	if err != nil {
+		slog.Error("Error initializing database", "error", err)
+		os.Exit(1)
+	}
 
 	botInst, err := bot.New()
 	if err != nil {

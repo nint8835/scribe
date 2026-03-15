@@ -106,32 +106,41 @@ func GenerateMessageUrl(message *discordgo.Message) string {
 func (b *Bot) addQuote(quote database.Quote, interaction *discordgo.InteractionCreate) {
 	result := database.Instance.Create(&quote)
 	if result.Error != nil {
-		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error),
 			},
 		})
+		if respondErr != nil {
+			slog.Error("error sending interaction response", "error", respondErr)
+		}
 	}
 
 	result = database.Instance.Save(&quote)
 	if result.Error != nil {
-		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error adding quote.\n```\n%s\n```", result.Error),
 			},
 		})
+		if respondErr != nil {
+			slog.Error("error sending interaction response", "error", respondErr)
+		}
 	}
 
 	encodedEmbedding, err := embedding.EmbedQuote(quote.Text)
 	if err != nil {
-		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error creating quote embedding.\n```\n%s\n```", err),
 			},
 		})
+		if respondErr != nil {
+			slog.Error("error sending interaction response", "error", respondErr)
+		}
 		return
 	}
 
@@ -141,29 +150,35 @@ func (b *Bot) addQuote(quote database.Quote, interaction *discordgo.InteractionC
 		encodedEmbedding,
 	).Error
 	if err != nil {
-		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error saving quote embedding.\n```\n%s\n```", err),
 			},
 		})
+		if respondErr != nil {
+			slog.Error("error sending interaction response", "error", respondErr)
+		}
 		return
 	}
 
 	embed, err := b.makeQuoteEmbed(&quote, interaction.GuildID)
 	if err != nil {
-		b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error generating quote embed.\n```\n%s\n```", err),
 			},
 		})
+		if respondErr != nil {
+			slog.Error("error sending interaction response", "error", respondErr)
+		}
 		return
 	}
 	embed.Title = fmt.Sprintf("Quote %d added!", quote.Meta.ID)
 	embed.Color = (45 << 16) + (200 << 8) + (95)
 
-	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	err = b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{
@@ -171,4 +186,7 @@ func (b *Bot) addQuote(quote database.Quote, interaction *discordgo.InteractionC
 			},
 		},
 	})
+	if err != nil {
+		slog.Error("error sending interaction response", "error", err)
+	}
 }

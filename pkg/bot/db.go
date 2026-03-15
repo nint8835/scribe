@@ -2,6 +2,7 @@ package bot
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/bwmarrin/discordgo"
@@ -12,7 +13,10 @@ import (
 func (b *Bot) dbCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args struct{}) {
 	dbFile, err := os.Open(config.Instance.DBPath)
 	if err != nil {
-		b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error opening database.\n```\n%s\n```", err))
+		_, sendErr := b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error opening database.\n```\n%s\n```", err))
+		if sendErr != nil {
+			slog.Error("error sending channel message", "error", sendErr)
+		}
 		return
 	}
 
@@ -30,6 +34,9 @@ func (b *Bot) dbCommand(_ *discordgo.Session, interaction *discordgo.Interaction
 	})
 
 	if err != nil {
-		b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error sending database.\n```\n%s\n```", err))
+		_, sendErr := b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error sending database.\n```\n%s\n```", err))
+		if sendErr != nil {
+			slog.Error("error sending channel message", "error", sendErr)
+		}
 	}
 }

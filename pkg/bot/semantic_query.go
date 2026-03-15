@@ -2,6 +2,7 @@ package bot
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/bwmarrin/discordgo"
 
@@ -16,7 +17,10 @@ type semanticQueryArgs struct {
 func (b *Bot) semanticQueryCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args semanticQueryArgs) {
 	encodedEmbedding, err := embedding.EmbedQuote(args.Query)
 	if err != nil {
-		b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error creating embedding.\n```\n%s\n```", err))
+		_, sendErr := b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error creating embedding.\n```\n%s\n```", err))
+		if sendErr != nil {
+			slog.Error("error sending channel message", "error", sendErr)
+		}
 		return
 	}
 
@@ -40,7 +44,10 @@ func (b *Bot) semanticQueryCommand(_ *discordgo.Session, interaction *discordgo.
 	).Preload("Authors").Take(&quotes).Error
 
 	if err != nil {
-		b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quotes.\n```\n%s\n```", err))
+		_, sendErr := b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quotes.\n```\n%s\n```", err))
+		if sendErr != nil {
+			slog.Error("error sending channel message", "error", sendErr)
+		}
 		return
 	}
 
@@ -53,7 +60,10 @@ func (b *Bot) semanticQueryCommand(_ *discordgo.Session, interaction *discordgo.
 	for _, quote := range quotes {
 		authors, _, err := b.generateAuthorString(quote.Authors, interaction.GuildID)
 		if err != nil {
-			b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote authors.\n```\n%s\n```", err))
+			_, sendErr := b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error getting quote authors.\n```\n%s\n```", err))
+			if sendErr != nil {
+				slog.Error("error sending channel message", "error", sendErr)
+			}
 		}
 
 		quoteText := quote.Text
@@ -71,10 +81,13 @@ func (b *Bot) semanticQueryCommand(_ *discordgo.Session, interaction *discordgo.
 		})
 	}
 
-	b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	err = b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{&embed},
 		},
 	})
+	if err != nil {
+		slog.Error("error sending interaction response", "error", err)
+	}
 }

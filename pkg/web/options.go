@@ -27,19 +27,26 @@ func (s *Server) handleGetOptions(w http.ResponseWriter, r *http.Request) error 
 		tiebreakerMethod = selection.DefaultTiebreakerMethod
 	}
 
-	pages.Options(
+	err := pages.Options(
 		pages.OptionsProps{
-			FirstMethod:     firstMethod,
-			SecondMethod:    secondMethod,
+			FirstMethod:      firstMethod,
+			SecondMethod:     secondMethod,
 			TiebreakerMethod: tiebreakerMethod,
 		},
 	).Render(r.Context(), w)
+	if err != nil {
+		return fmt.Errorf("error rendering options: %w", err)
+	}
 
 	return nil
 }
 
 func (s *Server) handlePostOptions(w http.ResponseWriter, r *http.Request) error {
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		return fmt.Errorf("error parsing form: %w", err)
+	}
+
 	session := s.getSession(r)
 
 	firstMethod := selection.FirstQuoteMethod(r.PostForm.Get("first_method"))
@@ -49,7 +56,9 @@ func (s *Server) handlePostOptions(w http.ResponseWriter, r *http.Request) error
 	session.Values["first_method"] = firstMethod
 	session.Values["second_method"] = secondMethod
 	session.Values["tiebreaker_method"] = tiebreakerMethod
-	if err := session.Save(r, w); err != nil {
+
+	err = session.Save(r, w)
+	if err != nil {
 		return fmt.Errorf("error saving session: %w", err)
 	}
 

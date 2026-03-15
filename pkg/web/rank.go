@@ -147,13 +147,19 @@ func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("error getting rank stats props: %w", err)
 	}
 
-	pages.Rank(props, stats, nil).Render(r.Context(), w)
+	err = pages.Rank(props, stats, nil).Render(r.Context(), w)
+	if err != nil {
+		return fmt.Errorf("error rendering rank page: %w", err)
+	}
 
 	return nil
 }
 
 func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) error {
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		return fmt.Errorf("error parsing form: %w", err)
+	}
 
 	userId := s.getCurrentUserId(r)
 
@@ -322,9 +328,20 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("error getting rank result props: %w", err)
 	}
 
-	components.RankStatsDisplay(stats).Render(r.Context(), w)
-	components.RankForm(props).Render(r.Context(), w)
-	components.RankResult(rankResultProps).Render(r.Context(), w)
+	err = components.RankStatsDisplay(stats).Render(r.Context(), w)
+	if err != nil {
+		return fmt.Errorf("error rendering rank stats: %w", err)
+	}
+
+	err = components.RankForm(props).Render(r.Context(), w)
+	if err != nil {
+		return fmt.Errorf("error rendering rank form: %w", err)
+	}
+
+	err = components.RankResult(rankResultProps).Render(r.Context(), w)
+	if err != nil {
+		return fmt.Errorf("error rendering rank result: %w", err)
+	}
 
 	return nil
 }
@@ -337,7 +354,10 @@ func (s *Server) handleRankStats(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("error getting rank stats props: %w", err)
 	}
 
-	components.RankStatsDisplay(stats).Render(r.Context(), w)
+	err = components.RankStatsDisplay(stats).Render(r.Context(), w)
+	if err != nil {
+		return fmt.Errorf("error rendering rank stats: %w", err)
+	}
 
 	return nil
 }
