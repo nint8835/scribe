@@ -1,7 +1,6 @@
 package web
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -54,12 +53,12 @@ func (s *Server) getRankStatsDisplayProps(id string) (components.RankStatsDispla
 }
 
 func (s *Server) getRankFormProps(quoteA database.Quote, quoteB database.Quote) (components.RankProps, error) {
-	quoteAContent, err := s.renderQuoteText(quoteA)
+	quoteAContent, err := s.renderMarkdown(quoteA.Text)
 	if err != nil {
 		return components.RankProps{}, fmt.Errorf("error rendering quote A: %w", err)
 	}
 
-	quoteBContent, err := s.renderQuoteText(quoteB)
+	quoteBContent, err := s.renderMarkdown(quoteB.Text)
 	if err != nil {
 		return components.RankProps{}, fmt.Errorf("error rendering quote B: %w", err)
 	}
@@ -73,12 +72,12 @@ func (s *Server) getRankFormProps(quoteA database.Quote, quoteB database.Quote) 
 }
 
 func (s *Server) getRankResultProps(quoteA database.Quote, quoteB database.Quote, quoteARankBefore, quoteARankAfter, quoteBRankBefore, quoteBRankAfter int) (components.RankResultProps, error) {
-	quoteAContent, err := s.renderQuoteText(quoteA)
+	quoteAContent, err := s.renderMarkdown(quoteA.Text)
 	if err != nil {
 		return components.RankResultProps{}, fmt.Errorf("error rendering quote A: %w", err)
 	}
 
-	quoteBContent, err := s.renderQuoteText(quoteB)
+	quoteBContent, err := s.renderMarkdown(quoteB.Text)
 	if err != nil {
 		return components.RankResultProps{}, fmt.Errorf("error rendering quote B: %w", err)
 	}
@@ -105,12 +104,6 @@ func (s *Server) getRankResultProps(quoteA database.Quote, quoteB database.Quote
 		QuoteAAuthors:    quoteAAuthors,
 		QuoteBAuthors:    quoteBAuthors,
 	}, nil
-}
-
-func (s *Server) renderQuoteText(quote database.Quote) (string, error) {
-	var buf bytes.Buffer
-	err := s.md.Convert([]byte(quote.Text), &buf)
-	return buf.String(), err
 }
 
 func (s *Server) selectQuotes(r *http.Request) (database.Quote, database.Quote, error) {

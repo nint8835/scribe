@@ -9,13 +9,17 @@ type ListProps struct {
 	components.QuoteListProps
 }
 
+templ ListContent(props ListProps) {
+	<div id="list-content" class="w-full max-w-4xl space-y-6" hx-swap-oob="true">
+		@components.QuoteListContent(props.QuoteListProps)
+	</div>
+}
+
 templ List(props ListProps) {
 	@ui.Layout("Quotes") {
 		<div class="flex min-h-screen w-full flex-col items-center p-6">
 			<h1 class="mb-4 text-3xl font-bold">Quotes</h1>
-			<div id="list-content" class="w-full max-w-4xl space-y-6">
-				@components.QuoteListContent(props.QuoteListProps)
-			</div>
+			@ListContent(props)
 		</div>
 	}
 }

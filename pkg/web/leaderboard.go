@@ -46,7 +46,7 @@ func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) er
 
 	formattedQuotes := make([]components.PageQuote, len(quotes))
 	for i, quote := range quotes {
-		content, err := s.renderQuoteText(quote)
+		content, err := s.renderMarkdown(quote.Text)
 		if err != nil {
 			return fmt.Errorf("error rendering quote: %w", err)
 		}

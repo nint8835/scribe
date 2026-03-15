@@ -67,7 +67,7 @@ func (s *Server) handleGetList(w http.ResponseWriter, r *http.Request) error {
 
 	formattedQuotes := make([]components.PageQuote, len(quotes))
 	for i, quote := range quotes {
-		content, err := s.renderQuoteText(quote)
+		content, err := s.renderMarkdown(quote.Text)
 		if err != nil {
 			return fmt.Errorf("error rendering quote: %w", err)
 		}

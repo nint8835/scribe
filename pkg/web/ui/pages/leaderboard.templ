@@ -9,13 +9,17 @@ type LeaderboardProps struct {
 	components.QuoteListProps
 }
 
+templ LeaderboardContent(props LeaderboardProps) {
+	<div id="leaderboard-content" class="w-full max-w-4xl space-y-6" hx-swap-oob="true">
+		@components.QuoteListContent(props.QuoteListProps)
+	</div>
+}
+
 templ Leaderboard(props LeaderboardProps) {
 	@ui.Layout("Leaderboard") {
 		<div class="flex min-h-screen w-full flex-col items-center p-6">
 			<h1 class="mb-4 text-3xl font-bold">Leaderboard</h1>
-			<div id="leaderboard-content" class="w-full max-w-4xl space-y-6">
-				@components.QuoteListContent(props.QuoteListProps)
-			</div>
+			@LeaderboardContent(props)
 		</div>
 	}
 }
