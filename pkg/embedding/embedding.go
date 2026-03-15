@@ -62,9 +62,9 @@ func EmbedQuote(text string) ([]byte, error) {
 	for i, line := range lines {
 		// Remove Discord mention prefix pattern like "<@178958252820791296>: "
 		if strings.HasPrefix(line, "<@") {
-			colonIndex := strings.Index(line, ": ")
-			if colonIndex != -1 {
-				lines[i] = line[colonIndex+2:]
+			_, after, ok := strings.Cut(line, ": ")
+			if ok {
+				lines[i] = after
 			}
 		}
 	}

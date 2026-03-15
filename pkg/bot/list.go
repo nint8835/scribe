@@ -8,7 +8,6 @@ import (
 
 	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/database"
-	"github.com/nint8835/scribe/pkg/utils"
 )
 
 const WEB_LIST_QUOTES_PER_PAGE = 10
@@ -28,7 +27,7 @@ func (b *Bot) listQuotesCommand(_ *discordgo.Session, interaction *discordgo.Int
 	}
 
 	if args.Author != nil {
-		opts.Author = utils.PtrTo(args.Author.ID)
+		opts.Author = new(args.Author.ID)
 	}
 
 	// TODO: Use quote count

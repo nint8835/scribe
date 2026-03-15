@@ -81,7 +81,7 @@ func (s *Server) handleGetList(w http.ResponseWriter, r *http.Request) error {
 
 		if quote.Source != nil {
 			var sourceLinkBuf bytes.Buffer
-			err := s.md.Convert([]byte(fmt.Sprintf("[Source](%s)", *quote.Source)), &sourceLinkBuf)
+			err := s.md.Convert(fmt.Appendf(nil, "[Source](%s)", *quote.Source), &sourceLinkBuf)
 			if err != nil {
 				return fmt.Errorf("error converting source link: %w", err)
 			}

@@ -205,18 +205,18 @@ func (b *Bot) saveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *di
 		authors = append(authors, &database.Author{ID: authorId})
 	}
 
-	quoteContent := ""
+	var quoteContent strings.Builder
 
 	for _, message := range pendingMultiMessageQuotes[memberId] {
 		if len(authors) > 1 {
-			quoteContent += fmt.Sprintf("%s: %s\n", message.Author.Mention(), message.Content)
+			quoteContent.WriteString(fmt.Sprintf("%s: %s\n", message.Author.Mention(), message.Content))
 		} else {
-			quoteContent += message.Content + "\n"
+			quoteContent.WriteString(message.Content + "\n")
 		}
 	}
 
 	quote := database.Quote{
-		Text:    quoteContent,
+		Text:    quoteContent.String(),
 		Authors: authors,
 		Source:  quoteUrl,
 		Meta: gorm.Model{
