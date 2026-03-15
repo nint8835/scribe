@@ -4,7 +4,7 @@ WORKDIR /build
 
 RUN apt-get update && apt-get install -y libsqlite3-dev
 
-ARG TAILWIND_VERSION=v4.0.6
+ARG TAILWIND_VERSION=v4.2.1
 RUN wget -O /usr/local/bin/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/${TAILWIND_VERSION}/tailwindcss-linux-x64 && \
     chmod +x /usr/local/bin/tailwindcss
 
