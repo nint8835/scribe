@@ -15,12 +15,28 @@ import (
 
 func (b *Bot) onThisDayQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
 	now := time.Now()
+	query := database.Instance.
+		Model(&database.Quote{}).
+		Where("strftime('%m', created_at) = ? AND strftime('%d', created_at) = ?", now.Format("01"), now.Format("02"))
+
+	var quoteCount int64
+	result := query.Count(&quoteCount)
+	if result.Error != nil {
+		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("Error counting quotes.\n```\n%s\n```", result.Error),
+			},
+		})
+		if respondErr != nil {
+			slog.Error("error sending interaction response", "error", respondErr)
+		}
+		return
+	}
 
 	var quote database.Quote
-	result := database.Instance.
-		Model(&database.Quote{}).
+	result = query.
 		Preload(clause.Associations).
-		Where("strftime('%m', created_at) = ? AND strftime('%d', created_at) = ?", now.Format("01"), now.Format("02")).
 		Order("RANDOM()").
 		Take(&quote)
 	if result.Error != nil {
@@ -58,6 +74,13 @@ func (b *Bot) onThisDayQuoteCommand(_ *discordgo.Session, interaction *discordgo
 	}
 
 	embed.Title = fmt.Sprintf("On This Day: %s", now.Format("January 2"))
+	quoteCountLabel := "quotes"
+	if quoteCount == 1 {
+		quoteCountLabel = "quote"
+	}
+	embed.Footer = &discordgo.MessageEmbedFooter{
+		Text: fmt.Sprintf("%d %s from this day in history", quoteCount, quoteCountLabel),
+	}
 
 	err = b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
