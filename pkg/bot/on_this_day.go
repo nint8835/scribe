@@ -23,11 +23,13 @@ func onThisDayQuery(query *gorm.DB, day time.Time) *gorm.DB {
 	timeZoneModifier := sqliteTimeZoneModifier(day)
 
 	return query.Where(
-		"strftime('%m', created_at, ?) = ? AND strftime('%d', created_at, ?) = ?",
+		"strftime('%m', created_at, ?) = ? AND strftime('%d', created_at, ?) = ? AND strftime('%Y', created_at, ?) != ?",
 		timeZoneModifier,
 		day.Format("01"),
 		timeZoneModifier,
 		day.Format("02"),
+		timeZoneModifier,
+		day.Format("2006"),
 	)
 }
 
