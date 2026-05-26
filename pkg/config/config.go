@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	_ "time/tzdata"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -26,10 +27,12 @@ type Config struct {
 	RunBot           bool   `default:"true" split_words:"true"`
 	MentionCachePath string `default:"mentions.json" split_words:"true"`
 	LogLevel         string `default:"info" split_words:"true"`
+	TimeZone         string `default:"America/St_Johns" split_words:"true"`
 }
 
 var Instance Config
 var BaseUrl *url.URL
+var Location *time.Location
 
 func Load() error {
 	err := godotenv.Load()
@@ -62,6 +65,11 @@ func Load() error {
 			},
 		),
 	))
+
+	Location, err = time.LoadLocation(Instance.TimeZone)
+	if err != nil {
+		return fmt.Errorf("error loading time zone %q: %w", Instance.TimeZone, err)
+	}
 
 	BaseUrl, err = url.Parse(Instance.BaseUrl)
 	if err != nil {

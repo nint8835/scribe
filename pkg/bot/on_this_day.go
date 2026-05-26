@@ -10,14 +10,30 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
+	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/database"
 )
 
+func sqliteTimeZoneModifier(t time.Time) string {
+	return t.Format("-07:00")
+}
+
+func onThisDayQuery(query *gorm.DB, day time.Time) *gorm.DB {
+	day = day.In(config.Location)
+	timeZoneModifier := sqliteTimeZoneModifier(day)
+
+	return query.Where(
+		"strftime('%m', created_at, ?) = ? AND strftime('%d', created_at, ?) = ?",
+		timeZoneModifier,
+		day.Format("01"),
+		timeZoneModifier,
+		day.Format("02"),
+	)
+}
+
 func (b *Bot) onThisDayQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
-	now := time.Now()
-	query := database.Instance.
-		Model(&database.Quote{}).
-		Where("strftime('%m', created_at) = ? AND strftime('%d', created_at) = ?", now.Format("01"), now.Format("02"))
+	now := time.Now().In(config.Location)
+	query := onThisDayQuery(database.Instance.Model(&database.Quote{}), now)
 
 	var quoteCount int64
 	result := query.Count(&quoteCount)

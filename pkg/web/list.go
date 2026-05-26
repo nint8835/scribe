@@ -6,16 +6,13 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"time"
-	_ "time/tzdata"
 
 	"github.com/nint8835/scribe/pkg/bot"
+	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/database"
 	"github.com/nint8835/scribe/pkg/web/ui/components"
 	"github.com/nint8835/scribe/pkg/web/ui/pages"
 )
-
-var nlLoc, _ = time.LoadLocation("America/St_Johns")
 
 func generatePageURL(baseURL *url.URL, query url.Values, page int) string {
 	newURL := *baseURL
@@ -77,7 +74,7 @@ func (s *Server) handleGetList(w http.ResponseWriter, r *http.Request) error {
 			return fmt.Errorf("error formatting author names: %w", err)
 		}
 
-		quoteLabel := fmt.Sprintf("#%d • %s • %s", quote.Meta.ID, authorNames, quote.Meta.CreatedAt.In(nlLoc).Format("January 2 2006, 3:04 PM"))
+		quoteLabel := fmt.Sprintf("#%d • %s • %s", quote.Meta.ID, authorNames, quote.Meta.CreatedAt.In(config.Location).Format("January 2 2006, 3:04 PM"))
 
 		if quote.Source != nil {
 			var sourceLinkBuf bytes.Buffer
