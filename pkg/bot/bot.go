@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/go-co-op/gocron/v2"
 	"pkg.nit.so/switchboard"
 
 	"github.com/nint8835/scribe/pkg/config"
@@ -13,8 +14,9 @@ import (
 type Bot struct {
 	Session *discordgo.Session
 
-	parser   *switchboard.Switchboard
-	quitChan chan struct{}
+	parser    *switchboard.Switchboard
+	quitChan  chan struct{}
+	scheduler gocron.Scheduler
 }
 
 var Instance *Bot
@@ -32,10 +34,18 @@ func (b *Bot) Run() error {
 		return fmt.Errorf("error opening Discord connection: %w", err)
 	}
 
+	if err = b.startScheduler(); err != nil {
+		return fmt.Errorf("error starting scheduler: %w", err)
+	}
+
 	slog.Info("Discord bot running")
 
 	<-b.quitChan
 	slog.Info("Stopping bot...")
+
+	if err = b.scheduler.Shutdown(); err != nil {
+		slog.Error("error shutting down scheduler", "error", err)
+	}
 
 	if err = b.Session.Close(); err != nil {
 		return fmt.Errorf("error closing Discord connection: %w", err)

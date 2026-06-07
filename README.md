@@ -17,6 +17,8 @@ cp .env.dist .env
 
 Create an application on [https://discord.com/developers/applications/](https://discord.com/developers/applications/) and fill out at least the `SCRIBE_TOKEN`, `SCRIBE_GUILD_ID`, and `SCRIBE_APP_ID` fields in `.env`
 
+To post an on-this-day quote every day, set `SCRIBE_ON_THIS_DAY_CHANNEL_ID` to the Discord channel ID to post in. The schedule defaults to 9AM in `SCRIBE_TIME_ZONE`, and can be configured with a standard crontab expression using `SCRIBE_ON_THIS_DAY_CRON` (default: `0 9 * * *`).
+
 ### Running the app
 
 Just run `air`
