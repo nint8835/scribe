@@ -33,7 +33,7 @@ func (b *Bot) addQuoteMessageCommand(_ *discordgo.Session, interaction *discordg
 	quoteUrl := GenerateMessageUrl(message)
 
 	quote := database.Quote{
-		Text:    message.Content,
+		Text:    stripSpoilerTags(message.Content),
 		Authors: []*database.Author{{ID: message.Author.ID}},
 		Source:  &quoteUrl,
 		Meta: gorm.Model{

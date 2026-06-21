@@ -32,7 +32,7 @@ func generateWIPMultiMessageQuoteEmbed(memberId string) *discordgo.MessageEmbed 
 
 		embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
 			Name:   messageTitle,
-			Value:  message.Content,
+			Value:  stripSpoilerTags(message.Content),
 			Inline: false,
 		})
 	}
@@ -231,9 +231,9 @@ func (b *Bot) saveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *di
 
 	for _, message := range pendingMultiMessageQuotes[memberId] {
 		if len(authors) > 1 {
-			fmt.Fprintf(&quoteContent, "%s: %s\n", message.Author.Mention(), message.Content)
+			fmt.Fprintf(&quoteContent, "%s: %s\n", message.Author.Mention(), stripSpoilerTags(message.Content))
 		} else {
-			quoteContent.WriteString(message.Content + "\n")
+			quoteContent.WriteString(stripSpoilerTags(message.Content) + "\n")
 		}
 	}
 

@@ -190,3 +190,7 @@ func (b *Bot) addQuote(quote database.Quote, interaction *discordgo.InteractionC
 		slog.Error("error sending interaction response", "error", err)
 	}
 }
+
+func stripSpoilerTags(text string) string {
+	return strings.ReplaceAll(text, "||", "")
+}
