@@ -7,7 +7,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm/clause"
 
-	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/database"
 )
 
@@ -16,16 +15,7 @@ type removeArgs struct {
 }
 
 func (b *Bot) removeQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args removeArgs) {
-	if interaction.Member.User.ID != config.Instance.OwnerId {
-		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "You do not have access to that command.",
-			},
-		})
-		if respondErr != nil {
-			slog.Error("error sending interaction response", "error", respondErr)
-		}
+	if b.ensureCanDeleteQuotes(interaction) {
 		return
 	}
 

@@ -6,7 +6,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/database"
 )
 
@@ -15,16 +14,7 @@ type banArgs struct {
 }
 
 func (b *Bot) banCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args banArgs) {
-	if interaction.Member.User.ID != config.Instance.OwnerId {
-		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "You do not have access to that command.",
-			},
-		})
-		if respondErr != nil {
-			slog.Error("error sending interaction response", "error", respondErr)
-		}
+	if b.ensureCanDeleteQuotes(interaction) {
 		return
 	}
 

@@ -9,6 +9,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
+	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/database"
 	"github.com/nint8835/scribe/pkg/embedding"
 )
@@ -101,6 +102,32 @@ func (b *Bot) makeQuoteEmbed(quote *database.Quote, guildID string) (*discordgo.
 
 func GenerateMessageUrl(message *discordgo.Message) string {
 	return fmt.Sprintf("https://discord.com/channels/%s/%s/%s", message.GuildID, message.ChannelID, message.ID)
+}
+
+// canDeleteQuotes reports whether the invoking user is permitted to remove
+// quotes. Other privileged commands (e.g. banning users) should reuse this
+// same check so their access stays in lockstep with quote deletion.
+func canDeleteQuotes(interaction *discordgo.InteractionCreate) bool {
+	return interaction.Member.User.ID == config.Instance.OwnerId
+}
+
+// ensureCanDeleteQuotes rejects the interaction when the invoking user is not
+// permitted to delete quotes. It returns true when the interaction was
+// rejected (and the caller should return early).
+func (b *Bot) ensureCanDeleteQuotes(interaction *discordgo.InteractionCreate) bool {
+	if canDeleteQuotes(interaction) {
+		return false
+	}
+	respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Content: "You do not have access to that command.",
+		},
+	})
+	if respondErr != nil {
+		slog.Error("error sending interaction response", "error", respondErr)
+	}
+	return true
 }
 
 func (b *Bot) rejectIfBanned(interaction *discordgo.InteractionCreate) bool {
