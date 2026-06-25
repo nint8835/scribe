@@ -104,9 +104,6 @@ func GenerateMessageUrl(message *discordgo.Message) string {
 }
 
 func (b *Bot) rejectIfBanned(interaction *discordgo.InteractionCreate) bool {
-	if interaction.Member == nil || interaction.Member.User.ID == "" {
-		return false
-	}
 	if !database.IsUserBanned(interaction.Member.User.ID) {
 		return false
 	}
