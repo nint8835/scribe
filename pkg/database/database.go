@@ -168,7 +168,7 @@ func Initialize(connectionString string) error {
 	}
 	Instance = newInstance
 
-	if err = Instance.AutoMigrate(&Quote{}, &Author{}, &CompletedComparison{}); err != nil {
+	if err = Instance.AutoMigrate(&Quote{}, &Author{}, &CompletedComparison{}, &BannedUser{}); err != nil {
 		return fmt.Errorf("error running migrations: %w", err)
 	}
 
