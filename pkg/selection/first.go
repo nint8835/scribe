@@ -84,6 +84,46 @@ func firstQuoteLeastSeenGlobal(ctx context.Context, userId string, tiebreaker Ti
 	return quote, nil
 }
 
+func firstQuoteUnseen(ctx context.Context, userId string, tiebreaker TiebreakerMethod) (database.Quote, error) {
+	var quote database.Quote
+	db := database.Instance.WithContext(ctx)
+
+	err := db.Raw(
+		fmt.Sprintf(
+			`SELECT
+				*
+			FROM
+				quotes
+			WHERE
+				deleted_at IS NULL
+				AND NOT EXISTS (
+					SELECT
+						1
+					FROM
+						completed_comparisons
+					WHERE
+						user_id = ?
+						AND (
+							quote_a_id = quotes.id
+							OR quote_b_id = quotes.id
+						)
+				)
+			ORDER BY
+				%s
+			LIMIT
+				1`,
+			tiebreakerSQL[tiebreaker],
+		),
+		userId,
+	).Take(&quote).Error
+
+	if err != nil {
+		return database.Quote{}, err
+	}
+
+	return quote, nil
+}
+
 func firstQuoteMostAverage(ctx context.Context, userId string, tiebreaker TiebreakerMethod) (database.Quote, error) {
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
@@ -243,6 +283,7 @@ func firstQuoteRandom(ctx context.Context, _ string, _ TiebreakerMethod) (databa
 const (
 	FirstQuoteMethodLeastSeen       FirstQuoteMethod = "least_seen"
 	FirstQuoteMethodLeastSeenGlobal FirstQuoteMethod = "least_seen_global"
+	FirstQuoteMethodUnseen          FirstQuoteMethod = "unseen"
 	FirstQuoteMethodMostAverage     FirstQuoteMethod = "most_average"
 	FirstQuoteMethodClosestElo      FirstQuoteMethod = "closest_elo"
 	FirstQuoteMethodLastWinner      FirstQuoteMethod = "last_winner"
@@ -260,6 +301,8 @@ func (m FirstQuoteMethod) DisplayName() string {
 		return "Least seen"
 	case FirstQuoteMethodLeastSeenGlobal:
 		return "Least seen (global)"
+	case FirstQuoteMethodUnseen:
+		return "Unseen"
 	case FirstQuoteMethodMostAverage:
 		return "Most average"
 	case FirstQuoteMethodClosestElo:
@@ -281,6 +324,8 @@ func (m FirstQuoteMethod) Description() string {
 		return "Selects the quote that you have completed the least comparisons for."
 	case FirstQuoteMethodLeastSeenGlobal:
 		return "Selects the quote that has had the least comparisons completed for, across all users."
+	case FirstQuoteMethodUnseen:
+		return "Selects a quote that you have not yet seen in a comparison."
 	case FirstQuoteMethodMostAverage:
 		return "Selects the quote with an Elo rating closest to the average / starting Elo rating."
 	case FirstQuoteMethodClosestElo:
@@ -299,6 +344,7 @@ func (m FirstQuoteMethod) Description() string {
 var FirstQuoteMethods = []FirstQuoteMethod{
 	FirstQuoteMethodLeastSeen,
 	FirstQuoteMethodLeastSeenGlobal,
+	FirstQuoteMethodUnseen,
 	FirstQuoteMethodMostAverage,
 	FirstQuoteMethodClosestElo,
 	FirstQuoteMethodLastWinner,
@@ -309,6 +355,7 @@ var FirstQuoteMethods = []FirstQuoteMethod{
 var firstQuoteSelectors = map[FirstQuoteMethod]FirstQuoteSelector{
 	FirstQuoteMethodLeastSeen:       firstQuoteLeastSeen,
 	FirstQuoteMethodLeastSeenGlobal: firstQuoteLeastSeenGlobal,
+	FirstQuoteMethodUnseen:          firstQuoteUnseen,
 	FirstQuoteMethodMostAverage:     firstQuoteMostAverage,
 	FirstQuoteMethodClosestElo:      firstQuoteClosestElo,
 	FirstQuoteMethodLastWinner:      firstQuoteLastWinner,
