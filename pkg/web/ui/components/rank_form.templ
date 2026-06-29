@@ -30,3 +30,12 @@ templ RankForm(props RankProps) {
 		AsButton:       true,
 	})
 }
+
+templ RankUnavailableMessage() {
+	<div class="col-span-full rounded bg-zinc-800 p-4 text-center text-zinc-200">
+		<p class="font-semibold">No quotes are available to rank with your current selection options.</p>
+		<p class="mt-1 text-sm text-zinc-400">
+			{ "Try changing your " }<a href="/options" class="text-sky-300 underline hover:text-sky-200">selection options</a>{ ", then come back and try again." }
+		</p>
+	</div>
+}

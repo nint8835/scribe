@@ -1,6 +1,7 @@
 package web
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -132,14 +133,18 @@ func (s *Server) selectQuotes(r *http.Request) (database.Quote, database.Quote, 
 func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) error {
 	userId := s.getCurrentUserId(r)
 
+	var props *components.RankProps
 	quoteA, quoteB, err := s.selectQuotes(r)
 	if err != nil {
-		return fmt.Errorf("error getting quotes: %w", err)
-	}
-
-	props, err := s.getRankFormProps(quoteA, quoteB)
-	if err != nil {
-		return fmt.Errorf("error getting rank form props: %w", err)
+		if !errors.Is(err, selection.ErrTooManyAttempts) {
+			return fmt.Errorf("error getting quotes: %w", err)
+		}
+	} else {
+		rankProps, err := s.getRankFormProps(quoteA, quoteB)
+		if err != nil {
+			return fmt.Errorf("error getting rank form props: %w", err)
+		}
+		props = &rankProps
 	}
 
 	stats, err := s.getRankStatsDisplayProps(userId)
@@ -307,16 +312,6 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("error getting quote B rank after: %w", err)
 	}
 
-	nextQuoteA, nextQuoteB, err := s.selectQuotes(r)
-	if err != nil {
-		return fmt.Errorf("error getting next quotes: %w", err)
-	}
-
-	props, err := s.getRankFormProps(nextQuoteA, nextQuoteB)
-	if err != nil {
-		return fmt.Errorf("error getting rank form props: %w", err)
-	}
-
 	stats, err := s.getRankStatsDisplayProps(userId)
 	if err != nil {
 		return fmt.Errorf("error getting rank stats props: %w", err)
@@ -328,14 +323,35 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("error getting rank result props: %w", err)
 	}
 
+	nextQuoteA, nextQuoteB, err := s.selectQuotes(r)
+	var props *components.RankProps
+	if err != nil {
+		if !errors.Is(err, selection.ErrTooManyAttempts) {
+			return fmt.Errorf("error getting next quotes: %w", err)
+		}
+	} else {
+		rankProps, err := s.getRankFormProps(nextQuoteA, nextQuoteB)
+		if err != nil {
+			return fmt.Errorf("error getting rank form props: %w", err)
+		}
+		props = &rankProps
+	}
+
 	err = components.RankStatsDisplay(stats).Render(r.Context(), w)
 	if err != nil {
 		return fmt.Errorf("error rendering rank stats: %w", err)
 	}
 
-	err = components.RankForm(props).Render(r.Context(), w)
-	if err != nil {
-		return fmt.Errorf("error rendering rank form: %w", err)
+	if props == nil {
+		err = components.RankUnavailableMessage().Render(r.Context(), w)
+		if err != nil {
+			return fmt.Errorf("error rendering rank unavailable message: %w", err)
+		}
+	} else {
+		err = components.RankForm(*props).Render(r.Context(), w)
+		if err != nil {
+			return fmt.Errorf("error rendering rank form: %w", err)
+		}
 	}
 
 	err = components.RankResult(rankResultProps).Render(r.Context(), w)
