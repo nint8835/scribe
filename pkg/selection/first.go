@@ -22,10 +22,12 @@ func firstQuoteLeastSeen(ctx context.Context, userId string, tiebreaker Tiebreak
 				LEFT JOIN completed_comparisons ca ON (
 					ca.user_id = ?
 					AND ca.quote_a_id = q.id
+					AND ca.deleted_at IS NULL
 				)
 				LEFT JOIN completed_comparisons cb ON (
 					cb.user_id = ?
 					AND cb.quote_b_id = q.id
+					AND cb.deleted_at IS NULL
 				)
 			WHERE
 				q.deleted_at IS NULL
@@ -60,8 +62,14 @@ func firstQuoteLeastSeenGlobal(ctx context.Context, userId string, tiebreaker Ti
 				COUNT(DISTINCT ca.id) + COUNT(DISTINCT cb.id) AS comparison_count
 			FROM
 				quotes q
-				LEFT JOIN completed_comparisons ca ON ca.quote_a_id = q.id
-				LEFT JOIN completed_comparisons cb ON cb.quote_b_id = q.id
+				LEFT JOIN completed_comparisons ca ON (
+					ca.quote_a_id = q.id
+					AND ca.deleted_at IS NULL
+				)
+				LEFT JOIN completed_comparisons cb ON (
+					cb.quote_b_id = q.id
+					AND cb.deleted_at IS NULL
+				)
 			WHERE
 				q.deleted_at IS NULL
 			GROUP BY
@@ -103,6 +111,7 @@ func firstQuoteUnseen(ctx context.Context, userId string, tiebreaker TiebreakerM
 						completed_comparisons
 					WHERE
 						user_id = ?
+						AND deleted_at IS NULL
 						AND (
 							quote_a_id = quotes.id
 							OR quote_b_id = quotes.id

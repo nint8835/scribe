@@ -26,6 +26,7 @@ func secondQuoteClosestRank(ctx context.Context, userId string, firstQuote datab
 						completed_comparisons c
 					WHERE
 						c.user_id = ?
+						AND c.deleted_at IS NULL
 						AND (
 							c.quote_a_id = ?
 							OR c.quote_b_id = ?
@@ -87,6 +88,7 @@ func secondQuoteFurthestRank(ctx context.Context, userId string, firstQuote data
 						completed_comparisons c
 					WHERE
 						c.user_id = ?
+						AND c.deleted_at IS NULL
 						AND (
 							c.quote_a_id = ?
 							OR c.quote_b_id = ?
@@ -152,6 +154,7 @@ func secondQuoteSemanticSimilarity(ctx context.Context, userId string, firstQuot
 					completed_comparisons c
 				WHERE
 					c.user_id = ?
+					AND c.deleted_at IS NULL
 					AND (
 						c.quote_a_id = ?
 						OR c.quote_b_id = ?
@@ -213,6 +216,7 @@ func secondQuoteRandom(ctx context.Context, userId string, firstQuote database.Q
 					completed_comparisons
 				WHERE
 					user_id = ?
+					AND deleted_at IS NULL
 					AND quote_a_id = ?
 					AND quote_b_id = quotes.id
 				UNION ALL
@@ -222,6 +226,7 @@ func secondQuoteRandom(ctx context.Context, userId string, firstQuote database.Q
 					completed_comparisons
 				WHERE
 					user_id = ?
+					AND deleted_at IS NULL
 					AND quote_b_id = ?
 					AND quote_a_id = quotes.id
 			)
