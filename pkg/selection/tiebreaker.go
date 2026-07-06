@@ -54,13 +54,13 @@ func (m TiebreakerMethod) Description() string {
 	case TiebreakerMethodRandom:
 		return "Breaks ties randomly."
 	case TiebreakerMethodHighestRanked:
-		return "When there is a tie, selects the quote with the highest Elo rating."
+		return "Selects the tied quote with the highest Elo rating."
 	case TiebreakerMethodLowestRanked:
-		return "When there is a tie, selects the quote with the lowest Elo rating."
+		return "Selects the tied quote with the lowest Elo rating."
 	case TiebreakerMethodNewest:
-		return "When there is a tie, selects the newest quote."
+		return "Selects the newest tied quote."
 	case TiebreakerMethodOldest:
-		return "When there is a tie, selects the oldest quote."
+		return "Selects the oldest tied quote."
 	default:
 		return "Unknown tiebreaker"
 	}

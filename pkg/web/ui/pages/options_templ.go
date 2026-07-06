@@ -50,7 +50,7 @@ func Options(props OptionsProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto w-full max-w-3xl space-y-6\"><div><p class=\"text-sm font-semibold uppercase tracking-[0.18em] text-zinc-400\">Settings</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-white\">Selection options</h1></div><div class=\"rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-4\"><h2 class=\"font-semibold text-emerald-100\">How quote selection works</h2><p class=\"mt-2 text-sm leading-6 text-emerald-50/80\">The first quote method chooses the starting quote. The second quote method then chooses its opponent, retrying up to 10 times until a valid pair is found. Applicable methods use the selected tiebreaker to resolve ties.</p></div><form action=\"/options\" method=\"POST\" class=\"space-y-6\"><fieldset class=\"rounded-lg border border-zinc-800 bg-zinc-900/60 p-4\"><legend class=\"px-2 text-sm font-semibold uppercase tracking-[0.14em] text-zinc-400\">First quote method</legend><div class=\"mt-2 space-y-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto w-full max-w-3xl space-y-6\"><div><p class=\"text-sm font-semibold uppercase tracking-[0.18em] text-zinc-400\">Settings</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-white\">Selection options</h1></div><div class=\"rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-4\"><h2 class=\"font-semibold text-emerald-100\">How quote selection works</h2><p class=\"mt-2 text-sm leading-6 text-emerald-50/80\">The first quote method chooses the starting quote. The second quote method chooses its opponent, retrying up to 10 times to find a valid pair. Applicable methods use the selected tiebreaker to resolve ties.</p></div><form action=\"/options\" method=\"POST\" class=\"space-y-6\"><fieldset class=\"rounded-lg border border-zinc-800 bg-zinc-900/60 p-4\"><legend class=\"px-2 text-sm font-semibold uppercase tracking-[0.14em] text-zinc-400\">First quote method</legend><div class=\"mt-2 space-y-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -62,7 +62,7 @@ func Options(props OptionsProps) templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(method.String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/options.templ`, Line: 31, Col: 108}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/options.templ`, Line: 31, Col: 108}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -85,7 +85,7 @@ func Options(props OptionsProps) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(method.DisplayName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/options.templ`, Line: 33, Col: 70}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/options.templ`, Line: 33, Col: 70}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -98,7 +98,7 @@ func Options(props OptionsProps) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(method.Description())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/options.templ`, Line: 34, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/options.templ`, Line: 34, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -121,7 +121,7 @@ func Options(props OptionsProps) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(method.String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/options.templ`, Line: 45, Col: 109}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/options.templ`, Line: 45, Col: 109}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -144,7 +144,7 @@ func Options(props OptionsProps) templ.Component {
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(method.DisplayName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/options.templ`, Line: 47, Col: 70}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/options.templ`, Line: 47, Col: 70}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -157,7 +157,7 @@ func Options(props OptionsProps) templ.Component {
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(method.Description())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/options.templ`, Line: 48, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/options.templ`, Line: 48, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -180,7 +180,7 @@ func Options(props OptionsProps) templ.Component {
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(method.String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/options.templ`, Line: 59, Col: 113}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/options.templ`, Line: 59, Col: 113}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -203,7 +203,7 @@ func Options(props OptionsProps) templ.Component {
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(method.DisplayName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/options.templ`, Line: 61, Col: 70}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/options.templ`, Line: 61, Col: 70}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -216,7 +216,7 @@ func Options(props OptionsProps) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(method.Description())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/options.templ`, Line: 62, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/options.templ`, Line: 62, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {

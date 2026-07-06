@@ -59,7 +59,7 @@ func (s *Server) handleGetLeaderboard(w http.ResponseWriter, r *http.Request) er
 		rank := (page-1)*LEADERBOARD_QUOTES_PER_PAGE + i + 1
 		formattedQuotes[i] = components.PageQuote{
 			Content: content,
-			Label:   fmt.Sprintf("#%d • %d ELO • %s", rank, quote.Elo, authorNames),
+			Label:   fmt.Sprintf("#%d • %d Elo • %s", rank, quote.Elo, authorNames),
 		}
 	}
 

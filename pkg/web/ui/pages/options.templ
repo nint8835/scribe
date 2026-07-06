@@ -19,7 +19,7 @@ templ Options(props OptionsProps) {
 			<div class="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-4">
 				<h2 class="font-semibold text-emerald-100">How quote selection works</h2>
 				<p class="mt-2 text-sm leading-6 text-emerald-50/80">
-					The first quote method chooses the starting quote. The second quote method then chooses its opponent, retrying up to 10 times until a valid pair is found. Applicable methods use the selected tiebreaker to resolve ties.
+					The first quote method chooses the starting quote. The second quote method chooses its opponent, retrying up to 10 times to find a valid pair. Applicable methods use the selected tiebreaker to resolve ties.
 				</p>
 			</div>
 			<form action="/options" method="POST" class="space-y-6">

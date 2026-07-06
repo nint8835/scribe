@@ -32,11 +32,11 @@ templ RankStatsDisplay(props RankStatsDisplayProps) {
 		<div>
 			{ "Of " }
 			@StatsValue(props.TotalRankCount)
-			{ " completed ranks, you were responsible for " }
+			{ " completed comparisons, you submitted " }
 			@StatsValue(props.UserRankCount)
-			{ ". For the current set of quotes, each user can perform " }
+			{ ". For the current quote set, each user can submit up to " }
 			@StatsValue(props.MaxRankCount)
-			{ " ranks." }
+			{ " comparisons." }
 		</div>
 	</div>
 }

@@ -30,7 +30,7 @@ templ UserLeaderboard(props UserLeaderboardProps) {
 			<div class="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/60">
 				<div class="grid grid-cols-[1fr_auto_auto] gap-4 border-b border-zinc-800 bg-zinc-900 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-400 sm:grid-cols-3">
 					<div>User</div>
-					<div class="text-right sm:text-center">Average ELO</div>
+					<div class="text-right sm:text-center">Average Elo</div>
 					<div class="text-right sm:text-center">Eligible Quotes</div>
 				</div>
 				for i, user := range props.Users {
@@ -44,7 +44,7 @@ templ UserLeaderboard(props UserLeaderboardProps) {
 				}
 			</div>
 			<div class="rounded-lg border border-sky-500/20 bg-sky-500/10 p-4 text-sm leading-6 text-sky-100">
-				Only quotes with at least <span class="font-semibold text-white">{ strconv.Itoa(props.RequiredRanks) }</span> ranks are eligible to be counted towards the leaderboard.
+				Only quotes with at least <span class="font-semibold text-white">{ strconv.Itoa(props.RequiredRanks) }</span> comparisons count toward the leaderboard.
 				Only users with at least <span class="font-semibold text-white">{ strconv.Itoa(props.RequiredQuotes) }</span> eligible quotes are shown.
 			</div>
 		</div>

@@ -330,21 +330,21 @@ func (m FirstQuoteMethod) DisplayName() string {
 func (m FirstQuoteMethod) Description() string {
 	switch m {
 	case FirstQuoteMethodLeastSeen:
-		return "Selects the quote that you have completed the least comparisons for."
+		return "Selects the quote you have compared the fewest times."
 	case FirstQuoteMethodLeastSeenGlobal:
-		return "Selects the quote that has had the least comparisons completed for, across all users."
+		return "Selects the quote with the fewest comparisons across all users."
 	case FirstQuoteMethodUnseen:
-		return "Selects a quote that you have not yet seen in a comparison."
+		return "Selects a quote you have not compared yet."
 	case FirstQuoteMethodMostAverage:
-		return "Selects the quote with an Elo rating closest to the average / starting Elo rating."
+		return "Selects the quote with an Elo rating closest to the starting average."
 	case FirstQuoteMethodClosestElo:
-		return "Selects the quote with the Elo closest to its neighbours in the leaderboard."
+		return "Selects the quote whose Elo rating is closest to its neighbors on the leaderboard."
 	case FirstQuoteMethodLastWinner:
-		return "Selects the quote that you last voted as the winner in a comparison."
+		return "Selects the quote you most recently chose as the winner."
 	case FirstQuoteMethodLastLoser:
-		return "Selects the quote that you last voted as the loser in a comparison."
+		return "Selects the quote you most recently chose as the loser."
 	case FirstQuoteMethodRandom:
-		return "Selects a quote completely at random."
+		return "Selects a random quote."
 	default:
 		return "Unknown method"
 	}
