@@ -46,7 +46,7 @@ func Rank(props *components.RankProps, stats components.RankStatsDisplayProps, r
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex h-full flex-col items-center p-4\"><div class=\"flex max-w-5xl flex-1 flex-col items-center justify-center gap-4\"><form id=\"rank-form\" hx-post=\"/rank\" class=\"grid min-h-0 w-full grid-cols-1 grid-rows-2 gap-4 md:grid-cols-2 md:grid-rows-1\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"flex min-h-[calc(100vh-9rem)] flex-col gap-5\"><div class=\"flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between\"><div><p class=\"text-sm font-semibold uppercase tracking-[0.18em] text-amber-300\">Head to head</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-white\">Pick the better quote</h1></div><p class=\"max-w-xl text-sm leading-6 text-zinc-400\">Use the left and right arrow keys, or select a quote card.</p></div><div class=\"flex flex-1 flex-col justify-center gap-4\"><form id=\"rank-form\" hx-post=\"/rank\" class=\"grid min-h-[28rem] w-full grid-cols-1 gap-4 md:grid-cols-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -69,7 +69,7 @@ func Rank(props *components.RankProps, stats components.RankStatsDisplayProps, r
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div></section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

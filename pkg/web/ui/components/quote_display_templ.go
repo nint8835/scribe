@@ -68,7 +68,7 @@ func quoteContent(props QuoteDisplayProps) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var3 = []any{"flex h-full min-h-8 w-full flex-row gap-4 rounded-lg p-4", props.QuoteClass}
+		var templ_7745c5c3_Var3 = []any{"flex h-full min-h-8 w-full flex-row gap-4 rounded-lg border p-5 shadow-lg shadow-black/15", props.QuoteClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -86,7 +86,7 @@ func quoteContent(props QuoteDisplayProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><div class=\"size-8 shrink-0\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><div class=\"size-8 shrink-0 text-white/70\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -94,7 +94,7 @@ func quoteContent(props QuoteDisplayProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"max-h-full overflow-y-auto text-left [&_p]:whitespace-pre-wrap\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"max-h-full overflow-y-auto text-left text-base leading-7 text-white/95 [&_a]:text-amber-200 [&_a]:underline-offset-4 [&_p]:whitespace-pre-wrap\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -131,7 +131,7 @@ func QuoteDisplay(props QuoteDisplayProps) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var6 = []any{"flex flex-col", props.ContainerClass}
+		var templ_7745c5c3_Var6 = []any{"flex min-h-0 flex-col", props.ContainerClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -153,7 +153,7 @@ func QuoteDisplay(props QuoteDisplayProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var8 = []any{"mb-[-0.5rem] w-fit flex-row gap-1 rounded-t-lg bg-zinc-700 p-[0_0.5rem_0.5rem_0.5rem] text-center md:flex [&_a]:text-emerald-300 [&_a]:transition-colors [&_a]:hover:text-emerald-400", templ.KV("hidden", props.AsButton)}
+		var templ_7745c5c3_Var8 = []any{"mb-[-0.5rem] w-fit max-w-full flex-row gap-1 rounded-t-lg border border-zinc-800 bg-zinc-900 px-3 pt-2 pb-4 text-sm text-zinc-300 md:flex [&_a]:text-emerald-300 [&_a]:transition-colors [&_a]:hover:text-emerald-200", templ.KV("hidden", props.AsButton)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -197,7 +197,7 @@ func QuoteDisplay(props QuoteDisplayProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-post=\"/rank\" hx-target=\"#rank-form\" class=\"max-h-full w-full flex-grow transition-all\" type=\"submit\" name=\"winner\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-post=\"/rank\" hx-target=\"#rank-form\" class=\"max-h-full w-full flex-grow rounded-lg text-left transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300\" type=\"submit\" name=\"winner\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

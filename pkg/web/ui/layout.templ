@@ -28,6 +28,15 @@ func getStyles() string {
   `, static.GetStaticPath("InterVariable.woff2"))
 }
 
+templ navLink(href string, label string, active bool) {
+	<a
+		href={ href }
+		class={ "rounded-full px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-100", templ.KV("bg-zinc-800 text-zinc-50 shadow-sm shadow-black/20", active) }
+	>
+		{ label }
+	</a>
+}
+
 templ Layout(title string) {
 	<!DOCTYPE html>
 	<html lang="en">
@@ -42,8 +51,31 @@ templ Layout(title string) {
 			<script src={ static.GetStaticPath("preload.min.js") }></script>
 			@templ.Raw(getStyles())
 		</head>
-		<body class="h-screen bg-zinc-800 text-zinc-300" hx-ext="preload">
-			{ children... }
+		<body class="min-h-screen bg-zinc-950 text-zinc-100 antialiased" hx-ext="preload">
+			<div class="flex min-h-screen flex-col">
+				<header class="sticky top-0 z-20 border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur">
+					<div class="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+						<a href="/" class="flex w-fit items-center gap-3">
+							<span class="grid size-10 place-items-center rounded-lg border border-amber-400/30 bg-amber-400/10 text-lg font-black text-amber-200">S</span>
+							<span>
+								<span class="block text-lg font-semibold tracking-tight text-white">Scribe</span>
+								<span class="block text-xs font-medium uppercase tracking-[0.18em] text-zinc-500">Quote ranking</span>
+							</span>
+						</a>
+						<nav class="flex gap-1 overflow-x-auto pb-1 lg:pb-0" aria-label="Primary navigation">
+							@navLink("/", "Home", title == "Home")
+							@navLink("/rank", "Rank", title == "Rank Quotes")
+							@navLink("/leaderboard", "Leaderboard", title == "Leaderboard")
+							@navLink("/user-leaderboard", "Users", title == "User Leaderboard")
+							@navLink("/list", "Quotes", title == "Quotes")
+							@navLink("/options", "Options", title == "Options")
+						</nav>
+					</div>
+				</header>
+				<main class="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
+					{ children... }
+				</main>
+			</div>
 		</body>
 	</html>
 }

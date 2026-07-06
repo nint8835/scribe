@@ -22,29 +22,31 @@ type UserLeaderboardEntry struct {
 
 templ UserLeaderboard(props UserLeaderboardProps) {
 	@ui.Layout("User Leaderboard") {
-		<header class="py-8 text-center text-4xl font-bold">
-			User Leaderboard
-		</header>
-		<div class="mx-auto w-full max-w-4xl p-6">
-			<div class="grid grid-cols-3 border-b border-zinc-600 pb-2 text-lg font-semibold">
-				<div>User</div>
-				<div class="text-center">Average ELO</div>
-				<div class="text-center">Eligible Quotes</div>
+		<div class="mx-auto w-full max-w-4xl space-y-6">
+			<div>
+				<p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-300">Users</p>
+				<h1 class="mt-1 text-3xl font-semibold tracking-tight text-white">User leaderboard</h1>
 			</div>
-			for i, user := range props.Users {
-				<div class={ "grid grid-cols-3 p-2", templ.KV("bg-opacity-30 bg-zinc-700", i%2 == 1) }>
-					<div>
-						@templ.Raw(user.Username)
-					</div>
-					<div class="text-center">{ fmt.Sprintf("%.2f", user.Elo) }</div>
-					<div class="text-center">{ strconv.Itoa(user.Quotes) }</div>
+			<div class="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/60">
+				<div class="grid grid-cols-[1fr_auto_auto] gap-4 border-b border-zinc-800 bg-zinc-900 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-400 sm:grid-cols-3">
+					<div>User</div>
+					<div class="text-right sm:text-center">Average ELO</div>
+					<div class="text-right sm:text-center">Eligible Quotes</div>
 				</div>
-			}
-		</div>
-		<div class="py-6 text-center text-sm text-zinc-400">
-			Only quotes with at least { strconv.Itoa(props.RequiredRanks) } ranks are eligible to be counted towards the leaderboard.
-			<br/>
-			Only users with at least { strconv.Itoa(props.RequiredQuotes) } eligible quotes are shown on the leaderboard.
+				for i, user := range props.Users {
+					<div class={ "grid grid-cols-[1fr_auto_auto] gap-4 px-4 py-3 text-sm text-zinc-200 sm:grid-cols-3", templ.KV("bg-zinc-950/35", i%2 == 1) }>
+						<div class="min-w-0 truncate font-medium text-white">
+							@templ.Raw(user.Username)
+						</div>
+						<div class="text-right tabular-nums sm:text-center">{ fmt.Sprintf("%.2f", user.Elo) }</div>
+						<div class="text-right tabular-nums sm:text-center">{ strconv.Itoa(user.Quotes) }</div>
+					</div>
+				}
+			</div>
+			<div class="rounded-lg border border-sky-500/20 bg-sky-500/10 p-4 text-sm leading-6 text-sky-100">
+				Only quotes with at least <span class="font-semibold text-white">{ strconv.Itoa(props.RequiredRanks) }</span> ranks are eligible to be counted towards the leaderboard.
+				Only users with at least <span class="font-semibold text-white">{ strconv.Itoa(props.RequiredQuotes) }</span> eligible quotes are shown.
+			</div>
 		</div>
 	}
 }

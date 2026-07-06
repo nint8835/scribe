@@ -17,19 +17,19 @@ type QuoteDisplayProps struct {
 }
 
 templ quoteContent(props QuoteDisplayProps) {
-	<div class={ "flex h-full min-h-8 w-full flex-row gap-4 rounded-lg p-4", props.QuoteClass }>
-		<div class="size-8 shrink-0">
+	<div class={ "flex h-full min-h-8 w-full flex-row gap-4 rounded-lg border p-5 shadow-lg shadow-black/15", props.QuoteClass }>
+		<div class="size-8 shrink-0 text-white/70">
 			@QuotationMark()
 		</div>
-		<div class="max-h-full overflow-y-auto text-left [&_p]:whitespace-pre-wrap">
+		<div class="max-h-full overflow-y-auto text-left text-base leading-7 text-white/95 [&_a]:text-amber-200 [&_a]:underline-offset-4 [&_p]:whitespace-pre-wrap">
 			@templ.Raw(props.Content)
 		</div>
 	</div>
 }
 
 templ QuoteDisplay(props QuoteDisplayProps) {
-	<div class={ "flex flex-col", props.ContainerClass }>
-		<div class={ "mb-[-0.5rem] w-fit flex-row gap-1 rounded-t-lg bg-zinc-700 p-[0_0.5rem_0.5rem_0.5rem] text-center md:flex [&_a]:text-emerald-300 [&_a]:transition-colors [&_a]:hover:text-emerald-400", templ.KV("hidden", props.AsButton) }>
+	<div class={ "flex min-h-0 flex-col", props.ContainerClass }>
+		<div class={ "mb-[-0.5rem] w-fit max-w-full flex-row gap-1 rounded-t-lg border border-zinc-800 bg-zinc-900 px-3 pt-2 pb-4 text-sm text-zinc-300 md:flex [&_a]:text-emerald-300 [&_a]:transition-colors [&_a]:hover:text-emerald-200", templ.KV("hidden", props.AsButton) }>
 			@templ.Raw(props.Label)
 		</div>
 		if props.AsButton {
@@ -37,7 +37,7 @@ templ QuoteDisplay(props QuoteDisplayProps) {
 				hx-trigger={ "click, keyup[key=='" + props.KeyboardKey + "'] from:body" }
 				hx-post="/rank"
 				hx-target="#rank-form"
-				class="max-h-full w-full flex-grow transition-all"
+				class="max-h-full w-full flex-grow rounded-lg text-left transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300"
 				type="submit"
 				name="winner"
 				value={ props.ID }
