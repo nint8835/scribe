@@ -10,13 +10,13 @@ templ Rank(props *components.RankProps, stats components.RankStatsDisplayProps, 
 		<section class="flex min-h-0 flex-col gap-4 md:min-h-[calc(100vh-9rem)] md:gap-5">
 			<div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
 				<div>
-					<p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-300">Head-to-head</p>
+					<p class="text-sm font-semibold tracking-[0.18em] text-red-300 uppercase">Head-to-head</p>
 					<h1 class="mt-1 text-2xl font-semibold tracking-tight text-stone-50 sm:text-3xl">Pick the better quote</h1>
 				</div>
 				<p class="max-w-xl text-sm leading-6 text-stone-400">Use the left and right arrow keys, or choose a quote card.</p>
 			</div>
 			<div class="flex flex-1 flex-col justify-center gap-4">
-				<form id="rank-form" hx-post="/rank" class="grid w-full grid-cols-1 gap-3 md:min-h-[28rem] md:grid-cols-2 md:gap-4">
+				<form id="rank-form" hx-post="/rank" class="grid w-full grid-cols-1 gap-3 md:min-h-112 md:grid-cols-2 md:gap-4">
 					if props != nil {
 						@components.RankForm(*props)
 					} else {

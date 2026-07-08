@@ -61,7 +61,7 @@ func UserLeaderboard(props UserLeaderboardProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto w-full max-w-4xl space-y-6\"><div><p class=\"text-sm font-semibold uppercase tracking-[0.18em] text-red-300\">Users</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-stone-50\">User leaderboard</h1></div><div class=\"overflow-hidden rounded-lg border border-stone-700 bg-[#342d26]/90\"><div class=\"grid grid-cols-[1fr_auto_auto] gap-4 border-b border-stone-700 bg-[#2f2923] px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-stone-400 sm:grid-cols-3\"><div>User</div><div class=\"text-right sm:text-center\">Average Elo</div><div class=\"text-right sm:text-center\">Eligible Quotes</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto w-full max-w-4xl space-y-6\"><div><p class=\"text-sm font-semibold tracking-[0.18em] text-red-300 uppercase\">Users</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-stone-50\">User leaderboard</h1></div><div class=\"overflow-hidden rounded-lg border border-stone-700 bg-[#342d26]/90\"><div class=\"grid grid-cols-[1fr_auto_auto] gap-4 border-b border-stone-700 bg-[#2f2923] px-4 py-3 text-xs font-semibold tracking-[0.14em] text-stone-400 uppercase sm:grid-cols-3\"><div>User</div><div class=\"text-right sm:text-center\">Average Elo</div><div class=\"text-right sm:text-center\">Eligible Quotes</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -152,7 +152,7 @@ func RankResult(props RankResultProps) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		quoteARankChange := props.QuoteARankBefore - props.QuoteARankAfter
 		quoteBRankChange := props.QuoteBRankBefore - props.QuoteBRankAfter
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div id=\"rank-results\" class=\"w-full rounded-lg border border-stone-700 bg-[#342d26]/90 p-4 shadow-md shadow-black/20 [&_p]:inline\" hx-swap-oob=\"true\"><div class=\"text-xs font-semibold uppercase tracking-[0.14em] text-stone-400\">Latest result</div><div class=\"mt-3 mb-0.5 text-sm leading-6\"><span class=\"mr-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div id=\"rank-results\" class=\"w-full rounded-lg border border-stone-700 bg-[#342d26]/90 p-4 shadow-md shadow-black/20 [&_p]:inline\" hx-swap-oob=\"true\"><div class=\"text-xs font-semibold tracking-[0.14em] text-stone-400 uppercase\">Latest result</div><div class=\"mt-3 mb-0.5 text-sm leading-6\"><span class=\"mr-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

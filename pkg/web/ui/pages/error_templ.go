@@ -52,7 +52,7 @@ func ErrorPage(props ErrorPageProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex min-h-[60vh] w-full flex-col items-center justify-center space-y-4 text-center\"><p class=\"text-sm font-semibold uppercase tracking-[0.18em] text-red-300\">Request failed</p><h1 class=\"text-6xl font-semibold tracking-tight text-stone-50\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex min-h-[60vh] w-full flex-col items-center justify-center space-y-4 text-center\"><p class=\"text-sm font-semibold tracking-[0.18em] text-red-300 uppercase\">Request failed</p><h1 class=\"text-6xl font-semibold tracking-tight text-stone-50\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -65,7 +65,7 @@ func ErrorPage(props ErrorPageProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1><div class=\"max-w-2xl whitespace-pre-wrap rounded-lg border border-stone-700 bg-[#342d26] p-4 text-left font-mono text-sm text-stone-300\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1><div class=\"max-w-2xl rounded-lg border border-stone-700 bg-[#342d26] p-4 text-left font-mono text-sm whitespace-pre-wrap text-stone-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

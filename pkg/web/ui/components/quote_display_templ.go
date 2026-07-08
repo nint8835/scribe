@@ -153,7 +153,7 @@ func QuoteDisplay(props QuoteDisplayProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var8 = []any{"mb-[-0.5rem] w-fit max-w-full flex-row gap-1 rounded-t-lg border border-stone-700 bg-[#2f2923] px-3 pt-2 pb-4 text-sm text-stone-400 md:flex [&_a]:text-emerald-300 [&_a]:transition-colors [&_a]:hover:text-red-300", templ.KV("hidden", props.AsButton)}
+		var templ_7745c5c3_Var8 = []any{"-mb-2 w-fit max-w-full flex-row gap-1 rounded-t-lg border border-stone-700 bg-[#2f2923] px-3 pt-2 pb-4 text-sm text-stone-400 md:flex [&_a]:text-emerald-300 [&_a]:transition-colors [&_a]:hover:text-red-300", templ.KV("hidden", props.AsButton)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -197,7 +197,7 @@ func QuoteDisplay(props QuoteDisplayProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-post=\"/rank\" hx-target=\"#rank-form\" class=\"max-h-full w-full flex-grow rounded-lg text-left transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d8c59a]\" type=\"submit\" name=\"winner\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-post=\"/rank\" hx-target=\"#rank-form\" class=\"max-h-full w-full grow rounded-lg text-left transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#d8c59a]\" type=\"submit\" name=\"winner\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

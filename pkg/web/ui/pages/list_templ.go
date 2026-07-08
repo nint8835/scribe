@@ -87,7 +87,7 @@ func List(props ListProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"mx-auto w-full max-w-4xl space-y-6\"><div><p class=\"text-sm font-semibold uppercase tracking-[0.18em] text-amber-300\">Archive</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-stone-50\">All quotes</h1></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"mx-auto w-full max-w-4xl space-y-6\"><div><p class=\"text-sm font-semibold tracking-[0.18em] text-amber-300 uppercase\">Archive</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-stone-50\">All quotes</h1></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

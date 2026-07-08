@@ -50,7 +50,7 @@ func Options(props OptionsProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto w-full max-w-3xl space-y-6\"><div><p class=\"text-sm font-semibold uppercase tracking-[0.18em] text-stone-400\">Settings</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-stone-50\">Selection options</h1></div><div class=\"rounded-lg border border-emerald-400/20 bg-emerald-900/5 p-4\"><h2 class=\"font-semibold text-emerald-200\">How quote selection works</h2><p class=\"mt-2 text-sm leading-6 text-stone-300\">The first quote method chooses the starting quote. The second quote method chooses its opponent, retrying up to 10 times to find a valid pair. Applicable methods use the selected tiebreaker to resolve ties.</p></div><form action=\"/options\" method=\"POST\" class=\"space-y-6\"><fieldset class=\"rounded-lg border border-stone-700 bg-[#342d26]/90 p-4\"><legend class=\"px-2 text-sm font-semibold uppercase tracking-[0.14em] text-stone-400\">First quote method</legend><div class=\"mt-2 space-y-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto w-full max-w-3xl space-y-6\"><div><p class=\"text-sm font-semibold tracking-[0.18em] text-stone-400 uppercase\">Settings</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-stone-50\">Selection options</h1></div><div class=\"rounded-lg border border-emerald-400/20 bg-emerald-900/5 p-4\"><h2 class=\"font-semibold text-emerald-200\">How quote selection works</h2><p class=\"mt-2 text-sm leading-6 text-stone-300\">The first quote method chooses the starting quote. The second quote method chooses its opponent, retrying up to 10 times to find a valid pair. Applicable methods use the selected tiebreaker to resolve ties.</p></div><form action=\"/options\" method=\"POST\" class=\"space-y-6\"><fieldset class=\"rounded-lg border border-stone-700 bg-[#342d26]/90 p-4\"><legend class=\"px-2 text-sm font-semibold tracking-[0.14em] text-stone-400 uppercase\">First quote method</legend><div class=\"mt-2 space-y-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -109,7 +109,7 @@ func Options(props OptionsProps) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></fieldset><fieldset class=\"rounded-lg border border-stone-700 bg-[#342d26]/90 p-4\"><legend class=\"px-2 text-sm font-semibold uppercase tracking-[0.14em] text-stone-400\">Second quote method</legend><div class=\"mt-2 space-y-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></fieldset><fieldset class=\"rounded-lg border border-stone-700 bg-[#342d26]/90 p-4\"><legend class=\"px-2 text-sm font-semibold tracking-[0.14em] text-stone-400 uppercase\">Second quote method</legend><div class=\"mt-2 space-y-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -168,7 +168,7 @@ func Options(props OptionsProps) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div></fieldset><fieldset class=\"rounded-lg border border-stone-700 bg-[#342d26]/90 p-4\"><legend class=\"px-2 text-sm font-semibold uppercase tracking-[0.14em] text-stone-400\">Tiebreaker method</legend><div class=\"mt-2 space-y-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div></fieldset><fieldset class=\"rounded-lg border border-stone-700 bg-[#342d26]/90 p-4\"><legend class=\"px-2 text-sm font-semibold tracking-[0.14em] text-stone-400 uppercase\">Tiebreaker method</legend><div class=\"mt-2 space-y-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -227,7 +227,7 @@ func Options(props OptionsProps) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div></fieldset><div class=\"flex justify-end\"><button type=\"submit\" class=\"rounded-lg bg-[#7f2d2d] px-5 py-3 text-sm font-semibold text-stone-50 transition hover:bg-[#913838] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d8c59a]\">Save options</button></div></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div></fieldset><div class=\"flex justify-end\"><button type=\"submit\" class=\"rounded-lg bg-[#7f2d2d] px-5 py-3 text-sm font-semibold text-stone-50 transition hover:bg-[#913838] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#d8c59a]\">Save options</button></div></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
