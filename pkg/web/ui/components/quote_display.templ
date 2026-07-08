@@ -17,11 +17,11 @@ type QuoteDisplayProps struct {
 }
 
 templ quoteContent(props QuoteDisplayProps) {
-	<div class={ "flex h-full min-h-8 w-full flex-row gap-4 rounded-lg border p-5 shadow-md shadow-black/20", props.QuoteClass }>
-		<div class="size-8 shrink-0 text-stone-400">
+	<div class={ "flex h-full min-h-8 w-full flex-row gap-4 rounded-lg border p-4 shadow-md shadow-black/20 sm:p-5 md:overflow-hidden", props.QuoteClass }>
+		<div class="size-7 shrink-0 text-stone-400 sm:size-8">
 			@QuotationMark()
 		</div>
-		<div class="max-h-full overflow-y-auto text-left text-base leading-7 text-stone-200 [&_a]:text-red-300 [&_a]:underline-offset-4 [&_p]:whitespace-pre-wrap">
+		<div class="min-h-0 flex-1 text-left text-base leading-7 text-stone-200 md:overflow-y-auto [&_a]:text-red-300 [&_a]:underline-offset-4 [&_p]:whitespace-pre-wrap">
 			@templ.Raw(props.Content)
 		</div>
 	</div>

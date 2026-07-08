@@ -73,7 +73,7 @@ func RankForm(props RankProps) templ.Component {
 			KeyboardKey:    "ArrowLeft",
 			Label:          "←",
 			ContainerClass: "items-start",
-			QuoteClass:     "border-emerald-400/25 bg-[#342d26] [scrollbar-color:rgb(216,197,154)_rgb(52,45,38)] hover:border-emerald-400/45 hover:bg-[#3c342c]",
+			QuoteClass:     "min-h-28 border-emerald-400/25 bg-[#342d26] [scrollbar-color:rgb(216,197,154)_rgb(52,45,38)] hover:border-emerald-400/45 hover:bg-[#3c342c] md:min-h-0",
 			AsButton:       true,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -85,7 +85,7 @@ func RankForm(props RankProps) templ.Component {
 			KeyboardKey:    "ArrowRight",
 			Label:          "→",
 			ContainerClass: "items-end",
-			QuoteClass:     "border-red-400/25 bg-[#342d26] [scrollbar-color:rgb(216,197,154)_rgb(52,45,38)] hover:border-red-400/45 hover:bg-[#3c342c]",
+			QuoteClass:     "min-h-28 border-red-400/25 bg-[#342d26] [scrollbar-color:rgb(216,197,154)_rgb(52,45,38)] hover:border-red-400/45 hover:bg-[#3c342c] md:min-h-0",
 			AsButton:       true,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
