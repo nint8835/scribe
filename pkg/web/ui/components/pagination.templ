@@ -15,10 +15,10 @@ type PaginationProps struct {
 }
 
 templ Pagination(props PaginationProps) {
-	<div class="flex items-center justify-center gap-4">
+	<div class="flex items-center justify-center gap-3">
 		if props.Page > 1 {
 			<button
-				class="rounded-md border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+				class="rounded-lg border border-stone-600 bg-[#342d26] px-4 py-2 text-sm font-medium text-stone-200 transition hover:border-stone-600 hover:bg-[#3c342c]"
 				hx-get={ cmp.Or(props.PrevPageUrl, props.UrlBase+"?page="+strconv.Itoa(props.Page-1)) }
 				hx-target={ props.Target }
 				hx-push-url="true"
@@ -28,12 +28,12 @@ templ Pagination(props PaginationProps) {
 				Previous
 			</button>
 		}
-		<span class="text-sm">
+		<span class="rounded-full border border-stone-700 bg-[#2f2923]/90 px-3 py-2 text-sm text-stone-400">
 			Page { strconv.Itoa(props.Page) } of { strconv.Itoa(props.TotalPages) }
 		</span>
 		if props.Page < props.TotalPages {
 			<button
-				class="rounded-md border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+				class="rounded-lg border border-stone-600 bg-[#342d26] px-4 py-2 text-sm font-medium text-stone-200 transition hover:border-stone-600 hover:bg-[#3c342c]"
 				hx-get={ cmp.Or(props.NextPageUrl, props.UrlBase+"?page="+strconv.Itoa(props.Page+1)) }
 				hx-target={ props.Target }
 				hx-push-url="true"

@@ -18,17 +18,19 @@ templ QuoteListContent(props QuoteListProps) {
 			@Pagination(props.PaginationProps)
 		</div>
 	}
-	for _, quote := range props.Quotes {
-		@QuoteDisplay(QuoteDisplayProps{
-			Content:    quote.Content,
-			Label:      quote.Label,
-			QuoteClass: "bg-emerald-800 [scrollbar-color:white_rgb(6,95,70)]",
-			AsButton:   false,
-		})
-	}
-	if len(props.Quotes) == 0 {
-		<div class="text-center font-medium">{ props.EmptyText }</div>
-	}
+	<div class="space-y-4">
+		for _, quote := range props.Quotes {
+			@QuoteDisplay(QuoteDisplayProps{
+				Content:    quote.Content,
+				Label:      quote.Label,
+				QuoteClass: "border-stone-700 bg-[#342d26] [scrollbar-color:rgb(216,197,154)_rgb(52,45,38)]",
+				AsButton:   false,
+			})
+		}
+		if len(props.Quotes) == 0 {
+			<div class="rounded-lg border border-dashed border-stone-600 bg-[#342d26]/80 p-8 text-center font-medium text-stone-400">{ props.EmptyText }</div>
+		}
+	</div>
 	<div class="mt-6">
 		@Pagination(props.PaginationProps)
 	</div>

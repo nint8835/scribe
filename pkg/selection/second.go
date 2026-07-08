@@ -277,13 +277,13 @@ func (m SecondQuoteMethod) DisplayName() string {
 func (m SecondQuoteMethod) Description() string {
 	switch m {
 	case SecondQuoteMethodClosestRank:
-		return "Selects a quote that is closest in Elo rating to the first quote, that you have not already ranked."
+		return "Selects an uncompared quote with the Elo rating closest to the first quote."
 	case SecondQuoteMethodFurthestRank:
-		return "Selects a quote that is furthest in Elo rating from the first quote, that you have not already ranked."
+		return "Selects an uncompared quote with the Elo rating farthest from the first quote."
 	case SecondQuoteMethodSemanticSimilarity:
-		return "Selects a quote that is semantically similar to the first quote, that you have not already ranked."
+		return "Selects an uncompared quote that is semantically similar to the first quote."
 	case SecondQuoteMethodRandom:
-		return "Selects a random quote that you have not already ranked against the first quote."
+		return "Selects a random quote you have not compared with the first quote."
 	default:
 		return "Unknown method"
 	}

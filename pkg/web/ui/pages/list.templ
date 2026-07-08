@@ -10,15 +10,18 @@ type ListProps struct {
 }
 
 templ ListContent(props ListProps) {
-	<div id="list-content" class="w-full max-w-4xl space-y-6" hx-swap-oob="true">
+	<div id="list-content" class="w-full space-y-6" hx-swap-oob="true">
 		@components.QuoteListContent(props.QuoteListProps)
 	</div>
 }
 
 templ List(props ListProps) {
 	@ui.Layout("Quotes") {
-		<div class="flex min-h-screen w-full flex-col items-center p-6">
-			<h1 class="mb-4 text-3xl font-bold">Quotes</h1>
+		<div class="mx-auto w-full max-w-4xl space-y-6">
+			<div>
+				<p class="text-sm font-semibold tracking-[0.18em] text-amber-300 uppercase">Archive</p>
+				<h1 class="mt-1 text-3xl font-semibold tracking-tight text-stone-50">All quotes</h1>
+			</div>
 			@ListContent(props)
 		</div>
 	}

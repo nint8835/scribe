@@ -38,7 +38,7 @@ func LeaderboardContent(props LeaderboardProps) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"leaderboard-content\" class=\"w-full max-w-4xl space-y-6\" hx-swap-oob=\"true\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"leaderboard-content\" class=\"w-full space-y-6\" hx-swap-oob=\"true\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -87,7 +87,7 @@ func Leaderboard(props LeaderboardProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex min-h-screen w-full flex-col items-center p-6\"><h1 class=\"mb-4 text-3xl font-bold\">Leaderboard</h1>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"mx-auto w-full max-w-4xl space-y-6\"><div><p class=\"text-sm font-semibold tracking-[0.18em] text-emerald-300 uppercase\">Leaderboard</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-stone-50\">Top ranked quotes</h1></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
