@@ -48,7 +48,7 @@ func Pagination(props PaginationProps) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if props.Page > 1 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<button class=\"rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:border-zinc-600 hover:bg-zinc-800\" hx-get=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<button class=\"rounded-lg border border-stone-600 bg-[#342d26] px-4 py-2 text-sm font-medium text-stone-200 transition hover:border-stone-600 hover:bg-[#3c342c]\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -79,7 +79,7 @@ func Pagination(props PaginationProps) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span class=\"rounded-full border border-zinc-800 bg-zinc-900/70 px-3 py-2 text-sm text-zinc-400\">Page ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span class=\"rounded-full border border-stone-700 bg-[#2f2923]/90 px-3 py-2 text-sm text-stone-400\">Page ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -110,7 +110,7 @@ func Pagination(props PaginationProps) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if props.Page < props.TotalPages {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<button class=\"rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:border-zinc-600 hover:bg-zinc-800\" hx-get=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<button class=\"rounded-lg border border-stone-600 bg-[#342d26] px-4 py-2 text-sm font-medium text-stone-200 transition hover:border-stone-600 hover:bg-[#3c342c]\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

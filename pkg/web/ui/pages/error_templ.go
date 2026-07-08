@@ -52,27 +52,27 @@ func ErrorPage(props ErrorPageProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex min-h-[60vh] w-full flex-col items-center justify-center space-y-4 text-center\"><p class=\"text-sm font-semibold uppercase tracking-[0.18em] text-rose-300\">Request failed</p><h1 class=\"text-6xl font-semibold tracking-tight text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex min-h-[60vh] w-full flex-col items-center justify-center space-y-4 text-center\"><p class=\"text-sm font-semibold uppercase tracking-[0.18em] text-red-300\">Request failed</p><h1 class=\"text-6xl font-semibold tracking-tight text-stone-50\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", props.StatusCode))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/error.templ`, Line: 18, Col: 101}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/error.templ`, Line: 18, Col: 104}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1><div class=\"max-w-2xl whitespace-pre-wrap rounded-lg border border-zinc-800 bg-zinc-900 p-4 text-left font-mono text-sm text-zinc-300\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1><div class=\"max-w-2xl whitespace-pre-wrap rounded-lg border border-stone-700 bg-[#342d26] p-4 text-left font-mono text-sm text-stone-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.Message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/error.templ`, Line: 19, Col: 153}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/error.templ`, Line: 19, Col: 156}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {

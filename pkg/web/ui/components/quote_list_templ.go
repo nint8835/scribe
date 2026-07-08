@@ -63,7 +63,7 @@ func QuoteListContent(props QuoteListProps) templ.Component {
 			templ_7745c5c3_Err = QuoteDisplay(QuoteDisplayProps{
 				Content:    quote.Content,
 				Label:      quote.Label,
-				QuoteClass: "border-emerald-400/20 bg-emerald-950/70 [scrollbar-color:white_rgb(6,78,59)]",
+				QuoteClass: "border-stone-700 bg-[#342d26] [scrollbar-color:rgb(216,197,154)_rgb(52,45,38)]",
 				AsButton:   false,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
@@ -71,14 +71,14 @@ func QuoteListContent(props QuoteListProps) templ.Component {
 			}
 		}
 		if len(props.Quotes) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"rounded-lg border border-dashed border-zinc-700 bg-zinc-900/50 p-8 text-center font-medium text-zinc-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"rounded-lg border border-dashed border-stone-600 bg-[#342d26]/80 p-8 text-center font-medium text-stone-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(props.EmptyText)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/quote_list.templ`, Line: 31, Col: 138}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/quote_list.templ`, Line: 31, Col: 141}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {

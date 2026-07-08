@@ -24,18 +24,18 @@ templ UserLeaderboard(props UserLeaderboardProps) {
 	@ui.Layout("User Leaderboard") {
 		<div class="mx-auto w-full max-w-4xl space-y-6">
 			<div>
-				<p class="text-sm font-semibold uppercase tracking-[0.18em] text-sky-300">Users</p>
-				<h1 class="mt-1 text-3xl font-semibold tracking-tight text-white">User leaderboard</h1>
+				<p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-300">Users</p>
+				<h1 class="mt-1 text-3xl font-semibold tracking-tight text-stone-50">User leaderboard</h1>
 			</div>
-			<div class="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/60">
-				<div class="grid grid-cols-[1fr_auto_auto] gap-4 border-b border-zinc-800 bg-zinc-900 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-400 sm:grid-cols-3">
+			<div class="overflow-hidden rounded-lg border border-stone-700 bg-[#342d26]/90">
+				<div class="grid grid-cols-[1fr_auto_auto] gap-4 border-b border-stone-700 bg-[#2f2923] px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-stone-400 sm:grid-cols-3">
 					<div>User</div>
 					<div class="text-right sm:text-center">Average Elo</div>
 					<div class="text-right sm:text-center">Eligible Quotes</div>
 				</div>
 				for i, user := range props.Users {
-					<div class={ "grid grid-cols-[1fr_auto_auto] gap-4 px-4 py-3 text-sm text-zinc-200 sm:grid-cols-3", templ.KV("bg-zinc-950/35", i%2 == 1) }>
-						<div class="min-w-0 truncate font-medium text-white">
+					<div class={ "grid grid-cols-[1fr_auto_auto] gap-4 px-4 py-3 text-sm text-stone-300 sm:grid-cols-3", templ.KV("bg-[#2f2923]/70", i%2 == 1) }>
+						<div class="min-w-0 truncate font-medium text-stone-50">
 							@templ.Raw(user.Username)
 						</div>
 						<div class="text-right tabular-nums sm:text-center">{ fmt.Sprintf("%.2f", user.Elo) }</div>
@@ -43,9 +43,9 @@ templ UserLeaderboard(props UserLeaderboardProps) {
 					</div>
 				}
 			</div>
-			<div class="rounded-lg border border-sky-500/20 bg-sky-500/10 p-4 text-sm leading-6 text-sky-100">
-				Only quotes with at least <span class="font-semibold text-white">{ strconv.Itoa(props.RequiredRanks) }</span> comparisons count toward the leaderboard.
-				Only users with at least <span class="font-semibold text-white">{ strconv.Itoa(props.RequiredQuotes) }</span> eligible quotes are shown.
+			<div class="rounded-lg border border-stone-700 bg-[#342d26]/80 p-4 text-sm leading-6 text-stone-300">
+				Only quotes with at least <span class="font-semibold text-stone-50">{ strconv.Itoa(props.RequiredRanks) }</span> comparisons count toward the leaderboard.
+				Only users with at least <span class="font-semibold text-stone-50">{ strconv.Itoa(props.RequiredQuotes) }</span> eligible quotes are shown.
 			</div>
 		</div>
 	}

@@ -23,12 +23,12 @@ templ QuoteListContent(props QuoteListProps) {
 			@QuoteDisplay(QuoteDisplayProps{
 				Content:    quote.Content,
 				Label:      quote.Label,
-				QuoteClass: "border-emerald-400/20 bg-emerald-950/70 [scrollbar-color:white_rgb(6,78,59)]",
+				QuoteClass: "border-stone-700 bg-[#342d26] [scrollbar-color:rgb(216,197,154)_rgb(52,45,38)]",
 				AsButton:   false,
 			})
 		}
 		if len(props.Quotes) == 0 {
-			<div class="rounded-lg border border-dashed border-zinc-700 bg-zinc-900/50 p-8 text-center font-medium text-zinc-400">{ props.EmptyText }</div>
+			<div class="rounded-lg border border-dashed border-stone-600 bg-[#342d26]/80 p-8 text-center font-medium text-stone-400">{ props.EmptyText }</div>
 		}
 	</div>
 	<div class="mt-6">

@@ -14,9 +14,9 @@ type ErrorPageProps struct {
 templ ErrorPage(props ErrorPageProps) {
 	@ui.Layout("Error") {
 		<div class="flex min-h-[60vh] w-full flex-col items-center justify-center space-y-4 text-center">
-			<p class="text-sm font-semibold uppercase tracking-[0.18em] text-rose-300">Request failed</p>
-			<h1 class="text-6xl font-semibold tracking-tight text-white">{ fmt.Sprintf("%d", props.StatusCode) }</h1>
-			<div class="max-w-2xl whitespace-pre-wrap rounded-lg border border-zinc-800 bg-zinc-900 p-4 text-left font-mono text-sm text-zinc-300">{ props.Message }</div>
+			<p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-300">Request failed</p>
+			<h1 class="text-6xl font-semibold tracking-tight text-stone-50">{ fmt.Sprintf("%d", props.StatusCode) }</h1>
+			<div class="max-w-2xl whitespace-pre-wrap rounded-lg border border-stone-700 bg-[#342d26] p-4 text-left font-mono text-sm text-stone-300">{ props.Message }</div>
 		</div>
 	}
 }

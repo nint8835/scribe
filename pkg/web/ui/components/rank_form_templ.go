@@ -73,7 +73,7 @@ func RankForm(props RankProps) templ.Component {
 			KeyboardKey:    "ArrowLeft",
 			Label:          "←",
 			ContainerClass: "items-start",
-			QuoteClass:     "border-sky-400/25 bg-sky-950/80 [scrollbar-color:white_rgb(8,47,73)] hover:border-sky-300/50 hover:bg-sky-900/90 hover:[scrollbar-color:white_rgb(12,74,110)]",
+			QuoteClass:     "border-emerald-400/25 bg-[#342d26] [scrollbar-color:rgb(216,197,154)_rgb(52,45,38)] hover:border-emerald-400/45 hover:bg-[#3c342c]",
 			AsButton:       true,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -85,7 +85,7 @@ func RankForm(props RankProps) templ.Component {
 			KeyboardKey:    "ArrowRight",
 			Label:          "→",
 			ContainerClass: "items-end",
-			QuoteClass:     "border-rose-400/25 bg-rose-950/80 [scrollbar-color:white_rgb(76,5,25)] hover:border-rose-300/50 hover:bg-rose-900/90 hover:[scrollbar-color:white_rgb(136,19,55)]",
+			QuoteClass:     "border-red-400/25 bg-[#342d26] [scrollbar-color:rgb(216,197,154)_rgb(52,45,38)] hover:border-red-400/45 hover:bg-[#3c342c]",
 			AsButton:       true,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -116,7 +116,7 @@ func RankUnavailableMessage() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"col-span-full flex min-h-64 flex-col items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/70 p-6 text-center text-zinc-200\"><p class=\"font-semibold\">No quotes are available with your current selection options.</p><p class=\"mt-1 text-sm text-zinc-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"col-span-full flex min-h-64 flex-col items-center justify-center rounded-lg border border-stone-700 bg-[#342d26]/90 p-6 text-center text-stone-300\"><p class=\"font-semibold\">No quotes are available with your current selection options.</p><p class=\"mt-1 text-sm text-stone-400\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -129,7 +129,7 @@ func RankUnavailableMessage() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<a href=\"/options\" class=\"text-sky-300 underline hover:text-sky-200\">selection options</a>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<a href=\"/options\" class=\"text-red-300 underline hover:text-red-200\">selection options</a>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

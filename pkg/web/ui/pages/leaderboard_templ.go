@@ -87,7 +87,7 @@ func Leaderboard(props LeaderboardProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"mx-auto w-full max-w-4xl space-y-6\"><div><p class=\"text-sm font-semibold uppercase tracking-[0.18em] text-emerald-300\">Leaderboard</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-white\">Top ranked quotes</h1></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"mx-auto w-full max-w-4xl space-y-6\"><div><p class=\"text-sm font-semibold uppercase tracking-[0.18em] text-emerald-300\">Leaderboard</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-stone-50\">Top ranked quotes</h1></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

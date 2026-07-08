@@ -14,24 +14,10 @@ func getTitleString(title string) string {
 	return fmt.Sprintf("%s - Scribe", title)
 }
 
-func getStyles() string {
-	return fmt.Sprintf(`
-    <style>
-      @font-face {
-        font-family: 'Inter Var';
-        font-style: normal;
-        font-weight: 100 900;
-        font-display: swap;
-        src: url("%s") format('woff2');
-      }
-    </style>
-  `, static.GetStaticPath("InterVariable.woff2"))
-}
-
 templ navLink(href string, label string, active bool) {
 	<a
 		href={ href }
-		class={ "rounded-full px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-100", templ.KV("bg-zinc-800 text-zinc-50 shadow-sm shadow-black/20", active) }
+		class={ "rounded-full px-3 py-2 text-sm font-medium text-stone-300 transition-colors hover:bg-stone-700/70 hover:text-stone-50", templ.KV("bg-[#d8c59a] text-stone-950 shadow-sm shadow-black/30 hover:bg-[#e3d2aa] hover:text-stone-950", active) }
 	>
 		{ label }
 	</a>
@@ -41,7 +27,6 @@ templ Layout(title string) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
-			<link rel="preload" href={ static.GetStaticPath("InterVariable.woff2") } as="font" type="font/woff2" crossorigin/>
 			<title>{ getTitleString(title) }</title>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -49,17 +34,16 @@ templ Layout(title string) {
 			<link rel="stylesheet" href={ static.GetStaticPath("tailwind.css") }/>
 			<script src={ static.GetStaticPath("htmx.min.js") }></script>
 			<script src={ static.GetStaticPath("preload.min.js") }></script>
-			@templ.Raw(getStyles())
 		</head>
-		<body class="min-h-screen bg-zinc-950 text-zinc-100 antialiased" hx-ext="preload">
+		<body class="min-h-screen bg-[#1f1a16] text-stone-200 antialiased" hx-ext="preload">
 			<div class="flex min-h-screen flex-col">
-				<header class="sticky top-0 z-20 border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur">
+				<header class="sticky top-0 z-20 border-b border-stone-700/80 bg-[#2a241f]/95 backdrop-blur">
 					<div class="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
 						<a href="/" class="flex w-fit items-center gap-3">
-							<span class="grid size-10 place-items-center rounded-lg border border-amber-400/30 bg-amber-400/10 text-lg font-black text-amber-200">S</span>
+							<span class="grid size-10 place-items-center rounded-lg border border-[#d8c59a]/35 bg-[#3a3128] text-lg font-black text-[#d8c59a]">S</span>
 							<span>
-								<span class="block text-lg font-semibold tracking-tight text-white">Scribe</span>
-								<span class="block text-xs font-medium uppercase tracking-[0.18em] text-zinc-500">Quote rankings</span>
+								<span class="block text-lg font-semibold tracking-tight text-stone-50">Scribe</span>
+								<span class="block text-xs font-medium uppercase tracking-[0.18em] text-stone-400">Quote rankings</span>
 							</span>
 						</a>
 						<nav class="flex gap-1 overflow-x-auto pb-1 lg:pb-0" aria-label="Primary navigation">

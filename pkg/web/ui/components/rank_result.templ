@@ -17,19 +17,19 @@ type RankResultProps struct {
 
 templ formatRankDisplay(newRank int, change int) {
 	if change > 0 {
-		<span class="font-semibold text-green-400">#{ strconv.Itoa(newRank) } (+{ strconv.Itoa(change) })</span>
+		<span class="font-semibold text-emerald-300">#{ strconv.Itoa(newRank) } (+{ strconv.Itoa(change) })</span>
 	} else if change < 0 {
-		<span class="font-semibold text-red-400">#{ strconv.Itoa(newRank) } ({ strconv.Itoa(change) })</span>
+		<span class="font-semibold text-red-300">#{ strconv.Itoa(newRank) } ({ strconv.Itoa(change) })</span>
 	} else {
-		<span class="text-zinc-400">#{ strconv.Itoa(newRank) } (0)</span>
+		<span class="text-stone-400">#{ strconv.Itoa(newRank) } (0)</span>
 	}
 }
 
 templ RankResult(props RankResultProps) {
 	{{ quoteARankChange := props.QuoteARankBefore - props.QuoteARankAfter }}
 	{{ quoteBRankChange := props.QuoteBRankBefore - props.QuoteBRankAfter }}
-	<div id="rank-results" class="w-full rounded-lg border border-zinc-800 bg-zinc-900/70 p-4 shadow-lg shadow-black/10 [&_p]:inline" hx-swap-oob="true">
-		<div class="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500">Latest result</div>
+	<div id="rank-results" class="w-full rounded-lg border border-stone-700 bg-[#342d26]/90 p-4 shadow-md shadow-black/20 [&_p]:inline" hx-swap-oob="true">
+		<div class="text-xs font-semibold uppercase tracking-[0.14em] text-stone-400">Latest result</div>
 		<div class="mt-3 mb-0.5 text-sm leading-6">
 			<span class="mr-2">
 				@formatRankDisplay(props.QuoteARankAfter, quoteARankChange)
@@ -38,7 +38,7 @@ templ RankResult(props RankResultProps) {
 				@templ.Raw(props.QuoteAContent)
 			</span>
 		</div>
-		<div class="ml-4 text-xs text-zinc-400 italic">
+		<div class="ml-4 text-xs text-stone-400 italic">
 			{ "— " }@templ.Raw(props.QuoteAAuthors)
 		</div>
 		<div class="mt-3 mb-0.5 text-sm leading-6">
@@ -49,7 +49,7 @@ templ RankResult(props RankResultProps) {
 				@templ.Raw(props.QuoteBContent)
 			</span>
 		</div>
-		<div class="ml-4 text-xs text-zinc-400 italic">
+		<div class="ml-4 text-xs text-stone-400 italic">
 			{ "— " }@templ.Raw(props.QuoteBAuthors)
 		</div>
 	</div>

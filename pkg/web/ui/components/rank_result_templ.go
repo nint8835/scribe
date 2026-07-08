@@ -45,14 +45,14 @@ func formatRankDisplay(newRank int, change int) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if change > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<span class=\"font-semibold text-green-400\">#")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<span class=\"font-semibold text-emerald-300\">#")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(newRank))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_result.templ`, Line: 20, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_result.templ`, Line: 20, Col: 71}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -65,7 +65,7 @@ func formatRankDisplay(newRank int, change int) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(change))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_result.templ`, Line: 20, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_result.templ`, Line: 20, Col: 98}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -76,7 +76,7 @@ func formatRankDisplay(newRank int, change int) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else if change < 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"font-semibold text-red-400\">#")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"font-semibold text-red-300\">#")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -107,14 +107,14 @@ func formatRankDisplay(newRank int, change int) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span class=\"text-zinc-400\">#")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span class=\"text-stone-400\">#")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(newRank))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_result.templ`, Line: 24, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/components/rank_result.templ`, Line: 24, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -152,7 +152,7 @@ func RankResult(props RankResultProps) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		quoteARankChange := props.QuoteARankBefore - props.QuoteARankAfter
 		quoteBRankChange := props.QuoteBRankBefore - props.QuoteBRankAfter
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div id=\"rank-results\" class=\"w-full rounded-lg border border-zinc-800 bg-zinc-900/70 p-4 shadow-lg shadow-black/10 [&_p]:inline\" hx-swap-oob=\"true\"><div class=\"text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500\">Latest result</div><div class=\"mt-3 mb-0.5 text-sm leading-6\"><span class=\"mr-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div id=\"rank-results\" class=\"w-full rounded-lg border border-stone-700 bg-[#342d26]/90 p-4 shadow-md shadow-black/20 [&_p]:inline\" hx-swap-oob=\"true\"><div class=\"text-xs font-semibold uppercase tracking-[0.14em] text-stone-400\">Latest result</div><div class=\"mt-3 mb-0.5 text-sm leading-6\"><span class=\"mr-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -168,7 +168,7 @@ func RankResult(props RankResultProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span></div><div class=\"ml-4 text-xs text-zinc-400 italic\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span></div><div class=\"ml-4 text-xs text-stone-400 italic\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -201,7 +201,7 @@ func RankResult(props RankResultProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</span></div><div class=\"ml-4 text-xs text-zinc-400 italic\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</span></div><div class=\"ml-4 text-xs text-stone-400 italic\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
