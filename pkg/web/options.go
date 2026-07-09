@@ -62,6 +62,6 @@ func (s *Server) handlePostOptions(w http.ResponseWriter, r *http.Request) error
 		return fmt.Errorf("error saving session: %w", err)
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/rank", http.StatusSeeOther)
 	return nil
 }
