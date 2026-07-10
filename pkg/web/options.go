@@ -16,11 +16,11 @@ func (s *Server) handleGetOptions(w http.ResponseWriter, r *http.Request) error 
 	tiebreakerMethod, tiebreakerMethodSet := session.Values["tiebreaker_method"].(selection.TiebreakerMethod)
 
 	if !firstMethodSet {
-		firstMethod = selection.FirstQuoteMethodLeastSeen
+		firstMethod = selection.DefaultFirstQuoteMethod
 	}
 
 	if !secondMethodSet {
-		secondMethod = selection.SecondQuoteMethodSemanticSimilarity
+		secondMethod = selection.DefaultSecondQuoteMethod
 	}
 
 	if !tiebreakerMethodSet {
@@ -49,9 +49,20 @@ func (s *Server) handlePostOptions(w http.ResponseWriter, r *http.Request) error
 
 	session := s.getSession(r)
 
-	firstMethod := selection.FirstQuoteMethod(r.PostForm.Get("first_method"))
-	secondMethod := selection.SecondQuoteMethod(r.PostForm.Get("second_method"))
-	tiebreakerMethod := selection.TiebreakerMethod(r.PostForm.Get("tiebreaker_method"))
+	var firstMethod selection.FirstQuoteMethod
+	var secondMethod selection.SecondQuoteMethod
+	var tiebreakerMethod selection.TiebreakerMethod
+
+	preset, presetFound := selection.FindSelectionPreset(r.PostForm.Get("preset"))
+	if presetFound {
+		firstMethod = preset.FirstMethod
+		secondMethod = preset.SecondMethod
+		tiebreakerMethod = preset.TiebreakerMethod
+	} else {
+		firstMethod = selection.FirstQuoteMethod(r.PostForm.Get("first_method"))
+		secondMethod = selection.SecondQuoteMethod(r.PostForm.Get("second_method"))
+		tiebreakerMethod = selection.TiebreakerMethod(r.PostForm.Get("tiebreaker_method"))
+	}
 
 	session.Values["first_method"] = firstMethod
 	session.Values["second_method"] = secondMethod
