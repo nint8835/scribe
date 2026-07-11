@@ -36,37 +36,48 @@ func onThisDayQuery(query *gorm.DB, day time.Time) *gorm.DB {
 func (b *Bot) makeOnThisDayEmbed(guildID string) (*discordgo.MessageEmbed, error) {
 	now := time.Now().In(config.Location)
 	query := onThisDayQuery(database.Instance.Model(&database.Quote{}), now)
-	var quoteCount int64
-	result := query.Count(&quoteCount)
+	var quotes []database.Quote
+	result := query.
+		Preload(clause.Associations).
+		Order("created_at ASC").
+		Find(&quotes)
 	if result.Error != nil {
-		return nil, fmt.Errorf("error counting quotes: %w", result.Error)
+		return nil, fmt.Errorf("error getting quotes: %w", result.Error)
+	}
+	if len(quotes) == 0 {
+		return nil, fmt.Errorf("no quotes found from this day in history (%s): %w", now.Format("January 2"), gorm.ErrRecordNotFound)
 	}
 
-	var quote database.Quote
-	result = query.
-		Preload(clause.Associations).
-		Order("RANDOM()").
-		Take(&quote)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, fmt.Errorf("no quotes found from this day in history (%s): %w", now.Format("January 2"), result.Error)
+	embed := &discordgo.MessageEmbed{
+		Title:  fmt.Sprintf("On This Day: %s", now.Format("January 2")),
+		Color:  (80 << 16) + (40 << 8) + 200,
+		Fields: []*discordgo.MessageEmbedField{},
+	}
+
+	for _, quote := range quotes {
+		authors, _, err := b.generateAuthorString(quote.Authors, guildID)
+		if err != nil {
+			return nil, fmt.Errorf("error getting quote authors: %w", err)
 		}
 
-		return nil, fmt.Errorf("error getting quote: %w", result.Error)
+		field := quoteListField(quote, authors)
+		footer := &discordgo.MessageEmbedFooter{Text: fmt.Sprintf("Showing %d of %d quotes from this day in history", len(embed.Fields)+1, len(quotes))}
+		embed.Fields = append(embed.Fields, field)
+		embed.Footer = footer
+		if len(embed.Fields) > discordEmbedFieldLimit || embedTextLength(embed) > discordEmbedTotalLimit {
+			embed.Fields = embed.Fields[:len(embed.Fields)-1]
+			break
+		}
 	}
 
-	embed, err := b.makeQuoteEmbed(&quote, guildID)
-	if err != nil {
-		return nil, fmt.Errorf("error getting quote: %w", err)
+	quoteLabel := "quotes"
+	if len(quotes) == 1 {
+		quoteLabel = "quote"
 	}
-
-	embed.Title = fmt.Sprintf("On This Day: %s", now.Format("January 2"))
-	quoteCountLabel := "quotes"
-	if quoteCount == 1 {
-		quoteCountLabel = "quote"
-	}
-	embed.Footer = &discordgo.MessageEmbedFooter{
-		Text: fmt.Sprintf("%d %s from this day in history", quoteCount, quoteCountLabel),
+	if len(embed.Fields) == len(quotes) {
+		embed.Footer = &discordgo.MessageEmbedFooter{Text: fmt.Sprintf("%d %s from this day in history", len(quotes), quoteLabel)}
+	} else {
+		embed.Footer = &discordgo.MessageEmbedFooter{Text: fmt.Sprintf("Showing %d of %d quotes from this day in history", len(embed.Fields), len(quotes))}
 	}
 
 	return embed, nil

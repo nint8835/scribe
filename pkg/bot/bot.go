@@ -80,7 +80,7 @@ func (b *Bot) registerCommands() {
 	})
 	_ = b.parser.AddCommand(&switchboard.Command{
 		Name:        "onthisday",
-		Description: "Get a random quote from this day in history.",
+		Description: "List quotes from this day in history.",
 		Handler:     b.onThisDayQuoteCommand,
 		GuildID:     config.Instance.GuildId,
 	})

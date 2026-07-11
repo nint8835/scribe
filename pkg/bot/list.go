@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"math"
+	"unicode/utf8"
 
 	"github.com/bwmarrin/discordgo"
 
@@ -14,10 +15,50 @@ import (
 const WEB_LIST_QUOTES_PER_PAGE = 10
 const BOT_LIST_QUOTES_PER_PAGE = 5
 
+const (
+	discordEmbedFieldLimit      = 25
+	discordEmbedFieldNameLimit  = 256
+	discordEmbedFieldValueLimit = 1024
+	discordEmbedTotalLimit      = 6000
+)
+
 type listArgs struct {
 	Author *discordgo.User `description:"Author to display quotes for. Omit to display quotes from all users."`
 	Query  *string         `description:"Optional keyword / phrase to search for."`
 	Page   int             `default:"1" description:"Page of quotes to display."`
+}
+
+func truncateDiscordText(value string, limit int) string {
+	if utf8.RuneCountInString(value) <= limit {
+		return value
+	}
+
+	runes := []rune(value)
+	return string(runes[:limit-3]) + "..."
+}
+
+func quoteListField(quote database.Quote, authors string) *discordgo.MessageEmbedField {
+	quoteText := truncateDiscordText(quote.Text, 900)
+	quoteBody := fmt.Sprintf("%s\n\n_<t:%d>_", quoteText, quote.Meta.CreatedAt.UTC().Unix())
+	if quote.Source != nil {
+		quoteBody += fmt.Sprintf(" - [Source](%s)", *quote.Source)
+	}
+
+	return &discordgo.MessageEmbedField{
+		Name:  truncateDiscordText(fmt.Sprintf("%d - %s", quote.Meta.ID, authors), discordEmbedFieldNameLimit),
+		Value: truncateDiscordText(quoteBody, discordEmbedFieldValueLimit),
+	}
+}
+
+func embedTextLength(embed *discordgo.MessageEmbed) int {
+	length := utf8.RuneCountInString(embed.Title) + utf8.RuneCountInString(embed.Description)
+	if embed.Footer != nil {
+		length += utf8.RuneCountInString(embed.Footer.Text)
+	}
+	for _, field := range embed.Fields {
+		length += utf8.RuneCountInString(field.Name) + utf8.RuneCountInString(field.Value)
+	}
+	return length
 }
 
 func (b *Bot) listQuotesCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args listArgs) {
@@ -79,19 +120,7 @@ func (b *Bot) listQuotesCommand(_ *discordgo.Session, interaction *discordgo.Int
 			}
 		}
 
-		quoteText := quote.Text
-		if len(quoteText) >= 900 {
-			quoteText = quoteText[:900] + "..."
-		}
-
-		quoteBody := fmt.Sprintf("%s\n\n_<t:%d>_", quoteText, quote.Meta.CreatedAt.UTC().Unix())
-		if quote.Source != nil {
-			quoteBody += fmt.Sprintf(" - [Source](%s)", *quote.Source)
-		}
-		embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
-			Name:  fmt.Sprintf("%d - %s", quote.Meta.ID, authors),
-			Value: quoteBody,
-		})
+		embed.Fields = append(embed.Fields, quoteListField(quote, authors))
 	}
 
 	err = b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
