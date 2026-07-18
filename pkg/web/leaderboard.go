@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"gorm.io/gorm"
+
 	"github.com/nint8835/scribe/pkg/database"
 	"github.com/nint8835/scribe/pkg/web/ui/components"
 	"github.com/nint8835/scribe/pkg/web/ui/pages"
@@ -153,6 +155,67 @@ func (s *Server) handleGetUserLeaderboard(w http.ResponseWriter, r *http.Request
 	}).Render(r.Context(), w)
 	if err != nil {
 		return fmt.Errorf("error rendering user leaderboard: %w", err)
+	}
+
+	return nil
+}
+
+type rankingLeaderboardUser struct {
+	UserID    string `gorm:"column:user_id"`
+	RankCount int64  `gorm:"column:rank_count"`
+	Placement int
+}
+
+func getRankingLeaderboardUsers(db *gorm.DB) ([]rankingLeaderboardUser, error) {
+	var users []rankingLeaderboardUser
+	err := db.Model(&database.CompletedComparison{}).
+		Select("user_id, COUNT(*) AS rank_count").
+		Group("user_id").
+		Order("rank_count DESC").
+		Order("user_id ASC").
+		Scan(&users).Error
+	if err != nil {
+		return nil, fmt.Errorf("error fetching ranking leaderboard users: %w", err)
+	}
+
+	placement := 0
+	var previousCount int64
+	for i := range users {
+		if i == 0 || users[i].RankCount != previousCount {
+			placement = i + 1
+			previousCount = users[i].RankCount
+		}
+		users[i].Placement = placement
+	}
+
+	return users, nil
+}
+
+func (s *Server) handleGetRankingLeaderboard(w http.ResponseWriter, r *http.Request) error {
+	users, err := getRankingLeaderboardUsers(database.Instance)
+	if err != nil {
+		return err
+	}
+
+	entries := make([]pages.RankingLeaderboardEntry, len(users))
+	for i, user := range users {
+		username, err := s.renderMarkdown(fmt.Sprintf("<@%s>", user.UserID))
+		if err != nil {
+			return fmt.Errorf("error resolving ranking leaderboard user ID: %w", err)
+		}
+
+		entries[i] = pages.RankingLeaderboardEntry{
+			Placement: user.Placement,
+			Username:  username,
+			RankCount: user.RankCount,
+		}
+	}
+
+	err = pages.RankingLeaderboard(pages.RankingLeaderboardProps{
+		Users: entries,
+	}).Render(r.Context(), w)
+	if err != nil {
+		return fmt.Errorf("error rendering ranking leaderboard: %w", err)
 	}
 
 	return nil

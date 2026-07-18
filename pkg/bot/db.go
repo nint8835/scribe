@@ -33,7 +33,11 @@ func (b *Bot) dbCommand(_ *discordgo.Session, interaction *discordgo.Interaction
 		}
 		return
 	}
-	defer dbFile.Close()
+	defer func() {
+		if closeErr := dbFile.Close(); closeErr != nil {
+			slog.Error("error closing database file", "error", closeErr)
+		}
+	}()
 
 	content := ""
 	_, err = b.Session.InteractionResponseEdit(interaction.Interaction, &discordgo.WebhookEdit{

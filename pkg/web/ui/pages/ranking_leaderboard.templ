@@ -1,0 +1,51 @@
+package pages
+
+import (
+	"strconv"
+
+	"github.com/nint8835/scribe/pkg/web/ui"
+)
+
+type RankingLeaderboardProps struct {
+	Users []RankingLeaderboardEntry
+}
+
+type RankingLeaderboardEntry struct {
+	Placement int
+	Username  string
+	RankCount int64
+}
+
+templ RankingLeaderboard(props RankingLeaderboardProps) {
+	@ui.Layout("Ranking Leaderboard") {
+		<div class="mx-auto w-full max-w-4xl space-y-6">
+			<div>
+				<p class="text-sm font-semibold tracking-[0.18em] text-sky-300 uppercase">Rankers</p>
+				<h1 class="mt-1 text-3xl font-semibold tracking-tight text-stone-50">Most rankings completed</h1>
+				<p class="mt-2 text-sm leading-6 text-stone-400">All-time quote comparisons completed by each user.</p>
+			</div>
+			if len(props.Users) == 0 {
+				<div class="rounded-lg border border-stone-700 bg-[#342d26]/90 px-5 py-10 text-center text-sm text-stone-400">
+					No completed rankings yet.
+				</div>
+			} else {
+				<div class="overflow-hidden rounded-lg border border-stone-700 bg-[#342d26]/90">
+					<div class="grid grid-cols-[4rem_1fr_auto] gap-4 border-b border-stone-700 bg-[#2f2923] px-4 py-3 text-xs font-semibold tracking-[0.14em] text-stone-400 uppercase sm:grid-cols-[6rem_1fr_12rem]">
+						<div>Place</div>
+						<div>User</div>
+						<div class="text-right sm:text-center">Rankings completed</div>
+					</div>
+					for i, user := range props.Users {
+						<div class={ "grid grid-cols-[4rem_1fr_auto] gap-4 px-4 py-3 text-sm text-stone-300 sm:grid-cols-[6rem_1fr_12rem]", templ.KV("bg-[#2f2923]/70", i%2 == 1) }>
+							<div class="font-semibold tabular-nums text-sky-300">#{ strconv.Itoa(user.Placement) }</div>
+							<div class="min-w-0 truncate font-medium text-stone-50">
+								@templ.Raw(user.Username)
+							</div>
+							<div class="text-right tabular-nums sm:text-center">{ strconv.FormatInt(user.RankCount, 10) }</div>
+						</div>
+					}
+				</div>
+			}
+		</div>
+	}
+}
