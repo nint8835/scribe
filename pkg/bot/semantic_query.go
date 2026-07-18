@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 
@@ -15,7 +16,7 @@ type semanticQueryArgs struct {
 }
 
 func (b *Bot) semanticQueryCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args semanticQueryArgs) {
-	encodedEmbedding, err := embedding.EmbedQuote(args.Query)
+	encodedEmbedding, err := embedding.EmbedQuote(context.TODO(), args.Query)
 	if err != nil {
 		_, sendErr := b.Session.ChannelMessageSend(interaction.ChannelID, fmt.Sprintf("Error creating embedding.\n```\n%s\n```", err))
 		if sendErr != nil {

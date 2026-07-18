@@ -137,7 +137,7 @@ func secondQuoteSemanticSimilarity(ctx context.Context, userId string, firstQuot
 	var quote database.Quote
 	db := database.Instance.WithContext(ctx)
 
-	encodedEmbedding, err := embedding.EmbedQuote(firstQuote.Text)
+	encodedEmbedding, err := embedding.EmbedQuote(ctx, firstQuote.Text)
 	if err != nil {
 		return database.Quote{}, fmt.Errorf("failed to serialize embedding: %w", err)
 	}

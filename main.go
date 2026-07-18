@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"os"
 
@@ -18,7 +19,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = embedding.Initialize()
+	err = embedding.Initialize(context.Background())
 	if err != nil {
 		slog.Error("Error initializing embedding", "error", err)
 		os.Exit(1)

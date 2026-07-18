@@ -2,6 +2,7 @@ package bot
 
 import (
 	"cmp"
+	"context"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -130,7 +131,7 @@ func (b *Bot) addQuote(quote database.Quote, interaction *discordgo.InteractionC
 		}
 	}
 
-	encodedEmbedding, err := embedding.EmbedQuote(quote.Text)
+	encodedEmbedding, err := embedding.EmbedQuote(context.TODO(), quote.Text)
 	if err != nil {
 		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,

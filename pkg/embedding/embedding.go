@@ -1,6 +1,7 @@
 package embedding
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
@@ -13,10 +14,10 @@ import (
 
 var Pipeline *pipelines.FeatureExtractionPipeline
 
-func Initialize() error {
+func Initialize(ctx context.Context) error {
 	slog.Debug("Initializing embedding support")
 
-	session, err := hugot.NewGoSession()
+	session, err := hugot.NewGoSession(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to create Hugot session: %w", err)
 	}
@@ -31,6 +32,7 @@ func Initialize() error {
 
 	slog.Debug("Downloading embedding model")
 	modelPath, err := hugot.DownloadModel(
+		ctx,
 		"sentence-transformers/all-MiniLM-L6-v2",
 		modelsDir,
 		downloadOptions,
@@ -56,7 +58,7 @@ func Initialize() error {
 	return nil
 }
 
-func EmbedQuote(text string) ([]byte, error) {
+func EmbedQuote(ctx context.Context, text string) ([]byte, error) {
 	// Preprocess text to remove mentions
 	lines := strings.Split(text, "\n")
 	for i, line := range lines {
@@ -74,7 +76,7 @@ func EmbedQuote(text string) ([]byte, error) {
 		slog.Debug("Preprocessed quote text for embedding", "original", text, "preprocessed", preprocessedText)
 	}
 
-	result, err := Pipeline.RunPipeline([]string{preprocessedText})
+	result, err := Pipeline.RunPipeline(ctx, []string{preprocessedText})
 	if err != nil {
 		return []byte{}, fmt.Errorf("failed to run embedding pipeline: %w", err)
 	}

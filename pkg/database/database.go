@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"log/slog"
@@ -127,7 +128,7 @@ func initializeQuoteEmbeddings() error {
 
 	for _, quote := range quotes {
 		slog.Info("Backfilling embedding for quote", "id", quote.Meta.ID)
-		encodedEmbedding, err := embedding.EmbedQuote(quote.Text)
+		encodedEmbedding, err := embedding.EmbedQuote(context.Background(), quote.Text)
 		if err != nil {
 			log.Printf("error embedding quote ID %d for backfill: %v", quote.Meta.ID, err)
 			continue

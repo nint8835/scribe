@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -63,7 +64,7 @@ func (b *Bot) editQuoteCommand(_ *discordgo.Session, interaction *discordgo.Inte
 		return
 	}
 
-	encodedEmbedding, err := embedding.EmbedQuote(quote.Text)
+	encodedEmbedding, err := embedding.EmbedQuote(context.TODO(), quote.Text)
 	if err != nil {
 		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
