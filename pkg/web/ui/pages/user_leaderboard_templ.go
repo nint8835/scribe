@@ -62,7 +62,7 @@ func UserLeaderboard(props UserLeaderboardProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto w-full max-w-4xl space-y-6\"><div><p class=\"text-sm font-semibold tracking-[0.18em] text-red-300 uppercase\">Users</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-stone-50\">User leaderboard</h1></div><div class=\"overflow-hidden rounded-lg border border-stone-700 bg-[#342d26]/90\"><div class=\"grid grid-cols-[4rem_1fr_auto_auto] gap-4 border-b border-stone-700 bg-[#2f2923] px-4 py-3 text-xs font-semibold tracking-[0.14em] text-stone-400 uppercase sm:grid-cols-[6rem_1fr_10rem_10rem]\"><div>Place</div><div>User</div><div class=\"text-right sm:text-center\">Average Elo</div><div class=\"text-right sm:text-center\">Eligible Quotes</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto w-full max-w-4xl space-y-6\"><div><p class=\"text-sm font-semibold tracking-[0.18em] text-violet-300 uppercase\">Users</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-stone-50\">User leaderboard</h1></div><div class=\"overflow-hidden rounded-lg border border-stone-700 bg-[#342d26]/90\"><div class=\"grid grid-cols-[4rem_1fr_auto_auto] gap-4 border-b border-stone-700 bg-[#2f2923] px-4 py-3 text-xs font-semibold tracking-[0.14em] text-stone-400 uppercase sm:grid-cols-[6rem_1fr_10rem_10rem]\"><div>Place</div><div>User</div><div class=\"text-right sm:text-center\">Average Elo</div><div class=\"text-right sm:text-center\">Eligible Quotes</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -85,14 +85,14 @@ func UserLeaderboard(props UserLeaderboardProps) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><div class=\"font-semibold tabular-nums text-red-300\">#")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><div class=\"font-semibold tabular-nums text-violet-300\">#")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(user.Placement))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/user_leaderboard.templ`, Line: 40, Col: 90}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/user_leaderboard.templ`, Line: 40, Col: 93}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {

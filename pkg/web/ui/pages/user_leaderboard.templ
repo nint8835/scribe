@@ -25,7 +25,7 @@ templ UserLeaderboard(props UserLeaderboardProps) {
 	@ui.Layout("User Leaderboard") {
 		<div class="mx-auto w-full max-w-4xl space-y-6">
 			<div>
-				<p class="text-sm font-semibold tracking-[0.18em] text-red-300 uppercase">Users</p>
+				<p class="text-sm font-semibold tracking-[0.18em] text-violet-300 uppercase">Users</p>
 				<h1 class="mt-1 text-3xl font-semibold tracking-tight text-stone-50">User leaderboard</h1>
 			</div>
 			<div class="overflow-hidden rounded-lg border border-stone-700 bg-[#342d26]/90">
@@ -37,7 +37,7 @@ templ UserLeaderboard(props UserLeaderboardProps) {
 				</div>
 				for i, user := range props.Users {
 					<div class={ "grid grid-cols-[4rem_1fr_auto_auto] gap-4 px-4 py-3 text-sm text-stone-300 sm:grid-cols-[6rem_1fr_10rem_10rem]", templ.KV("bg-[#2f2923]/70", i%2 == 1) }>
-						<div class="font-semibold tabular-nums text-red-300">#{ strconv.Itoa(user.Placement) }</div>
+						<div class="font-semibold tabular-nums text-violet-300">#{ strconv.Itoa(user.Placement) }</div>
 						<div class="min-w-0 truncate font-medium text-stone-50">
 							@templ.Raw(user.Username)
 						</div>
