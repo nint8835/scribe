@@ -23,9 +23,10 @@ type UserLeaderboardProps struct {
 }
 
 type UserLeaderboardEntry struct {
-	Username string
-	Elo      float64
-	Quotes   int
+	Placement int
+	Username  string
+	Elo       float64
+	Quotes    int
 }
 
 func UserLeaderboard(props UserLeaderboardProps) templ.Component {
@@ -61,12 +62,12 @@ func UserLeaderboard(props UserLeaderboardProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto w-full max-w-4xl space-y-6\"><div><p class=\"text-sm font-semibold tracking-[0.18em] text-red-300 uppercase\">Users</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-stone-50\">User leaderboard</h1></div><div class=\"overflow-hidden rounded-lg border border-stone-700 bg-[#342d26]/90\"><div class=\"grid grid-cols-[1fr_auto_auto] gap-4 border-b border-stone-700 bg-[#2f2923] px-4 py-3 text-xs font-semibold tracking-[0.14em] text-stone-400 uppercase sm:grid-cols-3\"><div>User</div><div class=\"text-right sm:text-center\">Average Elo</div><div class=\"text-right sm:text-center\">Eligible Quotes</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto w-full max-w-4xl space-y-6\"><div><p class=\"text-sm font-semibold tracking-[0.18em] text-red-300 uppercase\">Users</p><h1 class=\"mt-1 text-3xl font-semibold tracking-tight text-stone-50\">User leaderboard</h1></div><div class=\"overflow-hidden rounded-lg border border-stone-700 bg-[#342d26]/90\"><div class=\"grid grid-cols-[4rem_1fr_auto_auto] gap-4 border-b border-stone-700 bg-[#2f2923] px-4 py-3 text-xs font-semibold tracking-[0.14em] text-stone-400 uppercase sm:grid-cols-[6rem_1fr_10rem_10rem]\"><div>Place</div><div>User</div><div class=\"text-right sm:text-center\">Average Elo</div><div class=\"text-right sm:text-center\">Eligible Quotes</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for i, user := range props.Users {
-				var templ_7745c5c3_Var3 = []any{"grid grid-cols-[1fr_auto_auto] gap-4 px-4 py-3 text-sm text-stone-300 sm:grid-cols-3", templ.KV("bg-[#2f2923]/70", i%2 == 1)}
+				var templ_7745c5c3_Var3 = []any{"grid grid-cols-[4rem_1fr_auto_auto] gap-4 px-4 py-3 text-sm text-stone-300 sm:grid-cols-[6rem_1fr_10rem_10rem]", templ.KV("bg-[#2f2923]/70", i%2 == 1)}
 				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -84,24 +85,24 @@ func UserLeaderboard(props UserLeaderboardProps) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><div class=\"min-w-0 truncate font-medium text-stone-50\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templ.Raw(user.Username).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"text-right tabular-nums sm:text-center\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><div class=\"font-semibold tabular-nums text-red-300\">#")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var5 string
-				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", user.Elo))
+				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(user.Placement))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/user_leaderboard.templ`, Line: 41, Col: 89}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/user_leaderboard.templ`, Line: 40, Col: 90}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"min-w-0 truncate font-medium text-stone-50\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templ.Raw(user.Username).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -110,46 +111,59 @@ func UserLeaderboard(props UserLeaderboardProps) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var6 string
-				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(user.Quotes))
+				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", user.Elo))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/user_leaderboard.templ`, Line: 42, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/user_leaderboard.templ`, Line: 44, Col: 89}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"text-right tabular-nums sm:text-center\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var7 string
+				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(user.Quotes))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/user_leaderboard.templ`, Line: 45, Col: 85}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><div class=\"rounded-lg border border-stone-700 bg-[#342d26]/80 p-4 text-sm leading-6 text-stone-300\">Only quotes with at least <span class=\"font-semibold text-stone-50\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(props.RequiredRanks))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/user_leaderboard.templ`, Line: 47, Col: 107}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span> comparisons count toward the leaderboard. Only users with at least <span class=\"font-semibold text-stone-50\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><div class=\"rounded-lg border border-stone-700 bg-[#342d26]/80 p-4 text-sm leading-6 text-stone-300\">Only quotes with at least <span class=\"font-semibold text-stone-50\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(props.RequiredQuotes))
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(props.RequiredRanks))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/user_leaderboard.templ`, Line: 48, Col: 107}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/user_leaderboard.templ`, Line: 50, Col: 107}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span> eligible quotes are shown.</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span> comparisons count toward the leaderboard. Only users with at least <span class=\"font-semibold text-stone-50\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(props.RequiredQuotes))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/web/ui/pages/user_leaderboard.templ`, Line: 51, Col: 107}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span> eligible quotes are shown.</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

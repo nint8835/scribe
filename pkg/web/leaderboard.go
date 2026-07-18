@@ -129,22 +129,31 @@ func (s *Server) handleGetUserLeaderboard(w http.ResponseWriter, r *http.Request
 		HAVING
 			quote_count >= ?
 		ORDER BY
-			avg_elo DESC`, USER_LEADERBOARD_COMPARISON_THRESHOLD, USER_LEADERBOARD_QUOTE_THRESHOLD).Scan(&users).Error
+			avg_elo DESC,
+			quote_authors.author_id ASC`, USER_LEADERBOARD_COMPARISON_THRESHOLD, USER_LEADERBOARD_QUOTE_THRESHOLD).Scan(&users).Error
 	if err != nil {
 		return fmt.Errorf("error fetching users: %w", err)
 	}
 
 	formattedUsers := make([]pages.UserLeaderboardEntry, len(users))
+	placement := 0
+	var previousElo float64
 	for i, user := range users {
 		username, err := s.renderMarkdown(fmt.Sprintf("<@%s>", user.AuthorID))
 		if err != nil {
 			return fmt.Errorf("error resolving author IDs: %w", err)
 		}
 
+		if i == 0 || user.AvgElo != previousElo {
+			placement = i + 1
+			previousElo = user.AvgElo
+		}
+
 		formattedUsers[i] = pages.UserLeaderboardEntry{
-			Username: username,
-			Elo:      user.AvgElo,
-			Quotes:   user.QuoteCount,
+			Placement: placement,
+			Username:  username,
+			Elo:       user.AvgElo,
+			Quotes:    user.QuoteCount,
 		}
 	}
 
