@@ -123,7 +123,6 @@ func New() (*Server, error) {
 
 	serverInst.serveMux.HandleFunc("GET /rank", errorHandler(serverInst.requireAuth(serverInst.handleGetRank)))
 	serverInst.serveMux.HandleFunc("POST /rank", errorHandler(serverInst.requireAuth(serverInst.handlePostRank)))
-	serverInst.serveMux.HandleFunc("GET /rank/stats", errorHandler(serverInst.requireAuth(serverInst.handleRankStats)))
 
 	serverInst.serveMux.HandleFunc("GET /options", errorHandler(serverInst.requireAuth(serverInst.handleGetOptions)))
 	serverInst.serveMux.HandleFunc("POST /options", errorHandler(serverInst.requireAuth(serverInst.handlePostOptions)))

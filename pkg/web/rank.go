@@ -29,30 +29,6 @@ func (s *Server) getQuoteRank(quoteID uint) (int, error) {
 	return int(rank) + 1, nil
 }
 
-func (s *Server) getRankStatsDisplayProps(id string) (components.RankStatsDisplayProps, error) {
-	var stats components.RankStatsDisplayProps
-
-	err := database.Instance.Model(&database.CompletedComparison{}).Where("user_id = ?", id).Count(&stats.UserRankCount).Error
-	if err != nil {
-		return stats, fmt.Errorf("error getting user rank count: %w", err)
-	}
-
-	err = database.Instance.Model(&database.CompletedComparison{}).Count(&stats.TotalRankCount).Error
-	if err != nil {
-		return stats, fmt.Errorf("error getting total rank count: %w", err)
-	}
-
-	var quoteCount int64
-	err = database.Instance.Model(&database.Quote{}).Count(&quoteCount).Error
-	if err != nil {
-		return stats, fmt.Errorf("error getting quote count: %w", err)
-	}
-
-	stats.MaxRankCount = quoteCount * (quoteCount - 1) / 2
-
-	return stats, nil
-}
-
 func (s *Server) getRankFormProps(quoteA database.Quote, quoteB database.Quote) (components.RankProps, error) {
 	quoteAContent, err := s.renderMarkdown(quoteA.Text)
 	if err != nil {
@@ -131,8 +107,6 @@ func (s *Server) selectQuotes(r *http.Request) (database.Quote, database.Quote, 
 }
 
 func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) error {
-	userId := s.getCurrentUserId(r)
-
 	var props *components.RankProps
 	quoteA, quoteB, err := s.selectQuotes(r)
 	if err != nil {
@@ -147,12 +121,7 @@ func (s *Server) handleGetRank(w http.ResponseWriter, r *http.Request) error {
 		props = &rankProps
 	}
 
-	stats, err := s.getRankStatsDisplayProps(userId)
-	if err != nil {
-		return fmt.Errorf("error getting rank stats props: %w", err)
-	}
-
-	err = pages.Rank(props, stats, nil).Render(r.Context(), w)
+	err = pages.Rank(props, nil).Render(r.Context(), w)
 	if err != nil {
 		return fmt.Errorf("error rendering rank page: %w", err)
 	}
@@ -312,12 +281,6 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("error getting quote B rank after: %w", err)
 	}
 
-	stats, err := s.getRankStatsDisplayProps(userId)
-	if err != nil {
-		return fmt.Errorf("error getting rank stats props: %w", err)
-	}
-	stats.ShouldSwap = true
-
 	rankResultProps, err := s.getRankResultProps(previousQuoteA, previousQuoteB, quoteARankBefore, quoteARankAfter, quoteBRankBefore, quoteBRankAfter)
 	if err != nil {
 		return fmt.Errorf("error getting rank result props: %w", err)
@@ -337,11 +300,6 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) error {
 		props = &rankProps
 	}
 
-	err = components.RankStatsDisplay(stats).Render(r.Context(), w)
-	if err != nil {
-		return fmt.Errorf("error rendering rank stats: %w", err)
-	}
-
 	if props == nil {
 		err = components.RankUnavailableMessage().Render(r.Context(), w)
 		if err != nil {
@@ -357,22 +315,6 @@ func (s *Server) handlePostRank(w http.ResponseWriter, r *http.Request) error {
 	err = components.RankResult(rankResultProps).Render(r.Context(), w)
 	if err != nil {
 		return fmt.Errorf("error rendering rank result: %w", err)
-	}
-
-	return nil
-}
-
-func (s *Server) handleRankStats(w http.ResponseWriter, r *http.Request) error {
-	userId := s.getCurrentUserId(r)
-
-	stats, err := s.getRankStatsDisplayProps(userId)
-	if err != nil {
-		return fmt.Errorf("error getting rank stats props: %w", err)
-	}
-
-	err = components.RankStatsDisplay(stats).Render(r.Context(), w)
-	if err != nil {
-		return fmt.Errorf("error rendering rank stats: %w", err)
 	}
 
 	return nil
