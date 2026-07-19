@@ -104,18 +104,11 @@ func GenerateMessageUrl(message *discordgo.Message) string {
 	return fmt.Sprintf("https://discord.com/channels/%s/%s/%s", message.GuildID, message.ChannelID, message.ID)
 }
 
-// canDeleteQuotes reports whether the invoking user is permitted to remove
-// quotes. Other privileged commands (e.g. banning users) should reuse this
-// same check so their access stays in lockstep with quote deletion.
-func canDeleteQuotes(interaction *discordgo.InteractionCreate) bool {
-	return interaction.Member.User.ID == config.Instance.OwnerId
-}
-
-// ensureCanDeleteQuotes rejects the interaction when the invoking user is not
-// permitted to delete quotes. It returns true when the interaction was
-// rejected (and the caller should return early).
-func (b *Bot) ensureCanDeleteQuotes(interaction *discordgo.InteractionCreate) bool {
-	if canDeleteQuotes(interaction) {
+// ensureIsOwner rejects the interaction when the invoking user is not the bot
+// owner. It returns true when the interaction was rejected (and the caller
+// should return early).
+func (b *Bot) ensureIsOwner(interaction *discordgo.InteractionCreate) bool {
+	if interaction.Member.User.ID == config.Instance.OwnerId {
 		return false
 	}
 	respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{

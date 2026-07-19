@@ -14,7 +14,7 @@ type banArgs struct {
 }
 
 func (b *Bot) banCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args banArgs) {
-	if b.ensureCanDeleteQuotes(interaction) {
+	if b.ensureIsOwner(interaction) {
 		return
 	}
 
@@ -54,7 +54,7 @@ type unbanArgs struct {
 }
 
 func (b *Bot) unbanCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args unbanArgs) {
-	if b.ensureCanDeleteQuotes(interaction) {
+	if b.ensureIsOwner(interaction) {
 		return
 	}
 
