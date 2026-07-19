@@ -59,7 +59,7 @@ func Load() error {
 	}
 
 	slog.SetDefault(slog.New(
-		tint.NewHandler(
+		tint.NewTextHandler(
 			os.Stderr,
 			&tint.Options{
 				TimeFormat: time.Kitchen,
