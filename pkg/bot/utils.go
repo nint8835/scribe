@@ -10,6 +10,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
+	"github.com/nint8835/scribe/pkg/config"
 	"github.com/nint8835/scribe/pkg/database"
 	"github.com/nint8835/scribe/pkg/embedding"
 )
@@ -104,7 +105,49 @@ func GenerateMessageUrl(message *discordgo.Message) string {
 	return fmt.Sprintf("https://discord.com/channels/%s/%s/%s", message.GuildID, message.ChannelID, message.ID)
 }
 
+func (b *Bot) isOwner(interaction *discordgo.InteractionCreate) bool {
+	return interaction.Member.User.ID == config.Instance.OwnerId
+}
+
+func (b *Bot) respondAccessDenied(interaction *discordgo.InteractionCreate) {
+	respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Content: "You do not have access to that command.",
+		},
+	})
+	if respondErr != nil {
+		slog.Error("error sending interaction response", "error", respondErr)
+	}
+}
+
+func (b *Bot) rejectIfBanned(interaction *discordgo.InteractionCreate) bool {
+	if !database.IsUserBanned(interaction.Member.User.ID) {
+		return false
+	}
+	respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Color:       (240 << 16) + (85 << 8) + (125),
+					Title:       "Error adding quote.",
+					Description: "You have been banned from adding quotes.",
+				},
+			},
+			Flags: discordgo.MessageFlagsEphemeral,
+		},
+	})
+	if respondErr != nil {
+		slog.Error("error sending interaction response", "error", respondErr)
+	}
+	return true
+}
+
 func (b *Bot) addQuote(quote database.Quote, interaction *discordgo.InteractionCreate) {
+	if b.rejectIfBanned(interaction) {
+		return
+	}
 	result := database.Instance.Create(&quote)
 	if result.Error != nil {
 		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{

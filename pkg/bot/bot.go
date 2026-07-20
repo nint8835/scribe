@@ -132,6 +132,18 @@ func (b *Bot) registerCommands() {
 		Handler:     b.semanticQueryCommand,
 		GuildID:     config.Instance.GuildId,
 	})
+	_ = b.parser.AddCommand(&switchboard.Command{
+		Name:        "ban",
+		Description: "Ban a user from adding quotes.",
+		Handler:     b.banCommand,
+		GuildID:     config.Instance.GuildId,
+	})
+	_ = b.parser.AddCommand(&switchboard.Command{
+		Name:        "unban",
+		Description: "Unban a user from adding quotes.",
+		Handler:     b.unbanCommand,
+		GuildID:     config.Instance.GuildId,
+	})
 
 	// Message commands
 	_ = b.parser.AddCommand(&switchboard.Command{
