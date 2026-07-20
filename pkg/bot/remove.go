@@ -15,7 +15,8 @@ type removeArgs struct {
 }
 
 func (b *Bot) removeQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args removeArgs) {
-	if b.ensureIsOwner(interaction) {
+	if !b.isOwner(interaction) {
+		b.respondAccessDenied(interaction)
 		return
 	}
 

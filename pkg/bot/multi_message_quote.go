@@ -43,10 +43,6 @@ func generateWIPMultiMessageQuoteEmbed(memberId string) *discordgo.MessageEmbed 
 func (b *Bot) addToMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, message *discordgo.Message) {
 	memberId := interaction.Member.User.ID
 
-	if b.rejectIfBanned(interaction) {
-		return
-	}
-
 	if message.Content == "" {
 		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -117,10 +113,6 @@ type slashAddMultiMessageQuoteArgs struct {
 
 func (b *Bot) slashAddMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, args slashAddMultiMessageQuoteArgs) {
 	memberId := interaction.Member.User.ID
-
-	if b.rejectIfBanned(interaction) {
-		return
-	}
 
 	if _, ok := pendingMultiMessageQuotes[memberId]; !ok {
 		pendingMultiMessageQuotes[memberId] = []*discordgo.Message{}
@@ -195,10 +187,6 @@ func (b *Bot) cancelMultiMessageQuoteCommand(_ *discordgo.Session, interaction *
 
 func (b *Bot) saveMultiMessageQuoteCommand(_ *discordgo.Session, interaction *discordgo.InteractionCreate, _ struct{}) {
 	memberId := interaction.Member.User.ID
-
-	if b.rejectIfBanned(interaction) {
-		return
-	}
 
 	if _, ok := pendingMultiMessageQuotes[memberId]; !ok {
 		respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{

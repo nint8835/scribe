@@ -104,13 +104,11 @@ func GenerateMessageUrl(message *discordgo.Message) string {
 	return fmt.Sprintf("https://discord.com/channels/%s/%s/%s", message.GuildID, message.ChannelID, message.ID)
 }
 
-// ensureIsOwner rejects the interaction when the invoking user is not the bot
-// owner. It returns true when the interaction was rejected (and the caller
-// should return early).
-func (b *Bot) ensureIsOwner(interaction *discordgo.InteractionCreate) bool {
-	if interaction.Member.User.ID == config.Instance.OwnerId {
-		return false
-	}
+func (b *Bot) isOwner(interaction *discordgo.InteractionCreate) bool {
+	return interaction.Member.User.ID == config.Instance.OwnerId
+}
+
+func (b *Bot) respondAccessDenied(interaction *discordgo.InteractionCreate) {
 	respondErr := b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
@@ -120,7 +118,6 @@ func (b *Bot) ensureIsOwner(interaction *discordgo.InteractionCreate) bool {
 	if respondErr != nil {
 		slog.Error("error sending interaction response", "error", respondErr)
 	}
-	return true
 }
 
 func (b *Bot) rejectIfBanned(interaction *discordgo.InteractionCreate) bool {
