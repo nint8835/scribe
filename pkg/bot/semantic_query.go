@@ -66,20 +66,7 @@ func (b *Bot) semanticQueryCommand(_ *discordgo.Session, interaction *discordgo.
 				slog.Error("error sending channel message", "error", sendErr)
 			}
 		}
-
-		quoteText := quote.Text
-		if len(quoteText) >= 900 {
-			quoteText = quoteText[:900] + "..."
-		}
-
-		quoteBody := fmt.Sprintf("%s\n\n_<t:%d>_", quoteText, quote.Meta.CreatedAt.UTC().Unix())
-		if quote.Source != nil {
-			quoteBody += fmt.Sprintf(" - [Source](%s)", *quote.Source)
-		}
-		embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
-			Name:  fmt.Sprintf("%d - %s", quote.Meta.ID, authors),
-			Value: quoteBody,
-		})
+		embed.Fields = append(embed.Fields, quoteListField(quote, authors))
 	}
 
 	err = b.Session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{

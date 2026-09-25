@@ -39,10 +39,12 @@ func truncateDiscordText(value string, limit int) string {
 
 func quoteListField(quote database.Quote, authors string) *discordgo.MessageEmbedField {
 	quoteText := truncateDiscordText(quote.Text, 900)
-	quoteBody := fmt.Sprintf("%s\n\n_<t:%d>_", quoteText, quote.Meta.CreatedAt.UTC().Unix())
+	quoteBody := fmt.Sprintf("_<t:%d>_", quote.Meta.CreatedAt.UTC().Unix())
 	if quote.Source != nil {
 		quoteBody += fmt.Sprintf(" - [Source](%s)", *quote.Source)
 	}
+
+	quoteBody += fmt.Sprintf("\n%s", quoteText)
 
 	return &discordgo.MessageEmbedField{
 		Name:  truncateDiscordText(fmt.Sprintf("%d - %s", quote.Meta.ID, authors), discordEmbedFieldNameLimit),
